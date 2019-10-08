@@ -1,0 +1,1 @@
+If there is n people, the number of groups will be between ceil(n/5) and flour(n/4).
