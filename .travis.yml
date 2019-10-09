@@ -1,0 +1,25 @@
+language: python
+python:
+  - "3.4"
+  - "3.5"
+  - "3.6"      # current default Python on Travis CI
+  - "3.7"
+# command to install dependencies
+# Maybe needed in later stages
+#install:
+#  - pip install -r requirements.txt
+
+stages:
+  - test
+  - build
+  - name: deploy
+    # require the branch name to be master
+    if: branch = master
+jobs:
+  include:
+    - stage: test
+      script: # to be added
+    - stage: build
+      script: # to be added
+    - stage: deploy
+      script: # to be added
