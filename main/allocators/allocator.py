@@ -1,4 +1,4 @@
-from Allocable import Allocable
+from main.allocators.allocable import Allocable
 
 
 class Allocator(Allocable):
@@ -8,7 +8,8 @@ class Allocator(Allocable):
         self.evaluator = evaluator
 
     def allocate(self, users, gs_lower_bound, gs_upper_bound):
-        """ Return the best result from different algorithms evaluating by the metric"""
+        """ Return the best result(list of groups, which is list of users) from different algorithms evaluating by
+        the metric """
 
         bestResult = self.allocators[0]
 
