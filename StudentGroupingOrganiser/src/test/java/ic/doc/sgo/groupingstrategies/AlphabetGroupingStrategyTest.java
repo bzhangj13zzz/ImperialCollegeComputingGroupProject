@@ -1,11 +1,9 @@
 package ic.doc.sgo.groupingstrategies;
 
-import com.neovisionaries.i18n.CountryCode;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
 import org.junit.Test;
 
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,12 +12,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AlphabetGroupingStrategyTest {
 
-    private final static Student STUDENT_A = new Student("100", "Aaa Aaa", CountryCode.UK, ZoneId.of("UTC+1"),
-            "Male", 40, "Technology", "Master", 15, "2019J");
-    private final static Student STUDENT_B = new Student("101", "Aaa Bbb", CountryCode.CN, ZoneId.of("UTC+8"),
-            "Female", 43, "Technology", "Master", 16, "2019J");
-    private final static Student STUDENT_C = new Student("102", "aaa Caa", CountryCode.UK, ZoneId.of("UTC+1"),
-            "Male", 42, "Technology", "Master", 15, "2019J");
+    private final static Student STUDENT_A = new Student.Builder("100", "Aaa Aaa").createStudent();
+    private final static Student STUDENT_B = new Student.Builder("101", "Aaa bbb").createStudent();
+    private final static Student STUDENT_C = new Student.Builder("102", "aaa Ccc").createStudent();
 
     @Test
     public void canGroupStudentAlphabetically() {
