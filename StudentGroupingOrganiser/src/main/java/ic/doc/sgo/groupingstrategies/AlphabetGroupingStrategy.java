@@ -1,6 +1,7 @@
 package ic.doc.sgo.groupingstrategies;
 
 import com.google.common.collect.Lists;
+import ic.doc.sgo.Constrain;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
 
@@ -16,7 +17,7 @@ public class AlphabetGroupingStrategy implements GroupingStrategy {
     }
 
     @Override
-    public List<Group> apply(List<Student> students) {
+    public List<Group> apply(List<Student> students, Constrain constrain) {
         students.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
         List<List<Student>> partitioned = Lists.partition(students, groupSize);
         return partitioned.stream().map(Group::from).collect(Collectors.toList());

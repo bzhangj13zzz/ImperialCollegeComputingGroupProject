@@ -18,6 +18,7 @@ public class Student {
     private final int workYearNum;
     private final String cohort;
     private final Map<String, Object> additionalAttributes; // never null
+    private int groupId;
 
     private Student(String id, String name, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
@@ -33,6 +34,7 @@ public class Student {
         this.workYearNum = workYearNum;
         this.cohort = cohort;
         this.additionalAttributes = additionalAttributes;
+        this.groupId = -1;
     }
 
     @Override
@@ -191,5 +193,9 @@ public class Student {
             return new Student(id, name, countryCode, timeZone, gender, age, career, degree,
                     workYearNum, cohort, additionalAttributes);
         }
+    }
+
+    public void setGroupId(int id) {
+        this.groupId = id;
     }
 }
