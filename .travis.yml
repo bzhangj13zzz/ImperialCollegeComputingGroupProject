@@ -9,8 +9,8 @@ stages:
 jobs:
   include:
     - stage: test
-      script: # to be added
+      script: skip # to be added
     - stage: build
-      script: # to be added
+      script: skip # to be added
     - stage: deploy
-      script: # to be added
+      script: skip # to be added
