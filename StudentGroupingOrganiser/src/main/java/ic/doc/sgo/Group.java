@@ -8,8 +8,14 @@ import java.util.Objects;
 public class Group {
 
     private final List<Student> studentList;
+    private int id;
 
-    private Group(List<Student> students) {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+    public Group(List<Student> students) {
         studentList = students;
     }
 
@@ -57,4 +63,11 @@ public class Group {
         studentList.clear();
     }
 
+    public int getId() {
+        return this.id;
+    }
+
+    public int size() {
+        return studentList.size();
+    }
 }

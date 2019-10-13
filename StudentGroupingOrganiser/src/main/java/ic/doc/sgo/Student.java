@@ -16,6 +16,7 @@ public class Student {
     private final String degree;
     private final int workYearNum;
     private final String cohort;
+    private int groupId;
 
     public Student(String id, String name, CountryCode countryCode, ZoneId timeZone, String gender,
                    int age, String career, String degree, int workYearNum, String cohort) {
@@ -29,6 +30,7 @@ public class Student {
         this.degree = degree;
         this.workYearNum = workYearNum;
         this.cohort = cohort;
+        this.groupId = -1;
     }
 
     @Override
@@ -107,5 +109,9 @@ public class Student {
 
     public String getCohort() {
         return cohort;
+    }
+
+    public void setGroupId(int id) {
+        this.groupId = id;
     }
 }
