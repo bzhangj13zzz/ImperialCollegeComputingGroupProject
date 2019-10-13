@@ -70,4 +70,8 @@ public class Group {
     public int size() {
         return studentList.size();
     }
+
+    public List<Student> getStudents() {
+        return this.studentList;
+    }
 }

@@ -7,22 +7,24 @@ import java.time.ZoneId;
 import java.util.*;
 
 public class Student {
-    private final String id; // never null
-    private final String name; // never null
-    private final CountryCode countryCode;
-    private final ZoneId timeZone;
-    private final String gender;
-    private final int age;
-    private final String career;
-    private final String degree;
-    private final int workYearNum;
-    private final String cohort;
-    private final Map<String, Object> additionalAttributes; // never null
+    private  String id; // never null
+    private  String name; // never null
+    private CountryCode countryCode;
+    private ZoneId timeZone;
+    private String gender;
+    private int age;
+    private String career;
+    private String degree;
+    private int workYearNum;
+    private String cohort;
+    private  Map<String, Object> additionalAttributes; // never null
     private int groupId;
 
-    private Student(String id, String name, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
-                    @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
-                    int workYearNum, @Nullable String cohort, Map<String, Object> additionalAttributes) {
+    public Student() {};
+
+    public Student(String id, String name, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
+                   @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
+                   int workYearNum, @Nullable String cohort, Map<String, Object> additionalAttributes) {
         this.id = id;
         this.name = name;
         this.countryCode = countryCode;
@@ -124,6 +126,10 @@ public class Student {
 
     public void addAttribute(String key, Object value) {
         additionalAttributes.put(key, value);
+    }
+
+    public int getGroupId() {
+        return this.groupId;
     }
 
     public static class Builder {
