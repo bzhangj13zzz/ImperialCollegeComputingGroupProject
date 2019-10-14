@@ -1,9 +1,8 @@
 package ic.doc.sgo;
 
-public class Constrain {
+public class Constraint {
     private int groupSizeLowerBound;
     private int groupSizeUpperBound;
-
 
     public void setGroupSizeLowerBound(int groupSizeLowerBound) {
         this.groupSizeLowerBound = groupSizeLowerBound;

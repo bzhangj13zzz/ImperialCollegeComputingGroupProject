@@ -7,24 +7,21 @@ import java.time.ZoneId;
 import java.util.*;
 
 public class Student {
-    private  String id; // never null
-    private  String name; // never null
-    private CountryCode countryCode;
-    private ZoneId timeZone;
-    private String gender;
-    private int age;
-    private String career;
-    private String degree;
-    private int workYearNum;
-    private String cohort;
-    private  Map<String, Object> additionalAttributes; // never null
-    private int groupId;
+    private final String id; // never null
+    private final String name; // never null
+    private final CountryCode countryCode;
+    private final ZoneId timeZone;
+    private final String gender;
+    private final int age;
+    private final String career;
+    private final String degree;
+    private final int workYearNum;
+    private final String cohort;
+    private final Map<String, Object> additionalAttributes; // never null
 
-    public Student() {};
-
-    public Student(String id, String name, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
-                   @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
-                   int workYearNum, @Nullable String cohort, Map<String, Object> additionalAttributes) {
+    private Student(String id, String name, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
+                    @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
+                    int workYearNum, @Nullable String cohort, Map<String, Object> additionalAttributes) {
         this.id = id;
         this.name = name;
         this.countryCode = countryCode;
@@ -36,7 +33,6 @@ public class Student {
         this.workYearNum = workYearNum;
         this.cohort = cohort;
         this.additionalAttributes = additionalAttributes;
-        this.groupId = -1;
     }
 
     @Override
@@ -128,10 +124,6 @@ public class Student {
         additionalAttributes.put(key, value);
     }
 
-    public int getGroupId() {
-        return this.groupId;
-    }
-
     public static class Builder {
         private final String id;
         private final String name;
@@ -199,9 +191,5 @@ public class Student {
             return new Student(id, name, countryCode, timeZone, gender, age, career, degree,
                     workYearNum, cohort, additionalAttributes);
         }
-    }
-
-    public void setGroupId(int id) {
-        this.groupId = id;
     }
 }

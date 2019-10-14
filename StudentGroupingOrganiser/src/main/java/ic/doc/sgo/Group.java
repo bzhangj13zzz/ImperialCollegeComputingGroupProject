@@ -1,9 +1,6 @@
 package ic.doc.sgo;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Group {
 
@@ -15,7 +12,7 @@ public class Group {
     }
 
 
-    public Group(List<Student> students) {
+    private Group(List<Student> students) {
         studentList = students;
     }
 
@@ -24,7 +21,7 @@ public class Group {
     }
 
     public static Group of(Student... students) {
-        return new Group(Arrays.asList(students));
+        return new Group(new ArrayList<>(Arrays.asList(students)));
     }
 
     @Override
