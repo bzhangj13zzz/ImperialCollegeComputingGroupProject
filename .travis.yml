@@ -8,7 +8,7 @@ stages:
     if: branch = master
 jobs:
   include:
-    - stage: build
+    - stage: compile
       script: cd StudentGroupingOrganiser/ && mvn compile
     - stage: test
       script: cd StudentGroupingOrganiser/ && mvn test
