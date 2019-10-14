@@ -35,9 +35,9 @@
         </dependency>
         <dependency>
             <!--json-->
-            <groupId>com.vaadin.external.google</groupId>
-            <artifactId>android-json</artifactId>
-            <version>0.0.20131108.vaadin1</version>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20190722</version>
         </dependency>
         <dependency>
             <!--junit-->

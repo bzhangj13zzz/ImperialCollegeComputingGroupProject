@@ -14,8 +14,8 @@ public class RandomGroupingStrategy implements GroupingStrategy {
     @Override
     public List<Group> apply(List<Student> students, Constraint constraint) {
         int size = students.size();
-        int numberOfGroupsLowerBound = (int) Math.ceil(1.0*size/ constraint.getGroupSizeUpperBound());
-        int numberOfGroupsUpperBound = (int) Math.floor(1.0* size/ constraint.getGroupSizeLowerBound());
+        int numberOfGroupsLowerBound = (int) Math.ceil(1.0 * size / constraint.getGroupSizeUpperBound());
+        int numberOfGroupsUpperBound = (int) Math.floor(1.0 * size / constraint.getGroupSizeLowerBound());
         int number = getRandomIntegerBetween(numberOfGroupsLowerBound, numberOfGroupsUpperBound);
 
         Collections.shuffle(students);
@@ -24,14 +24,14 @@ public class RandomGroupingStrategy implements GroupingStrategy {
             groups.add(Group.of());
         }
 
-        for (int i = 0; i < constraint.getGroupSizeLowerBound()*number; i++) {
-            assignStudentToGroup(students.get(i), groups.get(i/ constraint.getGroupSizeLowerBound()));
+        for (int i = 0; i < constraint.getGroupSizeLowerBound() * number; i++) {
+            assignStudentToGroup(students.get(i), groups.get(i / constraint.getGroupSizeLowerBound()));
         }
 
-        for (int i = numberOfGroupsLowerBound*number; i < size; i++) {
-            int groupId = getRandomIntegerBetween(0, number-1);
+        for (int i = numberOfGroupsLowerBound * number; i < size; i++) {
+            int groupId = getRandomIntegerBetween(0, number - 1);
             while (groups.get(groupId).size() >= numberOfGroupsUpperBound) {
-                groupId = getRandomIntegerBetween(0, number-1);
+                groupId = getRandomIntegerBetween(0, number - 1);
             }
             assignStudentToGroup(students.get(i), groups.get(groupId));
         }

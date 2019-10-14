@@ -4,13 +4,8 @@ import java.util.*;
 
 public class Group {
 
+    private int id = -1;
     private final List<Student> studentList;
-    private int id;
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
 
     private Group(List<Student> students) {
         studentList = students;
@@ -27,7 +22,8 @@ public class Group {
     @Override
     public String toString() {
         return "Group{" +
-                "studentList=" + studentList +
+                "id=" + id +
+                ", studentList=" + studentList +
                 '}';
     }
 
@@ -36,12 +32,13 @@ public class Group {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Group group = (Group) o;
-        return Objects.equals(studentList, group.studentList);
+        return id == group.id &&
+                Objects.equals(studentList, group.studentList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(studentList);
+        return Objects.hash(id, studentList);
     }
 
     public boolean add(Student student) {
@@ -60,15 +57,19 @@ public class Group {
         studentList.clear();
     }
 
-    public int getId() {
-        return this.id;
-    }
-
     public int size() {
         return studentList.size();
     }
 
     public List<Student> getStudents() {
         return this.studentList;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

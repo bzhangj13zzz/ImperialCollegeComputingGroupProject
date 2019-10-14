@@ -29,12 +29,12 @@ public class RandomGroupingStrategyTest {
             students.add(student);
         }
         List<Group> groups = new RandomGroupingStrategy().apply(students, constraint);
-        for (Group group: groups) {
+        for (Group group : groups) {
             assertTrue(group.size() <= constraint.getGroupSizeUpperBound());
-            assertTrue( group.size() >= constraint.getGroupSizeLowerBound());
-            for (Student student: group.getStudents()) {
+            assertTrue(group.size() >= constraint.getGroupSizeLowerBound());
+            for (Student student : group.getStudents()) {
                 assertFalse(testedStudents.get(student));
-                testedStudents.put(student,true);
+                testedStudents.put(student, true);
             }
         }
     }
