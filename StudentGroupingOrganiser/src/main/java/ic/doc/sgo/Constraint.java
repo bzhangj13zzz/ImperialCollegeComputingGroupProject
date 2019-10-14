@@ -50,5 +50,6 @@ public class Constraint {
             for (int j = 0; j < i; j++) {
             }
         }
+        return -1;
     }
 }

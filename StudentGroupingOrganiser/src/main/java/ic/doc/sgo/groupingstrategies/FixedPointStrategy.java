@@ -14,5 +14,6 @@ public class FixedPointStrategy implements GroupingStrategy {
                 constraint.getGroupSizeLowerBound(), constraint.getGroupSizeUpperBound());
 
         List<Group> groups = new RandomGroupingStrategy().apply(students, constraint);
+        return groups;
     }
 }
