@@ -4,7 +4,6 @@ import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
 
-
 import java.util.List;
 
 public class FixedPointStrategy implements GroupingStrategy {
@@ -23,7 +22,6 @@ public class FixedPointStrategy implements GroupingStrategy {
             isChanged = false;
             for (Student s1 : students) {
                 for (Student s2 : students) {
-                    ;
                     if (Util.isSameGroup(s1, s2)) continue;
                     if (Util.isBetterFitIfSwap(s1, s2, constraint)) {
                         Util.swapGroup(s1, s2);
