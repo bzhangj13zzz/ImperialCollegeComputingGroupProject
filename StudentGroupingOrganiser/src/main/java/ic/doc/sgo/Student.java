@@ -18,6 +18,7 @@ public class Student {
     private final int workYearNum;
     private final String cohort;
     private final Map<String, Object> additionalAttributes; // never null
+    private Group group;
 
     private Student(String id, String name, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
@@ -122,6 +123,14 @@ public class Student {
 
     public void addAttribute(String key, Object value) {
         additionalAttributes.put(key, value);
+    }
+
+    public Group getGroup() {
+      return this.group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public static class Builder {

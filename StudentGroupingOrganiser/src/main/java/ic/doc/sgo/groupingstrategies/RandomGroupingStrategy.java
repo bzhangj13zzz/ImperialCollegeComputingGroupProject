@@ -23,13 +23,14 @@ public class RandomGroupingStrategy implements GroupingStrategy {
         int number = getRandomIntegerBetween(numberIntervalOfGroups.getKey(), numberIntervalOfGroups.getValue());
 
         Collections.shuffle(students);
-        List<Group> groups = new ArrayList<>();
-        for (int i = 0; i < number; i++) {
+
+        for (int i = 0; i <= number; i++) {
             groups.add(Group.of());
+            groups.get(i).setId(i);
         }
 
         for (int i = 0; i < constraint.getGroupSizeLowerBound() * number; i++) {
-            assignStudentToGroup(students.get(i), groups.get(i / constraint.getGroupSizeLowerBound()));
+            assignStudentToGroup(students.get(i), groups.get((i / constraint.getGroupSizeLowerBound())+1));
         }
 
         for (int i = numberIntervalOfGroups.getKey() * number; i < size; i++) {
