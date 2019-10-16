@@ -72,4 +72,14 @@ public class Group {
     public void setId(int id) {
         this.id = id;
     }
+
+    public int getTimeZoneDifference() {
+        int res = 0;
+        for (Student s1: studentList) {
+            for (Student s2: studentList) {
+                res = Math.max(res, TimeZoneCalculator.timeBetween(s1.getTimeZone(), s2.getTimeZone()));
+            }
+        }
+        return res;
+    }
 }
