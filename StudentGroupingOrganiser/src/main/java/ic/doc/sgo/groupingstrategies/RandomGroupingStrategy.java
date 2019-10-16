@@ -7,7 +7,6 @@ import ic.doc.sgo.Student;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import static ic.doc.sgo.groupingstrategies.Util.assignStudentToGroup;
 import static ic.doc.sgo.groupingstrategies.Util.getRandomIntegerBetween;
@@ -28,7 +27,6 @@ public class RandomGroupingStrategy implements GroupingStrategy {
         int number = getRandomIntegerBetween(numberIntervalOfGroups.first(), numberIntervalOfGroups.second());
 
         Collections.shuffle(students);
-        List<Group> groups = new ArrayList<>();
         for (int i = 0; i < number; i++) {
             groups.add(Group.of());
         }
