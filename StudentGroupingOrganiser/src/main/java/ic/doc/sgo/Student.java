@@ -8,22 +8,20 @@ import java.util.*;
 
 public class Student {
     private final String id; // never null
-    private final String name; // never null
     private final CountryCode countryCode;
     private final ZoneId timeZone;
     private final String gender;
     private final int age;
     private final String career;
     private final String degree;
-    private final int workYearNum;
+    private final double workYearNum;
     private final String cohort;
     private final Map<String, Object> additionalAttributes; // never null
 
-    private Student(String id, String name, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
+    private Student(String id, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
-                    int workYearNum, @Nullable String cohort, Map<String, Object> additionalAttributes) {
+                    double workYearNum, @Nullable String cohort, Map<String, Object> additionalAttributes) {
         this.id = id;
-        this.name = name;
         this.countryCode = countryCode;
         this.timeZone = timeZone;
         this.gender = gender;
@@ -39,7 +37,6 @@ public class Student {
     public String toString() {
         return "Student{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
                 ", countryCode=" + countryCode +
                 ", timeZone=" + timeZone +
                 ", gender='" + gender + '\'' +
@@ -60,7 +57,6 @@ public class Student {
         return age == student.age &&
                 workYearNum == student.workYearNum &&
                 Objects.equals(id, student.id) &&
-                Objects.equals(name, student.name) &&
                 countryCode == student.countryCode &&
                 Objects.equals(timeZone, student.timeZone) &&
                 Objects.equals(gender, student.gender) &&
@@ -72,16 +68,12 @@ public class Student {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, countryCode, timeZone, gender, age, career, degree,
+        return Objects.hash(id, countryCode, timeZone, gender, age, career, degree,
                 workYearNum, cohort, additionalAttributes);
     }
 
     public String getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Optional<CountryCode> getCountryCode() {
@@ -108,8 +100,8 @@ public class Student {
         return Optional.ofNullable(degree);
     }
 
-    public OptionalInt getWorkYearNum() {
-        return workYearNum == -1 ? OptionalInt.empty() : OptionalInt.of(workYearNum);
+    public OptionalDouble getWorkYearNum() {
+        return workYearNum == -1.0 ? OptionalDouble.empty() : OptionalDouble.of(workYearNum);
     }
 
     public Optional<String> getCohort() {
@@ -126,20 +118,18 @@ public class Student {
 
     public static class Builder {
         private final String id;
-        private final String name;
         private CountryCode countryCode = null;
         private ZoneId timeZone = null;
         private String gender = null;
         private int age = -1;
         private String career = null;
         private String degree = null;
-        private int workYearNum = -1;
+        private double workYearNum = -1.0;
         private String cohort = null;
         private final Map<String, Object> additionalAttributes = new HashMap<>();
 
-        public Builder(String id, String name) {
+        public Builder(String id) {
             this.id = id;
-            this.name = name;
         }
 
         public Builder setCountryCode(CountryCode countryCode) {
@@ -172,7 +162,7 @@ public class Student {
             return this;
         }
 
-        public Builder setWorkYearNum(int workYearNum) {
+        public Builder setWorkYearNum(double workYearNum) {
             this.workYearNum = workYearNum;
             return this;
         }
@@ -188,7 +178,7 @@ public class Student {
         }
 
         public Student createStudent() {
-            return new Student(id, name, countryCode, timeZone, gender, age, career, degree,
+            return new Student(id, countryCode, timeZone, gender, age, career, degree,
                     workYearNum, cohort, additionalAttributes);
         }
     }

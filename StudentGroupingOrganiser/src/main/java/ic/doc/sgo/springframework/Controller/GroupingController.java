@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Resource;
-import org.json.JSONObject;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +37,7 @@ public class GroupingController {
     List<Student> studentList = new ArrayList<>();
     for (int i = 0; i < studentsJsonArray.size(); i++) {
       Optional<Student> optionalStudent =
-          new JsonStudentAdapter(new JSONObject(studentsJsonArray.get(i).toString())).toStudent();
+          new JsonStudentAdapter(studentsJsonArray.get(i).getAsJsonObject()).toStudent();
       optionalStudent.ifPresent(studentList::add);
     }
 
@@ -55,8 +54,7 @@ public class GroupingController {
         JsonObject studentJsonObject = new JsonObject();
         studentJsonObject.addProperty("id", student.getId());
         // Add group id for each student json object
-        studentJsonObject.addProperty("groupId", String.valueOf(group.getId()));
-        studentJsonObject.addProperty("name", student.getName());
+        studentJsonObject.addProperty("groupId", group.getId());
         studentsJsonArray.add(studentJsonObject);
       }
     }

@@ -1,18 +1,17 @@
 package ic.doc.sgo.studentadapters;
 
+import com.google.gson.JsonObject;
 import com.neovisionaries.i18n.CountryCode;
 import ic.doc.sgo.Student;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.time.ZoneId;
-import java.util.Iterator;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public class JsonStudentAdapter implements StudentAdapter {
-    private final JSONObject studentJson;
+    private final JsonObject studentJson;
 
-    public JsonStudentAdapter(JSONObject studentJson) {
+    public JsonStudentAdapter(JsonObject studentJson) {
         this.studentJson = studentJson;
     }
 
@@ -21,46 +20,48 @@ public class JsonStudentAdapter implements StudentAdapter {
         Student.Builder studentBuilder;
         try {
             studentBuilder = new Student.Builder(
-                    studentJson.getString("id"),
-                    studentJson.getString("name")
+                    studentJson.get("id").toString()
             );
         } catch (JSONException e) {
             return Optional.empty();
         }
-        for (Iterator it = studentJson.keys(); it.hasNext(); ) {
-            String key = (String) it.next();
+        LocalDate now = LocalDate.now();
+        for (String key : studentJson.keySet()) {
             switch (key) {
                 case "id":
                     // do nothing
-                case "name":
-                    // do nothing
                     break;
-                case "countryCode":
-                    studentBuilder.setCountryCode(CountryCode.getByCodeIgnoreCase(studentJson.optString(key)));
+                case "country":
+                    String countryName = studentJson.get(key).getAsString();
+                    studentBuilder.setCountryCode(CountryCode.findByName(countryName).get(0));
                     break;
-                case "timeZone":
-                    studentBuilder.setTimeZone(ZoneId.of(studentJson.optString(key)));
+                case "currentCity":
+                    String cityName = studentJson.get(key).getAsString();
+                    //TODO: convert city name to zoneId
                     break;
                 case "gender":
-                    studentBuilder.setGender(studentJson.optString(key));
+                    studentBuilder.setGender(studentJson.get(key).getAsString());
                     break;
-                case "age":
-                    studentBuilder.setAge(studentJson.optInt(key));
+                case "dob":
+                    String dobStr = studentJson.get(key).getAsString();
+                    studentBuilder.setAge(JsonFormatUtil.dobToAge(dobStr, now));
                     break;
                 case "career":
-                    studentBuilder.setCareer(studentJson.optString(key));
+                    studentBuilder.setCareer(studentJson.get(key).getAsString());
                     break;
                 case "degree":
-                    studentBuilder.setDegree(studentJson.optString(key));
+                    studentBuilder.setDegree(studentJson.get(key).getAsString());
                     break;
                 case "workYearNum":
-                    studentBuilder.setWorkYearNum(studentJson.optInt(key));
+                    String yearNumStr = studentJson.get(key).getAsString();
+                    double yearNum = JsonFormatUtil.yearNumStringToDouble(yearNumStr);
+                    studentBuilder.setWorkYearNum(yearNum);
                     break;
                 case "cohort":
-                    studentBuilder.setCohort(studentJson.optString(key));
+                    studentBuilder.setCohort(studentJson.get(key).getAsString());
                     break;
                 default:
-                    studentBuilder.addAttribute(key, studentJson.opt(key));
+                    studentBuilder.addAttribute(key, studentJson.get(key));
             }
         }
         return Optional.of(studentBuilder.createStudent());
