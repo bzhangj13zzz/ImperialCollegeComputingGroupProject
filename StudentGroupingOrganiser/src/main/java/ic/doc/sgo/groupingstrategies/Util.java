@@ -3,7 +3,6 @@ package ic.doc.sgo.groupingstrategies;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
-import javafx.util.Pair;
 
 import java.util.Random;
 
@@ -50,5 +49,32 @@ public class Util {
         Group originalGroup = student.getGroup();
         originalGroup.remove(student);
         assignStudentToGroup(student, targetGroup);
+    }
+
+    static class Pair<S, T> {
+        private S fst;
+        private T snd;
+
+        public Pair(S fst, T snd) {
+            this.fst = fst;
+            this.snd = snd;
+        }
+
+        public S first() {
+            return fst;
+        }
+
+        public void setFirst(S fst) {
+            this.fst = fst;
+        }
+
+        public T second() {
+            return snd;
+        }
+
+        public void setSecond(T snd) {
+            this.snd = snd;
+        }
+
     }
 }

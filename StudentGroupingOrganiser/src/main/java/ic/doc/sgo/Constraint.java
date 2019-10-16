@@ -55,12 +55,22 @@ public class Constraint {
 
     //evaluation value is between 0~1, higher the value, higher the matchness.
     public double evaluateGroup(Group group) {
-        int timeZoneDifference = group.getTimeZoneDifference();
+        int timeZoneDifference = getTimezoneDiffOfGroup(group);
         return 1.0*(12 - timeZoneDifference)/12;
     }
 
+    private int getTimezoneDiffOfGroup(Group group) {
+        int res = 0;
+        for (Student s1: group.getStudents()) {
+            for (Student s2: group.getStudents()) {
+                res = Math.max(res, TimeZoneCalculator.timeBetween(s1.getTimeZone(), s2.getTimeZone()));
+            }
+        }
+        return res;
+    }
+
     public boolean isValidGroup(Group group) {
-        int timeZoneDifference = group.getTimeZoneDifference();
+        int timeZoneDifference = getTimezoneDiffOfGroup(group);
         if (group.size() < groupSizeLowerBound) {
             return false;
         }
@@ -69,7 +79,7 @@ public class Constraint {
             return false;
         }
 
-        if (group.getTimeZoneDifference() > timeZoneDifference) {
+        if (getTimezoneDiffOfGroup(group) > timeZoneDifference) {
             return false;
         }
 
