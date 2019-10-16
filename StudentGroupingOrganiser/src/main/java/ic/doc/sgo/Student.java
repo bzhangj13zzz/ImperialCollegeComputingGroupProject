@@ -126,7 +126,7 @@ public class Student {
     }
 
     public Group getGroup() {
-      return this.group;
+        return this.group;
     }
 
     public void setGroup(Group group) {

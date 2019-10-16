@@ -3,14 +3,13 @@ package ic.doc.sgo.groupingstrategies;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
-import javafx.util.Pair;
 
 import java.util.List;
 
 public class FixedPointStrategy implements GroupingStrategy {
     @Override
     public List<Group> apply(List<Student> students, Constraint constraint) {
-        Pair<Integer, Integer> numberIntervalOfGroups = Util.getNumberInterval(students.size(),
+        Util.Pair<Integer, Integer> numberIntervalOfGroups = Util.getNumberInterval(students.size(),
                 constraint.getGroupSizeLowerBound(), constraint.getGroupSizeUpperBound());
 
         List<Group> groups = new RandomGroupingStrategy().apply(students, constraint);
@@ -19,10 +18,10 @@ public class FixedPointStrategy implements GroupingStrategy {
         }
 
         boolean isChanged = true;
-        while(isChanged) {
+        while (isChanged) {
             isChanged = false;
-            for (Student s1: students) {
-                for (Student s2: students) { ;
+            for (Student s1 : students) {
+                for (Student s2 : students) {
                     if (Util.isSameGroup(s1, s2)) continue;
                     if (Util.isBetterFitIfSwap(s1, s2, constraint)) {
                         Util.swapGroup(s1, s2);
@@ -32,9 +31,9 @@ public class FixedPointStrategy implements GroupingStrategy {
             }
         }
 
-        for (Group group: groups) {
+        for (Group group : groups) {
             if (!constraint.isValidGroup(group)) {
-                for (Student student: group.getStudents()) {
+                for (Student student : group.getStudents()) {
                     Util.moveStudentToGroup(student, groups.get(0));
                 }
             }
