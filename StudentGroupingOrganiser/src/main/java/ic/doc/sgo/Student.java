@@ -1,5 +1,6 @@
 package ic.doc.sgo;
 
+import com.google.gson.JsonElement;
 import com.neovisionaries.i18n.CountryCode;
 
 import javax.annotation.Nullable;
@@ -16,11 +17,11 @@ public class Student {
     private final String degree;
     private final double workYearNum;
     private final String cohort;
-    private final Map<String, Object> additionalAttributes; // never null
+    private final Map<String, JsonElement> additionalAttributes; // never null
 
     private Student(String id, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
-                    double workYearNum, @Nullable String cohort, Map<String, Object> additionalAttributes) {
+                    double workYearNum, @Nullable String cohort, Map<String, JsonElement> additionalAttributes) {
         this.id = id;
         this.countryCode = countryCode;
         this.timeZone = timeZone;
@@ -108,11 +109,11 @@ public class Student {
         return Optional.ofNullable(cohort);
     }
 
-    public Optional<Object> getAttribute(String key) {
+    public Optional<JsonElement> getAttribute(String key) {
         return Optional.ofNullable(additionalAttributes.get(key));
     }
 
-    public void addAttribute(String key, Object value) {
+    public void addAttribute(String key, JsonElement value) {
         additionalAttributes.put(key, value);
     }
 
@@ -126,7 +127,7 @@ public class Student {
         private String degree = null;
         private double workYearNum = -1.0;
         private String cohort = null;
-        private final Map<String, Object> additionalAttributes = new HashMap<>();
+        private final Map<String, JsonElement> additionalAttributes = new HashMap<>();
 
         public Builder(String id) {
             this.id = id;
@@ -172,7 +173,7 @@ public class Student {
             return this;
         }
 
-        public Builder addAttribute(String key, Object value) {
+        public Builder addAttribute(String key, JsonElement value) {
             additionalAttributes.put(key, value);
             return this;
         }

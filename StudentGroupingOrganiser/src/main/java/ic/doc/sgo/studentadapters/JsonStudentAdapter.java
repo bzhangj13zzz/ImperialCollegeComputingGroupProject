@@ -3,7 +3,6 @@ package ic.doc.sgo.studentadapters;
 import com.google.gson.JsonObject;
 import com.neovisionaries.i18n.CountryCode;
 import ic.doc.sgo.Student;
-import org.json.JSONException;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -17,14 +16,11 @@ public class JsonStudentAdapter implements StudentAdapter {
 
     @Override
     public Optional<Student> toStudent() {
-        Student.Builder studentBuilder;
-        try {
-            studentBuilder = new Student.Builder(
-                    studentJson.get("id").toString()
-            );
-        } catch (JSONException e) {
+        if (!studentJson.has("id")) {
             return Optional.empty();
         }
+        Student.Builder studentBuilder;
+        studentBuilder = new Student.Builder(studentJson.get("id").getAsString());
         LocalDate now = LocalDate.now();
         for (String key : studentJson.keySet()) {
             switch (key) {
