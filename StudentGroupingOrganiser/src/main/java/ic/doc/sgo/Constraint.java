@@ -52,27 +52,4 @@ public class Constraint {
         }
         return -1;
     }
-
-    //evaluation value is between 0~1, higher the value, higher the matchness.
-    public double evaluateGroup(Group group) {
-        int timeZoneDifference = group.getTimeZoneDifference();
-        return 1.0*(12 - timeZoneDifference)/12;
-    }
-
-    public boolean isValidGroup(Group group) {
-        int timeZoneDifference = group.getTimeZoneDifference();
-        if (group.size() < groupSizeLowerBound) {
-            return false;
-        }
-
-        if (group.size() > groupSizeUpperBound) {
-            return false;
-        }
-
-        if (group.getTimeZoneDifference() > timeZoneDifference) {
-            return false;
-        }
-
-        return true;
-    }
 }
