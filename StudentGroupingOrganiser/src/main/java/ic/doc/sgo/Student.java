@@ -18,6 +18,7 @@ public class Student {
     private final double workYearNum;
     private final String cohort;
     private final Map<String, JsonElement> additionalAttributes; // never null
+    private Group group;
 
     private Student(String id, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
@@ -115,6 +116,14 @@ public class Student {
 
     public void addAttribute(String key, JsonElement value) {
         additionalAttributes.put(key, value);
+    }
+
+    public Group getGroup() {
+        return this.group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public static class Builder {
