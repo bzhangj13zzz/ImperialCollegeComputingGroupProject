@@ -1,6 +1,6 @@
 package ic.doc.sgo;
 
-import com.neovisionaries.i18n.CountryCode;
+import com.google.gson.JsonElement;
 
 import javax.annotation.Nullable;
 import java.time.ZoneId;
@@ -8,23 +8,20 @@ import java.util.*;
 
 public class Student {
     private final String id; // never null
-    private final String name; // never null
-    private final CountryCode countryCode;
     private final ZoneId timeZone;
     private final String gender;
     private final int age;
     private final String career;
     private final String degree;
-    private final int workYearNum;
+    private final double workYearNum;
     private final String cohort;
-    private final Map<String, Object> additionalAttributes; // never null
+    private final Map<String, JsonElement> additionalAttributes; // never null
+    private Group group;
 
-    private Student(String id, String name, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
+    private Student(String id, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
-                    int workYearNum, @Nullable String cohort, Map<String, Object> additionalAttributes) {
+                    double workYearNum, @Nullable String cohort, Map<String, JsonElement> additionalAttributes) {
         this.id = id;
-        this.name = name;
-        this.countryCode = countryCode;
         this.timeZone = timeZone;
         this.gender = gender;
         this.age = age;
@@ -39,8 +36,6 @@ public class Student {
     public String toString() {
         return "Student{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", countryCode=" + countryCode +
                 ", timeZone=" + timeZone +
                 ", gender='" + gender + '\'' +
                 ", age=" + age +
@@ -60,8 +55,6 @@ public class Student {
         return age == student.age &&
                 workYearNum == student.workYearNum &&
                 Objects.equals(id, student.id) &&
-                Objects.equals(name, student.name) &&
-                countryCode == student.countryCode &&
                 Objects.equals(timeZone, student.timeZone) &&
                 Objects.equals(gender, student.gender) &&
                 Objects.equals(career, student.career) &&
@@ -72,20 +65,12 @@ public class Student {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, countryCode, timeZone, gender, age, career, degree,
+        return Objects.hash(id, timeZone, gender, age, career, degree,
                 workYearNum, cohort, additionalAttributes);
     }
 
     public String getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Optional<CountryCode> getCountryCode() {
-        return Optional.ofNullable(countryCode);
     }
 
     public Optional<ZoneId> getTimeZone() {
@@ -108,43 +93,43 @@ public class Student {
         return Optional.ofNullable(degree);
     }
 
-    public OptionalInt getWorkYearNum() {
-        return workYearNum == -1 ? OptionalInt.empty() : OptionalInt.of(workYearNum);
+    public OptionalDouble getWorkYearNum() {
+        return workYearNum == -1.0 ? OptionalDouble.empty() : OptionalDouble.of(workYearNum);
     }
 
     public Optional<String> getCohort() {
         return Optional.ofNullable(cohort);
     }
 
-    public Optional<Object> getAttribute(String key) {
+    public Optional<JsonElement> getAttribute(String key) {
         return Optional.ofNullable(additionalAttributes.get(key));
     }
 
-    public void addAttribute(String key, Object value) {
+    public void addAttribute(String key, JsonElement value) {
         additionalAttributes.put(key, value);
+    }
+
+    public Group getGroup() {
+        return this.group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public static class Builder {
         private final String id;
-        private final String name;
-        private CountryCode countryCode = null;
         private ZoneId timeZone = null;
         private String gender = null;
         private int age = -1;
         private String career = null;
         private String degree = null;
-        private int workYearNum = -1;
+        private double workYearNum = -1.0;
         private String cohort = null;
-        private final Map<String, Object> additionalAttributes = new HashMap<>();
+        private final Map<String, JsonElement> additionalAttributes = new HashMap<>();
 
-        public Builder(String id, String name) {
+        public Builder(String id) {
             this.id = id;
-            this.name = name;
-        }
-
-        public Builder setCountryCode(CountryCode countryCode) {
-            this.countryCode = countryCode;
-            return this;
         }
 
         public Builder setTimeZone(ZoneId timeZone) {
@@ -172,7 +157,7 @@ public class Student {
             return this;
         }
 
-        public Builder setWorkYearNum(int workYearNum) {
+        public Builder setWorkYearNum(double workYearNum) {
             this.workYearNum = workYearNum;
             return this;
         }
@@ -182,13 +167,13 @@ public class Student {
             return this;
         }
 
-        public Builder addAttribute(String key, Object value) {
+        public Builder addAttribute(String key, JsonElement value) {
             additionalAttributes.put(key, value);
             return this;
         }
 
         public Student createStudent() {
-            return new Student(id, name, countryCode, timeZone, gender, age, career, degree,
+            return new Student(id, timeZone, gender, age, career, degree,
                     workYearNum, cohort, additionalAttributes);
         }
     }
