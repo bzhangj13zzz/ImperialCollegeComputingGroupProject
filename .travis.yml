@@ -7,7 +7,7 @@ stages:
   - test
   - name: deploy
     # require the branch name to be master
-    if: branch = master
+    # if: branch = master
 jobs:
   include:
     - stage: compile
@@ -20,5 +20,5 @@ deploy:
   provider: heroku
   app:organiser-app
   api_key:
-    750485f6-8805-4575-a7d2-1be7b8c601b7
+    secure: 750485f6-8805-4575-a7d2-1be7b8c601b7
 
