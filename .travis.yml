@@ -1,5 +1,7 @@
 language: java
-
+sudo: true
+before_install:
+  - cd StudentGroupingOrganiser/ && mvn clean && mvn -N io.takari:maven:0.7.6:wrapper && chmod +x mvnw
 stages:
   - compile
   - test
@@ -14,3 +16,9 @@ jobs:
       script: cd StudentGroupingOrganiser/ && mvn test
     - stage: deploy
       script: skip # to be added
+deploy:
+  provider: heroku
+  app:organiser-app
+  api_key:
+    750485f6-8805-4575-a7d2-1be7b8c601b7
+
