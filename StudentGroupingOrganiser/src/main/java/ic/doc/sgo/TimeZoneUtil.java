@@ -20,8 +20,7 @@ public final class TimeZoneUtil {
     // TODO: populate the mapping so that we can avoid some lookup, it will be country name
     //  if the country code is non-standard we use the API.
     private static final Map<String, ZoneId> timeZoneMapping = new HashMap<>();
-    // Note that the correct key is AIzaSyBMnK69TbryPXKWfV58FduK56kvbhsh33Q
-    private static final String API_KEY = "AIzaSyBMnK69TbryPXKWfV58FduK56kvbhsh33";
+    private static final String API_KEY = "";
     private static final Gson gson = new Gson();
 
     public static ZoneId getTimeZoneId(String cityName, String countryName) throws Exception {
