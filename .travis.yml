@@ -1,7 +1,7 @@
 language: java
 sudo: true
 before_install:
-  - cd StudentGroupingOrganiser/ && mvn clean && mvn -N io.takari:maven:0.7.6:wrapper && chmod +x mvnw
+  - mvn clean && mvn -N io.takari:maven:0.7.6:wrapper && chmod +x mvnw
 stages:
   - compile
   - test
