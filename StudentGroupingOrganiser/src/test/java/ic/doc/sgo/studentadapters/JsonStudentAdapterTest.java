@@ -1,131 +1,76 @@
 package ic.doc.sgo.studentadapters;
 
-import com.neovisionaries.i18n.CountryCode;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import ic.doc.sgo.Student;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Test;
 
-import java.time.ZoneId;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 
 public class JsonStudentAdapterTest {
 
     @Test
-    public void canInterpretStudentFromJSONWithAllBasicFields() {
-        try {
-            JSONObject json = new JSONObject("{\n" +
-                    "  \"id\": \"12345\",\n" +
-                    "  \"name\": \"Dummy\",\n" +
-                    "  \"countryCode\": \"CHN\",\n" +
-                    "  \"timeZone\": \"UTC+8\",\n" +
-                    "  \"gender\": \"Male\",\n" +
-                    "  \"age\": 40,\n" +
-                    "  \"career\": \"Biology\",\n" +
-                    "  \"degree\": \"Master\",\n" +
-                    "  \"workYearNum\": 15,\n" +
-                    "  \"cohort\": \"2018J\"\n" +
-                    "}");
-            Student student = new Student.Builder("12345", "Dummy")
-                    .setCountryCode(CountryCode.CN)
-                    .setTimeZone(ZoneId.of("UTC+8"))
-                    .setGender("Male")
-                    .setAge(40)
-                    .setCareer("Biology")
-                    .setDegree("Master")
-                    .setWorkYearNum(15)
-                    .setCohort("2018J")
-                    .createStudent();
-            assertThat(new JsonStudentAdapter(json).toStudent(), is(Optional.of(student)));
-        } catch (JSONException e) {
-            fail();
-        }
+    public void returnEmptyIfJsonNoIdMember() {
+        JsonObject json = new JsonObject();
+        json.addProperty("gender", "Male");
+        assertThat(new JsonStudentAdapter(json).toStudent(), is(Optional.empty()));
     }
 
     @Test
-    public void canInterpretStudentFromJSONWithOnlyNecessaryFields() {
-        try {
-            JSONObject json = new JSONObject("{\n" +
-                    "  \"id\": \"12345\",\n" +
-                    "  \"name\": \"Dummy\"\n" +
-                    "}");
-            Student student = new Student.Builder("12345", "Dummy")
-                    .createStudent();
-            assertThat(new JsonStudentAdapter(json).toStudent(), is(Optional.of(student)));
-        } catch (JSONException e) {
-            fail();
-        }
-    }
-
-
-    @Test
-    public void canInterpretStudentFromJSONWithAdditionalFields() {
-        try {
-            JSONObject json = new JSONObject("{\n" +
-                    "  \"id\": \"12345\",\n" +
-                    "  \"name\": \"Dummy\",\n" +
-                    "  \"religion\": \"No Religion\"\n" +
-                    "}");
-            Student student = new Student.Builder("12345", "Dummy")
-                    .addAttribute("religion", "No Religion")
-                    .createStudent();
-            assertThat(new JsonStudentAdapter(json).toStudent(), is(Optional.of(student)));
-        } catch (JSONException e) {
-            fail();
-        }
+    public void canReturnStudentIfJsonHasIdMember() {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", "123");
+        Student student = new Student.Builder("123").createStudent();
+        assertThat(new JsonStudentAdapter(json).toStudent(), is(Optional.of(student)));
     }
 
     @Test
-    public void canInterpretStudentFromJSONWithAllFieldsAndAdditionalFields() {
-        try {
-            JSONObject json = new JSONObject("{\n" +
-                    "  \"id\": \"12345\",\n" +
-                    "  \"name\": \"Dummy\",\n" +
-                    "  \"countryCode\": \"CHN\",\n" +
-                    "  \"timeZone\": \"UTC+8\",\n" +
-                    "  \"gender\": \"Male\",\n" +
-                    "  \"age\": 40,\n" +
-                    "  \"career\": \"Biology\",\n" +
-                    "  \"degree\": \"Master\",\n" +
-                    "  \"workYearNum\": 15,\n" +
-                    "  \"cohort\": \"2018J\",\n" +
-                    "  \"religion\": \"No Religion\"\n" +
-                    "}");
-            Student student = new Student.Builder("12345", "Dummy")
-                    .setCountryCode(CountryCode.CN)
-                    .setTimeZone(ZoneId.of("UTC+8"))
-                    .setGender("Male")
-                    .setAge(40)
-                    .setCareer("Biology")
-                    .setDegree("Master")
-                    .setWorkYearNum(15)
-                    .setCohort("2018J")
-                    .addAttribute("religion", "No Religion")
-                    .createStudent();
-            assertThat(new JsonStudentAdapter(json).toStudent(), is(Optional.of(student)));
-        } catch (JSONException e) {
-            fail();
-        }
+    public void canReturnStudentIfJsonHasMembersWithoutAgeAndTimezone() {
+        // exclude Age in test because age is calculated from dob and current time
+        // exclude timezone because not implemented yet
+        JsonObject json = new JsonObject();
+        json.addProperty("id", "123");
+        json.addProperty("gender", "Male");
+        json.addProperty("career", "Biology");
+        json.addProperty("degree", "PhD");
+        json.addProperty("workYearNum", "15y");
+        json.addProperty("cohort", "18J");
+        Student student = new Student.Builder("123")
+                .setGender("Male")
+                .setCareer("Biology")
+                .setDegree("PhD")
+                .setWorkYearNum(15)
+                .setCohort("18J")
+                .createStudent();
+        assertThat(new JsonStudentAdapter(json).toStudent(), is(Optional.of(student)));
     }
 
     @Test
-    public void returnOptionalEmptyIfJSONInvalid() {
-        try {
-            JSONObject json = new JSONObject("{\n" +
-                    "  \"id\": \"12345\",\n" +
-                    "  \"countryCode\": \"CHN\",\n" +
-                    "  \"timeZone\": \"UTC+8\"\n" +
-                    "}");
-            assertThat(new JsonStudentAdapter(json).toStudent(), is(Optional.empty()));
-        } catch (JSONException e) {
-            e.printStackTrace();
-            fail();
-        }
+    public void canReturnStudentIfJsonHasMembersWithAdditionalAttributes() {
+        JsonArray array = new JsonArray();
+        array.add(1);
+        array.add(2);
+        JsonObject obj = new JsonObject();
+        JsonObject json = new JsonObject();
+        json.addProperty("id", "123");
+        json.addProperty("str", "Str");
+        json.addProperty("int", 1);
+        json.addProperty("float", 1.1);
+        json.addProperty("bool", true);
+        json.add("array", array);
+        json.add("obj", obj);
+        Student student = new Student.Builder("123")
+                .addAttribute("str", new JsonPrimitive("Str"))
+                .addAttribute("int", new JsonPrimitive(1))
+                .addAttribute("float", new JsonPrimitive(1.1))
+                .addAttribute("bool", new JsonPrimitive(true))
+                .addAttribute("array", array)
+                .addAttribute("obj", obj)
+                .createStudent();
+        assertThat(new JsonStudentAdapter(json).toStudent(), is(Optional.of(student)));
     }
-
-
 }

@@ -24,7 +24,7 @@ public class RandomGroupingStrategyTest {
         List<Student> students = new ArrayList<>();
         int number = 1000;
         for (int i = 0; i < 1000; i++) {
-            Student student = new Student.Builder(String.valueOf(i), "Test").createStudent();
+            Student student = new Student.Builder(String.valueOf(i)).createStudent();
             testedStudents.put(student, false);
             students.add(student);
         }
