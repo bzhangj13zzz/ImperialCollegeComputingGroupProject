@@ -1,7 +1,6 @@
 package ic.doc.sgo;
 
 import com.google.gson.JsonElement;
-import com.neovisionaries.i18n.CountryCode;
 
 import javax.annotation.Nullable;
 import java.time.ZoneId;
@@ -9,7 +8,6 @@ import java.util.*;
 
 public class Student {
     private final String id; // never null
-    private final CountryCode countryCode;
     private final ZoneId timeZone;
     private final String gender;
     private final int age;
@@ -20,11 +18,10 @@ public class Student {
     private final Map<String, JsonElement> additionalAttributes; // never null
     private Group group;
 
-    private Student(String id, @Nullable CountryCode countryCode, @Nullable ZoneId timeZone,
+    private Student(String id, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
                     double workYearNum, @Nullable String cohort, Map<String, JsonElement> additionalAttributes) {
         this.id = id;
-        this.countryCode = countryCode;
         this.timeZone = timeZone;
         this.gender = gender;
         this.age = age;
@@ -39,7 +36,6 @@ public class Student {
     public String toString() {
         return "Student{" +
                 "id='" + id + '\'' +
-                ", countryCode=" + countryCode +
                 ", timeZone=" + timeZone +
                 ", gender='" + gender + '\'' +
                 ", age=" + age +
@@ -59,7 +55,6 @@ public class Student {
         return age == student.age &&
                 workYearNum == student.workYearNum &&
                 Objects.equals(id, student.id) &&
-                countryCode == student.countryCode &&
                 Objects.equals(timeZone, student.timeZone) &&
                 Objects.equals(gender, student.gender) &&
                 Objects.equals(career, student.career) &&
@@ -70,16 +65,12 @@ public class Student {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, countryCode, timeZone, gender, age, career, degree,
+        return Objects.hash(id, timeZone, gender, age, career, degree,
                 workYearNum, cohort, additionalAttributes);
     }
 
     public String getId() {
         return id;
-    }
-
-    public Optional<CountryCode> getCountryCode() {
-        return Optional.ofNullable(countryCode);
     }
 
     public Optional<ZoneId> getTimeZone() {
@@ -128,7 +119,6 @@ public class Student {
 
     public static class Builder {
         private final String id;
-        private CountryCode countryCode = null;
         private ZoneId timeZone = null;
         private String gender = null;
         private int age = -1;
@@ -140,11 +130,6 @@ public class Student {
 
         public Builder(String id) {
             this.id = id;
-        }
-
-        public Builder setCountryCode(CountryCode countryCode) {
-            this.countryCode = countryCode;
-            return this;
         }
 
         public Builder setTimeZone(ZoneId timeZone) {
@@ -188,7 +173,7 @@ public class Student {
         }
 
         public Student createStudent() {
-            return new Student(id, countryCode, timeZone, gender, age, career, degree,
+            return new Student(id, timeZone, gender, age, career, degree,
                     workYearNum, cohort, additionalAttributes);
         }
     }

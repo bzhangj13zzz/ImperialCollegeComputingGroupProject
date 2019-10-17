@@ -3,7 +3,6 @@ package ic.doc.sgo.studentadapters;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.neovisionaries.i18n.CountryCode;
 import ic.doc.sgo.Student;
 import org.junit.Test;
 
@@ -17,7 +16,7 @@ public class JsonStudentAdapterTest {
     @Test
     public void returnEmptyIfJsonNoIdMember() {
         JsonObject json = new JsonObject();
-        json.addProperty("country", "China");
+        json.addProperty("gender", "Male");
         assertThat(new JsonStudentAdapter(json).toStudent(), is(Optional.empty()));
     }
 
@@ -35,14 +34,12 @@ public class JsonStudentAdapterTest {
         // exclude timezone because not implemented yet
         JsonObject json = new JsonObject();
         json.addProperty("id", "123");
-        json.addProperty("country", "China");
         json.addProperty("gender", "Male");
         json.addProperty("career", "Biology");
         json.addProperty("degree", "PhD");
         json.addProperty("workYearNum", "15y");
         json.addProperty("cohort", "18J");
         Student student = new Student.Builder("123")
-                .setCountryCode(CountryCode.CN)
                 .setGender("Male")
                 .setCareer("Biology")
                 .setDegree("PhD")

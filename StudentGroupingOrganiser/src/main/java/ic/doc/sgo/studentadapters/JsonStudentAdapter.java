@@ -1,7 +1,6 @@
 package ic.doc.sgo.studentadapters;
 
 import com.google.gson.JsonObject;
-import com.neovisionaries.i18n.CountryCode;
 import ic.doc.sgo.Student;
 
 import java.time.LocalDate;
@@ -29,7 +28,7 @@ public class JsonStudentAdapter implements StudentAdapter {
                     break;
                 case "country":
                     String countryName = studentJson.get(key).getAsString();
-                    studentBuilder.setCountryCode(CountryCode.findByName(countryName).get(0));
+                    //TODO: convert country to zoneId
                     break;
                 case "currentCity":
                     String cityName = studentJson.get(key).getAsString();
