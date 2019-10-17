@@ -11,9 +11,9 @@ stages:
 jobs:
   include:
     - stage: compile
-      script: cd StudentGroupingOrganiser/ && mvn compile
+      script: mvn compile
     - stage: test
-      script: cd StudentGroupingOrganiser/ && mvn test
+      script: mvn test
     - stage: deploy
       script: skip # to be added
 deploy:
