@@ -94,12 +94,26 @@ public class Constraint {
     public boolean isBetterFitIfSwap(Student s1, Student s2) {
         Group g1 = s1.getGroup();
         Group g2 = s2.getGroup();
+        int v1 = 0;
+        if (isValidGroup(g1)) {
+            v1 ++;
+        }
+        if (isValidGroup(g2)) {
+            v1 ++;
+        }
         double pv1 = evaluateGroup(g1);
         double pv2 = evaluateGroup(g2);
         Util.swapGroup(s1, s2);
+        int v2 = 0;
+        if (isValidGroup(g1)) {
+            v2 ++;
+        }
+        if (isValidGroup(g2)) {
+            v2 ++;
+        }
         double cv1 = evaluateGroup(g1);
         double cv2 = evaluateGroup(g2);
-        boolean res = pv1 + pv2 < cv1 + cv2;
+        boolean res = (pv1 + pv2 < cv1 + cv2) && v1 <= v2;
         Util.swapGroup(s1, s2);
         return res;
     }
