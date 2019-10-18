@@ -8,6 +8,8 @@ import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.springframework.Service.GroupingService;
 import ic.doc.sgo.studentadapters.JsonStudentAdapter;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,9 +37,10 @@ public class GroupingController {
     Constraint constraint = gson.fromJson(constraintJsonObject, Constraint.class);
 
     List<Student> studentList = new ArrayList<>();
+    LocalDate now = LocalDate.now();
     for (int i = 0; i < studentsJsonArray.size(); i++) {
       Optional<Student> optionalStudent =
-          new JsonStudentAdapter(studentsJsonArray.get(i).getAsJsonObject()).toStudent();
+          new JsonStudentAdapter(studentsJsonArray.get(i).getAsJsonObject(), now).toStudent();
       optionalStudent.ifPresent(studentList::add);
     }
 
