@@ -10,13 +10,20 @@ import static org.junit.Assert.*;
 public class TimeZoneUtilTest {
 
     @Test
-    public void getTimeZoneId_London_TimeZone() throws Exception {
+    public void getTimeZoneIdLocalLookUpByCity() throws Exception {
         assertThat(TimeZoneUtil.getTimeZoneId("London", "United Kingdom"), is(ZoneId.of("Europe/London")));
+        assertThat(TimeZoneUtil.getTimeZoneId("Paris", "France"), is(ZoneId.of("Europe/Paris")));
+        assertThat(TimeZoneUtil.getTimeZoneId("New York", "United States"), is(ZoneId.of("America/New_York")));
     }
 
-//    @Test
-//    public void getTimeZoneId_NewYork_TimeZone() throws Exception {
-//        assertThat(TimeZoneUtil.getTimeZoneId("New York", "United States"), is(ZoneId.of("America/New_York")));
-//    }
+    @Test
+    public void getTimeZoneIdLocalLookUpOnlyOneTimezone() throws Exception {
+        assertThat(TimeZoneUtil.getTimeZoneId("Lee", "France"), is(ZoneId.of("Europe/Paris")));
+    }
+
+    @Test
+    public void getTimeZoneIdNeedAPI() throws Exception {
+        //TODO
+    }
 
 }
