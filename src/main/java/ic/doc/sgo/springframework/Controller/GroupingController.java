@@ -14,12 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Resource;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/")
 public class GroupingController {
@@ -31,7 +33,6 @@ public class GroupingController {
     JsonObject parsedJson = gson.fromJson(json, JsonObject.class);
     JsonArray studentsJsonArray = parsedJson.getAsJsonArray("students");
     JsonObject constraintJsonObject = parsedJson.getAsJsonObject("filters");
-    JsonObject groupedStudentsJsonObject = new JsonObject();
 
     // Use Gson to convert json to object
     Constraint constraint = gson.fromJson(constraintJsonObject, Constraint.class);
@@ -45,12 +46,12 @@ public class GroupingController {
     }
 
     List<Group> groupList = groupingService.groupStudent(studentList, constraint);
-    groupedStudentsJsonObject.add("students", groupListToJsonArray(groupList));
     // return a string which is in the form of a JsonObject
-    return gson.toJson(groupedStudentsJsonObject);
+    return gson.toJson(getResultJsonObj(groupList));
   }
 
-  private JsonArray groupListToJsonArray(List<Group> groupList) {
+  private JsonObject getResultJsonObj(List<Group> groupList) {
+    JsonObject result = new JsonObject();
     JsonArray studentsJsonArray = new JsonArray();
     for (Group group : groupList) {
       for (Student student : group.getStudents()) {
@@ -61,6 +62,15 @@ public class GroupingController {
         studentsJsonArray.add(studentJsonObject);
       }
     }
-    return studentsJsonArray;
+    long numOfGroup = groupList.stream()
+            .filter(group -> group.getId() != Group.UNKNOWN_ID && group.getId() != Group.UNALLOC_ID)
+            .count();
+    long numOfUnallocStu = groupList.stream()
+            .filter(group -> group.getId() == Group.UNALLOC_ID)
+            .map(Group::size).reduce(0, Integer::sum);
+    result.add("students", studentsJsonArray);
+    result.addProperty("numOfGroup", numOfGroup);
+    result.addProperty("numOfUnalloc", numOfUnallocStu);
+    return result;
   }
 }

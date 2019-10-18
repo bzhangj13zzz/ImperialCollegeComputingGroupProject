@@ -57,6 +57,17 @@ public class JsonStudentAdapterTest {
     }
 
     @Test
+    public void canReturnStudentIfJsonHasIdAndCountryWithoutCity() {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", "123");
+        json.addProperty("country", "United Kingdom");
+        Student student = new Student.Builder("123")
+                .setTimeZone(ZoneId.of("Europe/London"))
+                .createStudent();
+        assertThat(new JsonStudentAdapter(json, localDate).toStudent(), is(Optional.of(student)));
+    }
+
+    @Test
     public void canReturnStudentIfJsonHasMembersWithAdditionalAttributes() {
         JsonArray array = new JsonArray();
         array.add(1);

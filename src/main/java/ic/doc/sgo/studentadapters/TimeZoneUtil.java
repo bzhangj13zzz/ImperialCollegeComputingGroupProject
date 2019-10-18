@@ -20,6 +20,9 @@ final class TimeZoneUtil {
     private static final String API_KEY = "";
     private static final Gson gson = new Gson();
 
+    private TimeZoneUtil() {
+    }
+
     static ZoneId getTimeZoneId(String cityName, String countryName) throws Exception {
         Optional<ZoneId> lookup = lookUpTimezoneJson(cityName, countryName);
         if (lookup.isPresent()) {
@@ -33,29 +36,27 @@ final class TimeZoneUtil {
     }
 
     private static Optional<ZoneId> lookUpTimezoneJson(String cityName, String countryName) {
-        BufferedReader br;
-        try {
-            br = new BufferedReader(new FileReader(JSON_PATH));
-        } catch (FileNotFoundException e) {
-            return Optional.empty();
-        }
-        JsonArray array = JsonParser.parseReader(br).getAsJsonArray();
-        for (JsonElement elem : array) {
-            JsonObject jsonObject = elem.getAsJsonObject();
-            if (jsonObject.get("CountryName").getAsString().equalsIgnoreCase(countryName)
-                    || jsonObject.get("IsoAlpha2").getAsString().equalsIgnoreCase(countryName)
-                    || jsonObject.get("IsoAlpha3").getAsString().equalsIgnoreCase(countryName)) {
-                JsonArray timeZones = jsonObject.get("TimeZones").getAsJsonArray();
-                if (timeZones.size() == 1) {
-                    return Optional.of(ZoneId.of(timeZones.get(0).getAsString()));
-                }
-                for (JsonElement timeZone : timeZones) {
-                    String timeZoneStr = timeZone.getAsString();
-                    if (timeZoneStr.toLowerCase().contains(cityName.replace(" ", "_").toLowerCase())) {
-                        return Optional.of(ZoneId.of(timeZoneStr));
+        try (BufferedReader br = new BufferedReader(new FileReader(JSON_PATH))) {
+            JsonArray array = JsonParser.parseReader(br).getAsJsonArray();
+            for (JsonElement elem : array) {
+                JsonObject jsonObject = elem.getAsJsonObject();
+                if (jsonObject.get("CountryName").getAsString().equalsIgnoreCase(countryName)
+                        || jsonObject.get("IsoAlpha2").getAsString().equalsIgnoreCase(countryName)
+                        || jsonObject.get("IsoAlpha3").getAsString().equalsIgnoreCase(countryName)) {
+                    JsonArray timeZones = jsonObject.get("TimeZones").getAsJsonArray();
+                    if (timeZones.size() == 1) {
+                        return Optional.of(ZoneId.of(timeZones.get(0).getAsString()));
+                    }
+                    for (JsonElement timeZone : timeZones) {
+                        String timeZoneStr = timeZone.getAsString();
+                        if (timeZoneStr.toLowerCase().contains(cityName.replace(" ", "_").toLowerCase())) {
+                            return Optional.of(ZoneId.of(timeZoneStr));
+                        }
                     }
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return Optional.empty();
     }

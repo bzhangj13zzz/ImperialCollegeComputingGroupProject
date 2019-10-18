@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class JsonFormatUtil {
+final class JsonFormatUtil {
     private JsonFormatUtil() {
     }
 
