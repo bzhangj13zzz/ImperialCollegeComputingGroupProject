@@ -11,8 +11,8 @@ import static ic.doc.sgo.groupingstrategies.Util.*;
 import static org.junit.Assert.*;
 
 public class UtilTest {
-    Student s1 = new Student.Builder(String.valueOf(1), "Test1").createStudent();
-    Student s2 = new Student.Builder(String.valueOf(2), "Test2").createStudent();
+    Student s1 = new Student.Builder(String.valueOf(1)).createStudent();
+    Student s2 = new Student.Builder(String.valueOf(2)).createStudent();
     Group g1 = Group.from(new ArrayList<>());
     Group g2 = Group.from(new ArrayList<>());
 

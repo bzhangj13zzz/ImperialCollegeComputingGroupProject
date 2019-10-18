@@ -1,6 +1,11 @@
 package ic.doc.sgo;
 
 
+import ic.doc.sgo.groupingstrategies.Util;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Constraint {
     private int groupSizeLowerBound;
     private int groupSizeUpperBound;
@@ -75,5 +80,37 @@ public class Constraint {
         }
 
         return true;
+    }
+
+    public boolean studentCanBeFitInGroup(Student student, Group group) {
+        Group originalGroup = student.getGroup();
+        Util.assignStudentToGroup(student, group);
+        boolean res = isValidGroup(group);
+        Util.assignStudentToGroup(student, originalGroup);
+        return res;
+    }
+
+    public List<Student> getUnvalidStudentsFromGroup(Group group) {
+        List<Student> students = new ArrayList<>(group.getStudents());
+        List<Student> removeStudents = new ArrayList<>();
+        for (Student student: students) {
+            if (isBetterFitIfRemove(student, group)) {
+                removeStudents.add(student);
+                group.remove(student);
+                if (isValidGroup(group)) {
+                    return removeStudents;
+                }
+            }
+        }
+
+        return students;
+    }
+
+    private boolean isBetterFitIfRemove(Student student, Group group) {
+        double p = evaluateGroup(group);
+        group.remove(student);
+        double q = evaluateGroup(group);
+        group.add(student);
+        return q > p;
     }
 }
