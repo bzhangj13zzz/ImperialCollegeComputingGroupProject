@@ -50,7 +50,7 @@ public class FixedPointStrategy implements GroupingStrategy {
             }
         }
         if (constraint.isValidGroup(groups.get(0))) {
-            Group newGroup = Group.from(groups.get(0).getStudents())
+            Group newGroup = Group.from(groups.get(0).getStudents());
             groups.add(newGroup);
             newGroup.setId(groups.indexOf(newGroup));
         }
