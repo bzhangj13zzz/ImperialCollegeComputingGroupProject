@@ -29,7 +29,9 @@ public class RandomGroupingStrategyTest {
             students.add(student);
         }
         List<Group> groups = new RandomGroupingStrategy().apply(students, constraint);
-        for (Group group : groups) {
+        for (int i = 0; i < groups.size(); i++) {
+            Group group = groups.get(i);
+            assertEquals(group.getId(), i);
             assertTrue(group.size() <= constraint.getGroupSizeUpperBound());
             assertTrue(group.size() >= constraint.getGroupSizeLowerBound());
             for (Student student : group.getStudents()) {

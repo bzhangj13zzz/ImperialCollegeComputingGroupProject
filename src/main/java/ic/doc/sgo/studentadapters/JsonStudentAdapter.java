@@ -2,11 +2,9 @@ package ic.doc.sgo.studentadapters;
 
 import com.google.gson.JsonObject;
 import ic.doc.sgo.Student;
-import ic.doc.sgo.TimeZoneUtil;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.TimeZone;
 
 public class JsonStudentAdapter implements StudentAdapter {
     private final JsonObject studentJson;
@@ -32,11 +30,9 @@ public class JsonStudentAdapter implements StudentAdapter {
                     break;
                 case "country":
                     countryName = studentJson.get(key).getAsString();
-                    //TODO: convert country to zoneId
                     break;
                 case "currentCity":
                     cityName = studentJson.get(key).getAsString();
-                    //TODO: convert city name to zoneId
                     break;
                 case "gender":
                     studentBuilder.setGender(studentJson.get(key).getAsString());
@@ -63,10 +59,12 @@ public class JsonStudentAdapter implements StudentAdapter {
                     studentBuilder.addAttribute(key, studentJson.get(key));
             }
         }
-        try {
-            studentBuilder.setTimeZone(TimeZoneUtil.getTimeZoneId(cityName, countryName));
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!cityName.equals("") && !countryName.equals("")) {
+            try {
+                studentBuilder.setTimeZone(TimeZoneUtil.getTimeZoneId(cityName, countryName));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return Optional.of(studentBuilder.createStudent());
     }
