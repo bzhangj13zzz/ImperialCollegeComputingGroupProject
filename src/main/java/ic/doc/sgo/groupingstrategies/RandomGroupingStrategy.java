@@ -28,8 +28,7 @@ public class RandomGroupingStrategy implements GroupingStrategy {
 
         Collections.shuffle(students);
         for (int i = 0; i < number; i++) {
-            groups.add(Group.of());
-            groups.get(i).setId(i);
+            groups.add(Group.of(i));
         }
 
         for (int i = 0; i < constraint.getGroupSizeLowerBound() * number; i++) {

@@ -8,9 +8,11 @@ import java.util.Optional;
 
 public class JsonStudentAdapter implements StudentAdapter {
     private final JsonObject studentJson;
+    private final LocalDate now;
 
-    public JsonStudentAdapter(JsonObject studentJson) {
+    public JsonStudentAdapter(JsonObject studentJson, LocalDate now) {
         this.studentJson = studentJson;
+        this.now = now;
     }
 
     @Override
@@ -20,7 +22,6 @@ public class JsonStudentAdapter implements StudentAdapter {
         }
         Student.Builder studentBuilder;
         studentBuilder = new Student.Builder(studentJson.get("id").getAsString());
-        LocalDate now = LocalDate.now();
         String cityName = "";
         String countryName = "";
         for (String key : studentJson.keySet()) {
