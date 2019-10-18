@@ -31,7 +31,6 @@ public class GroupingController {
     JsonObject parsedJson = gson.fromJson(json, JsonObject.class);
     JsonArray studentsJsonArray = parsedJson.getAsJsonArray("students");
     JsonObject constraintJsonObject = parsedJson.getAsJsonObject("filters");
-    JsonObject groupedStudentsJsonObject = new JsonObject();
 
     // Use Gson to convert json to object
     Constraint constraint = gson.fromJson(constraintJsonObject, Constraint.class);
@@ -45,12 +44,12 @@ public class GroupingController {
     }
 
     List<Group> groupList = groupingService.groupStudent(studentList, constraint);
-    groupedStudentsJsonObject.add("students", groupListToJsonArray(groupList));
     // return a string which is in the form of a JsonObject
-    return gson.toJson(groupedStudentsJsonObject);
+    return gson.toJson(getResultJsonObj(groupList));
   }
 
-  private JsonArray groupListToJsonArray(List<Group> groupList) {
+  private JsonObject getResultJsonObj(List<Group> groupList) {
+    JsonObject result = new JsonObject();
     JsonArray studentsJsonArray = new JsonArray();
     for (Group group : groupList) {
       for (Student student : group.getStudents()) {
@@ -67,10 +66,9 @@ public class GroupingController {
     long numOfUnallocStu = groupList.stream()
             .filter(group -> group.getId() == Group.UNALLOC_ID)
             .map(Group::size).reduce(0, Integer::sum);
-    JsonObject result = new JsonObject();
     result.add("students", studentsJsonArray);
     result.addProperty("numOfGroup", numOfGroup);
     result.addProperty("numOfUnalloc", numOfUnallocStu);
-    return studentsJsonArray;
+    return result;
   }
 }
