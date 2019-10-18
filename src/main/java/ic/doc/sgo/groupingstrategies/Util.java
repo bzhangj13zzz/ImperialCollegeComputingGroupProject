@@ -5,8 +5,6 @@ import ic.doc.sgo.Student;
 
 import java.util.Random;
 
-import ic.doc.sgo.Constraint;
-
 public class Util {
     public static Pair<Integer, Integer> getNumberInterval(int size, int lowerBound, int upperBound) {
         return new Pair<>((int) Math.ceil(1.0 * size / upperBound),
@@ -18,34 +16,13 @@ public class Util {
         return r.nextInt((b - a) + 1) + a;
     }
 
-    public static void assignStudentToGroup(Student student, Group group) {
-        Group originalGroup = student.getGroup();
-        if (originalGroup != null) {
-            originalGroup.remove(student);
-        }
-        group.add(student);
-        student.setGroup(group);
-    }
-
     public static void swapGroup(Student s1, Student s2) {
         Group g1 = s1.getGroup();
         Group g2 = s2.getGroup();
-        assignStudentToGroup(s1, g2);
-        assignStudentToGroup(s2, g1);
+        g2.add(s1);
+        g1.add(s2);
     }
 
-    public static boolean isBetterFitIfSwap(Student s1, Student s2, Constraint constraint) {
-        Group g1 = s1.getGroup();
-        Group g2 = s2.getGroup();
-        double pv1 = constraint.evaluateGroup(g1);
-        double pv2 = constraint.evaluateGroup(g2);
-        swapGroup(s1, s2);
-        double cv1 = constraint.evaluateGroup(g1);
-        double cv2 = constraint.evaluateGroup(g2);
-        boolean res = pv1 + pv2 < cv1 + cv2;
-        swapGroup(s1, s2);
-        return res;
-    }
 
     public static boolean isSameGroup(Student s1, Student s2) {
         return s1.getGroup() == s2.getGroup();

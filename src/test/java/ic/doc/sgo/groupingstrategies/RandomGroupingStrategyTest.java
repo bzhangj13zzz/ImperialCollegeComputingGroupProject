@@ -18,9 +18,7 @@ public class RandomGroupingStrategyTest {
 
     @Test
     public void allocateStudentsAccordingToConstrainGroupsSize() {
-        Constraint constraint = new Constraint();
-        constraint.setGroupSizeLowerBound(4);
-        constraint.setGroupSizeUpperBound(7);
+        Constraint constraint = new Constraint.Builder(4, 7).createConstrain();
         List<Student> students = new ArrayList<>();
         int number = 1000;
         for (int i = 0; i < 1000; i++) {

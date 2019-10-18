@@ -7,16 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Constraint {
-    private int groupSizeLowerBound;
-    private int groupSizeUpperBound;
-    private int timezoneDiff;
+    private final int groupSizeLowerBound;
+    private final int groupSizeUpperBound;
+    private final int timezoneDiff;
 
-    public void setGroupSizeLowerBound(int groupSizeLowerBound) {
+    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, int timezoneDiff) {
         this.groupSizeLowerBound = groupSizeLowerBound;
-    }
-
-    public void setGroupSizeUpperBound(int groupSizeUpperBound) {
         this.groupSizeUpperBound = groupSizeUpperBound;
+        this.timezoneDiff = timezoneDiff;
     }
 
     public int getGroupSizeLowerBound() {
@@ -25,27 +23,6 @@ public class Constraint {
 
     public int getGroupSizeUpperBound() {
         return groupSizeUpperBound;
-    }
-
-    public int getTimezoneDiff() {
-        return timezoneDiff;
-    }
-
-    public void setTimezoneDiff(int timezoneDiff) {
-        this.timezoneDiff = timezoneDiff;
-    }
-
-    public boolean validGroup(Group group) {
-        if (group.size() > groupSizeUpperBound) {
-            return false;
-        }
-        if (group.size() < getGroupSizeLowerBound()) {
-            return false;
-        }
-        if (getTimezoneDiffOfGroup(group) > timezoneDiff) {
-            return false;
-        }
-        return true;
     }
 
     //evaluation value is between 0~1, higher the value, higher the matchness.
@@ -84,13 +61,13 @@ public class Constraint {
 
     public boolean studentCanBeFitInGroup(Student student, Group group) {
         Group originalGroup = student.getGroup();
-        Util.assignStudentToGroup(student, group);
+        group.add(student);
         boolean res = isValidGroup(group);
-        Util.assignStudentToGroup(student, originalGroup);
+        originalGroup.add(student);
         return res;
     }
 
-    public List<Student> getUnvalidStudentsFromGroup(Group group) {
+    public List<Student> getInvalidStudentsFromGroup(Group group) {
         List<Student> students = new ArrayList<>(group.getStudents());
         List<Student> removeStudents = new ArrayList<>();
         for (Student student: students) {
@@ -112,5 +89,37 @@ public class Constraint {
         double q = evaluateGroup(group);
         group.add(student);
         return q > p;
+    }
+
+    public boolean isBetterFitIfSwap(Student s1, Student s2) {
+        Group g1 = s1.getGroup();
+        Group g2 = s2.getGroup();
+        double pv1 = evaluateGroup(g1);
+        double pv2 = evaluateGroup(g2);
+        Util.swapGroup(s1, s2);
+        double cv1 = evaluateGroup(g1);
+        double cv2 = evaluateGroup(g2);
+        boolean res = pv1 + pv2 < cv1 + cv2;
+        Util.swapGroup(s1, s2);
+        return res;
+    }
+
+    public static class Builder {
+        private final int groupSizeLowerBound;
+        private final int groupSizeUpperBound;
+        private int timezoneDiff = 12;
+
+        public Builder(int groupSizeLowerBound, int groupSizeUpperBound) {
+            this.groupSizeLowerBound = groupSizeLowerBound;
+            this.groupSizeUpperBound = groupSizeUpperBound;
+        }
+
+        public void setTimezoneDiff(int timezoneDiff) {
+            this.timezoneDiff = timezoneDiff;
+        }
+
+        public Constraint createConstrain() {
+            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff);
+        }
     }
 }

@@ -57,7 +57,16 @@ public class Group {
     }
 
     public boolean add(Student student) {
-        return studentList.add(student);
+        if (!studentList.contains(student)) {
+            Group origin = student.getGroup();
+            if (origin != null) {
+                origin.remove(student);
+            }
+            studentList.add(student);
+            student.setGroup(this);
+            return true;
+        }
+        return true;
     }
 
     public boolean addAll(Collection<Student> students) {
@@ -65,7 +74,12 @@ public class Group {
     }
 
     public boolean remove(Student student) {
-        return studentList.remove(student);
+        if (studentList.contains(student)) {
+            studentList.remove(student);
+            student.setGroup(null);
+            return true;
+        }
+        return false;
     }
 
     public void clear() {

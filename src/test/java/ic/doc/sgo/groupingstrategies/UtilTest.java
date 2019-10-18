@@ -19,16 +19,16 @@ public class UtilTest {
     @Test
     public void testGetNumberInterval() {
         Util.Pair<Integer, Integer> interval = getNumberInterval(100, 5, 10);
-        assertTrue(interval.first() == 10);
-        assertTrue(interval.second() == 20);
+        assertEquals(10, (int) interval.first());
+        assertEquals(20, (int) interval.second());
 
         interval = getNumberInterval(100, 13, 21);
-        assertTrue(interval.first() == 5);
-        assertTrue(interval.second() == 7);
+        assertEquals(5, (int) interval.first());
+        assertEquals(7, (int) interval.second());
 
         interval = getNumberInterval(100, 10, 10);
-        assertTrue(interval.first() == 10);
-        assertTrue(interval.second() == 10);
+        assertEquals(10, (int) interval.first());
+        assertEquals(10, (int) interval.second());
 
         //TODO: Return UnvalidSubSizeInterval
         interval = getNumberInterval(100, 13, 13);
@@ -51,26 +51,13 @@ public class UtilTest {
     }
 
     @Test
-    public void testAssignStudentToGroup() {
-        assignStudentToGroup(s1, g1);
-        assertTrue(s1.getGroup() == g1);
-        assertTrue(g1.contains(s1));
-
-        assignStudentToGroup(s1, g2);
-        assertTrue(s1.getGroup() == g2);
-        assertTrue(g2.contains(s1));
-        assertTrue(!g1.contains(s1));
-    }
-
-    @Test
     public void testSwapGroup() {
-
-        assignStudentToGroup(s1, g1);
-        assignStudentToGroup(s2, g2);
+        g1.add(s1);
+        g2.add(s2);
 
         swapGroup(s1, s2);
-        assertTrue(s1.getGroup() == g2);
-        assertTrue(s2.getGroup() == g1);
+        assertSame(s1.getGroup(), g2);
+        assertSame(s2.getGroup(), g1);
         assertTrue(g1.contains(s2));
         assertTrue(g2.contains(s1));
         assertFalse(g1.contains(s1));
@@ -78,17 +65,11 @@ public class UtilTest {
     }
 
     @Test
-    public void testIsBetterSwapIfSwap() {
-        //TODO: find a way to test it
-    }
-
-    @Test
     public void testIsSameGroup() {
-
-        assignStudentToGroup(s1, g1);
-        assignStudentToGroup(s2, g1);
+        g1.add(s1);
+        g1.add(s2);
         assertTrue(isSameGroup(s1, s2));
-        assignStudentToGroup(s1, g2);
+        g2.add(s1);
         assertFalse(isSameGroup(s1, s2));
 
     }
