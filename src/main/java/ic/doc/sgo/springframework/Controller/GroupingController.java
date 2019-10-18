@@ -61,6 +61,16 @@ public class GroupingController {
         studentsJsonArray.add(studentJsonObject);
       }
     }
+    long numOfGroup = groupList.stream()
+            .filter(group -> group.getId() != Group.UNKNOWN_ID && group.getId() != Group.UNALLOC_ID)
+            .count();
+    long numOfUnallocStu = groupList.stream()
+            .filter(group -> group.getId() == Group.UNALLOC_ID)
+            .map(Group::size).reduce(0, Integer::sum);
+    JsonObject result = new JsonObject();
+    result.add("students", studentsJsonArray);
+    result.addProperty("numOfGroup", numOfGroup);
+    result.addProperty("numOfUnalloc", numOfUnallocStu);
     return studentsJsonArray;
   }
 }
