@@ -5,7 +5,11 @@ import ic.doc.sgo.Student;
 
 import java.util.Random;
 
-public class Util {
+public final class Util {
+
+    private Util() {
+    }
+
     public static Pair<Integer, Integer> getNumberInterval(int size, int lowerBound, int upperBound) {
         return new Pair<>((int) Math.ceil(1.0 * size / upperBound),
                 (int) Math.floor(1.0 * size / lowerBound));

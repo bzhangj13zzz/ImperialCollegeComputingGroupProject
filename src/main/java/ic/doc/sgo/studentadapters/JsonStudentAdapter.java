@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import ic.doc.sgo.Student;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Optional;
 
 public class JsonStudentAdapter implements StudentAdapter {
@@ -60,9 +61,10 @@ public class JsonStudentAdapter implements StudentAdapter {
                     studentBuilder.addAttribute(key, studentJson.get(key));
             }
         }
-        if (!cityName.equals("") && !countryName.equals("")) {
+        if (!countryName.equals("")) {
             try {
-                studentBuilder.setTimeZone(TimeZoneUtil.getTimeZoneId(cityName, countryName));
+                ZoneId timeZoneId = TimeZoneUtil.getTimeZoneId(cityName, countryName);
+                studentBuilder.setTimeZone(timeZoneId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
