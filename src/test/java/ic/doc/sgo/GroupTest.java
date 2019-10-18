@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import static org.junit.Assert.*;
 
 public class GroupTest {
-    Group g1 = Group.from(new ArrayList<>());
-    Group g2 = Group.from(new ArrayList<>());
-    Student s1 = new Student.Builder(String.valueOf(1)).createStudent();
-    Student s2 = new Student.Builder(String.valueOf(2)).createStudent();
+    private Group g1 = Group.from(new ArrayList<>());
+    private Group g2 = Group.from(new ArrayList<>());
+    private Student s1 = new Student.Builder(String.valueOf(1)).createStudent();
+    private Student s2 = new Student.Builder(String.valueOf(2)).createStudent();
 
     @Test
     public void ableToAddStudent() {
@@ -19,7 +19,7 @@ public class GroupTest {
 
         g1.add(s1);
         assertTrue(g1.contains(s1));
-        assertTrue(g1.size() == 1);
+        assertEquals(1, g1.size());
     }
 
     @Test
@@ -27,7 +27,7 @@ public class GroupTest {
         g1.add(s1);
         g1.add(s1);
         assertTrue(g1.contains(s1));
-        assertTrue(g1.size() == 1);
+        assertEquals(1, g1.size());
     }
 
     @Test

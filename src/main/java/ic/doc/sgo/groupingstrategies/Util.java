@@ -13,6 +13,9 @@ public class Util {
 
     public static int getRandomIntegerBetween(int a, int b) {
         Random r = new Random();
+        if (a > b) {
+            return b;
+        }
         return r.nextInt((b - a) + 1) + a;
     }
 
