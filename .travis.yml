@@ -21,5 +21,3 @@ deploy:
   app: organiser-app
   api_key:
     secure: 750485f6-8805-4575-a7d2-1be7b8c601b7
-  on:
-    branch: sprint_1
