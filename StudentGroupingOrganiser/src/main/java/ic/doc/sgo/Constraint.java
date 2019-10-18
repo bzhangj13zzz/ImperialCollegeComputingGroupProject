@@ -1,6 +1,5 @@
 package ic.doc.sgo;
 
-import java.util.List;
 
 public class Constraint {
     private int groupSizeLowerBound;
@@ -38,32 +37,23 @@ public class Constraint {
         if (group.size() < getGroupSizeLowerBound()) {
             return false;
         }
-        if (getGroupTimezoneDiff(group) > timezoneDiff) {
+        if (getTimezoneDiffOfGroup(group) > timezoneDiff) {
             return false;
         }
         return true;
     }
 
-    private int getGroupTimezoneDiff(Group group) {
-        List<Student> students = group.getStudents();
-        for (int i = 0; i < students.size(); i++) {
-            for (int j = 0; j < i; j++) {
-            }
-        }
-        return -1;
-    }
-
     //evaluation value is between 0~1, higher the value, higher the matchness.
     public double evaluateGroup(Group group) {
         int timeZoneDifference = getTimezoneDiffOfGroup(group);
-        return 1.0*(12 - timeZoneDifference)/12;
+        return 1.0 * (12 - timeZoneDifference) / 12;
     }
 
 
     private int getTimezoneDiffOfGroup(Group group) {
         int res = 0;
-        for (Student s1: group.getStudents()) {
-            for (Student s2: group.getStudents()) {
+        for (Student s1 : group.getStudents()) {
+            for (Student s2 : group.getStudents()) {
                 res = Math.max(res, TimeZoneCalculator.timeBetween(s1.getTimeZone(), s2.getTimeZone()));
             }
         }

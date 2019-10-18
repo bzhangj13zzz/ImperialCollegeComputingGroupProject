@@ -33,8 +33,8 @@ public class FixedPointStrategy implements GroupingStrategy {
 
         for (Group group : groups) {
             if (!constraint.isValidGroup(group)) {
-                for (Student student : group.getStudents()) {
-                    Util.moveStudentToGroup(student, groups.get(0));
+                for (Student student: group.getStudents()) {
+                    if
                 }
             }
         }

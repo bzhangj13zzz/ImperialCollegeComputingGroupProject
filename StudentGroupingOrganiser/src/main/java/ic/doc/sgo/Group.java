@@ -72,4 +72,8 @@ public class Group {
     public void setId(int id) {
         this.id = id;
     }
+
+    public boolean contains(Student s1) {
+        return studentList.contains(s1);
+    }
 }

@@ -19,6 +19,10 @@ public class Util {
     }
 
     public static void assignStudentToGroup(Student student, Group group) {
+        Group originalGroup = student.getGroup();
+        if (originalGroup != null) {
+            originalGroup.remove(student);
+        }
         group.add(student);
         student.setGroup(group);
     }
@@ -26,8 +30,8 @@ public class Util {
     public static void swapGroup(Student s1, Student s2) {
         Group g1 = s1.getGroup();
         Group g2 = s2.getGroup();
-        moveStudentToGroup(s1, g2);
-        moveStudentToGroup(s2, g1);
+        assignStudentToGroup(s1, g2);
+        assignStudentToGroup(s2, g1);
     }
 
     public static boolean isBetterFitIfSwap(Student s1, Student s2, Constraint constraint) {
@@ -45,12 +49,6 @@ public class Util {
 
     public static boolean isSameGroup(Student s1, Student s2) {
         return s1.getGroup() == s2.getGroup();
-    }
-
-    public static void moveStudentToGroup(Student student, Group targetGroup) {
-        Group originalGroup = student.getGroup();
-        originalGroup.remove(student);
-        assignStudentToGroup(student, targetGroup);
     }
 
     static class Pair<S, T> {
