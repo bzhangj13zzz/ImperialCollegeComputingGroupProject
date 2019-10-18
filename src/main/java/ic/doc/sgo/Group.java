@@ -3,8 +3,10 @@ package ic.doc.sgo;
 import java.util.*;
 
 public class Group {
+    public final int UNKNOWN_ID = -1;
+    public final int UNALLOC_ID = 0;
 
-    private int id = -1;
+    private int id = UNKNOWN_ID;
     private final List<Student> studentList;
 
     private Group(List<Student> students) {
