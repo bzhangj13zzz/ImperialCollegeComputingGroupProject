@@ -3,16 +3,14 @@ package ic.doc.sgo.studentadapters;
 import com.google.gson.*;
 import com.neovisionaries.i18n.CountryCode;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * Utility class that handles time zone.
@@ -23,27 +21,43 @@ final class TimeZoneUtil {
     private static final Gson gson = new Gson();
 
     static ZoneId getTimeZoneId(String cityName, String countryName) throws Exception {
-        BufferedReader br = new BufferedReader(new FileReader(JSON_PATH));
-        JsonArray array = JsonParser.parseReader(br).getAsJsonArray();
-        for (JsonElement elem : array) {
-            JsonObject jsonObject = elem.getAsJsonObject();
-            if (jsonObject.get("CountryName").getAsString().equalsIgnoreCase(countryName)
-            || jsonObject.get("IsoAlpha2").getAsString().equalsIgnoreCase(countryName)
-            || jsonObject.get("IsoAlpha3").getAsString().equalsIgnoreCase(countryName)) {
-                JsonArray timeZones = jsonObject.get("TimeZones").getAsJsonArray();
-                for (JsonElement timeZone : timeZones) {
-                    String timeZoneStr = timeZone.getAsString();
-                    if (timeZoneStr.toLowerCase().contains(cityName.replace(" ", "").toLowerCase())) {
-                        return ZoneId.of(timeZoneStr);
-                    }
-                }
-            }
+        Optional<ZoneId> lookup = lookUpTimezoneJson(cityName, countryName);
+        if (lookup.isPresent()) {
+            return lookup.get();
         }
 
         String cityAndCountry = cityName + " " + countryName;
         // Call the API to get the Location.
         Location location = getLocationFromCityAndCountry(cityAndCountry);
         return getZoneIdFromLocation(location);
+    }
+
+    private static Optional<ZoneId> lookUpTimezoneJson(String cityName, String countryName) {
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader(JSON_PATH));
+        } catch (FileNotFoundException e) {
+            return Optional.empty();
+        }
+        JsonArray array = JsonParser.parseReader(br).getAsJsonArray();
+        for (JsonElement elem : array) {
+            JsonObject jsonObject = elem.getAsJsonObject();
+            if (jsonObject.get("CountryName").getAsString().equalsIgnoreCase(countryName)
+                    || jsonObject.get("IsoAlpha2").getAsString().equalsIgnoreCase(countryName)
+                    || jsonObject.get("IsoAlpha3").getAsString().equalsIgnoreCase(countryName)) {
+                JsonArray timeZones = jsonObject.get("TimeZones").getAsJsonArray();
+                if (timeZones.size() == 1) {
+                    return Optional.of(ZoneId.of(timeZones.get(0).getAsString()));
+                }
+                for (JsonElement timeZone : timeZones) {
+                    String timeZoneStr = timeZone.getAsString();
+                    if (timeZoneStr.toLowerCase().contains(cityName.replace(" ", "_").toLowerCase())) {
+                        return Optional.of(ZoneId.of(timeZoneStr));
+                    }
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     private static ZoneId getZoneIdFromLocation(Location location) throws Exception {
