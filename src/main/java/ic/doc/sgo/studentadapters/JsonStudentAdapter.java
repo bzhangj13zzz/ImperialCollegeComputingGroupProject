@@ -21,18 +21,18 @@ public class JsonStudentAdapter implements StudentAdapter {
         Student.Builder studentBuilder;
         studentBuilder = new Student.Builder(studentJson.get("id").getAsString());
         LocalDate now = LocalDate.now();
+        String cityName = "";
+        String countryName = "";
         for (String key : studentJson.keySet()) {
             switch (key) {
                 case "id":
                     // do nothing
                     break;
                 case "country":
-                    String countryName = studentJson.get(key).getAsString();
-                    //TODO: convert country to zoneId
+                    countryName = studentJson.get(key).getAsString();
                     break;
                 case "currentCity":
-                    String cityName = studentJson.get(key).getAsString();
-                    //TODO: convert city name to zoneId
+                    cityName = studentJson.get(key).getAsString();
                     break;
                 case "gender":
                     studentBuilder.setGender(studentJson.get(key).getAsString());
@@ -57,6 +57,13 @@ public class JsonStudentAdapter implements StudentAdapter {
                     break;
                 default:
                     studentBuilder.addAttribute(key, studentJson.get(key));
+            }
+        }
+        if (!cityName.equals("") && !countryName.equals("")) {
+            try {
+                studentBuilder.setTimeZone(TimeZoneUtil.getTimeZoneId(cityName, countryName));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return Optional.of(studentBuilder.createStudent());
