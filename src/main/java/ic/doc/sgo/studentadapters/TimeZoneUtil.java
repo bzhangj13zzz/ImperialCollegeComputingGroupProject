@@ -1,9 +1,10 @@
-package ic.doc.sgo;
+package ic.doc.sgo.studentadapters;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import com.neovisionaries.i18n.CountryCode;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -16,16 +17,27 @@ import java.util.Date;
 /**
  * Utility class that handles time zone.
  **/
-public final class TimeZoneUtil {
-    // TODO: populate the mapping so that we can avoid some lookup, it will be country name
-    //  if the country code is non-standard we use the API.
-    private static final Map<String, ZoneId> timeZoneMapping = new HashMap<>();
+final class TimeZoneUtil {
+    private static final String JSON_PATH = "src/main/java/ic/doc/sgo/studentadapters/countries_with_timeZones.json";
     private static final String API_KEY = "";
     private static final Gson gson = new Gson();
 
-    public static ZoneId getTimeZoneId(String cityName, String countryName) throws Exception {
-        if (timeZoneMapping.containsKey(countryName)) {
-            return timeZoneMapping.get(countryName);
+    static ZoneId getTimeZoneId(String cityName, String countryName) throws Exception {
+        BufferedReader br = new BufferedReader(new FileReader(JSON_PATH));
+        JsonArray array = JsonParser.parseReader(br).getAsJsonArray();
+        for (JsonElement elem : array) {
+            JsonObject jsonObject = elem.getAsJsonObject();
+            if (jsonObject.get("CountryName").getAsString().equalsIgnoreCase(countryName)
+            || jsonObject.get("IsoAlpha2").getAsString().equalsIgnoreCase(countryName)
+            || jsonObject.get("IsoAlpha3").getAsString().equalsIgnoreCase(countryName)) {
+                JsonArray timeZones = jsonObject.get("TimeZones").getAsJsonArray();
+                for (JsonElement timeZone : timeZones) {
+                    String timeZoneStr = timeZone.getAsString();
+                    if (timeZoneStr.toLowerCase().contains(cityName.replace(" ", "").toLowerCase())) {
+                        return ZoneId.of(timeZoneStr);
+                    }
+                }
+            }
         }
 
         String cityAndCountry = cityName + " " + countryName;
