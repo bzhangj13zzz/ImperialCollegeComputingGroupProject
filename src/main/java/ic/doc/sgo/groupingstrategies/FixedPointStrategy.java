@@ -12,52 +12,83 @@ public class FixedPointStrategy implements GroupingStrategy {
 
     @Override
     public List<Group> apply(List<Student> students, Constraint constraint) {
-        Util.Pair<Integer, Integer> numberIntervalOfGroups = Util.getNumberInterval(students.size(),
-                constraint.getGroupSizeLowerBound(), constraint.getGroupSizeUpperBound());
+        List<Group> bestGroups = new ArrayList<>();
+        bestGroups.add(Group.from(students));
+        for (int i = 1; i <= 100; i++) {
+            List<Student> newStudents = cloneStudents(students);
+            List<Group> groups = new RandomGroupingStrategy().apply(newStudents, constraint);
+            if (groups.size() == 1) {
+                return groups;
+            }
 
-        List<Group> groups = new RandomGroupingStrategy().apply(students, constraint);
-        if (groups.size() == 1) {
-            return groups;
+            FixedPointToBest(newStudents, groups, constraint);
+
+            validifyGroups(groups, constraint);
+
+            AdjustGroupsAfterValidation(groups, constraint);
+
+            if (groups.get(0).size() == 0) {
+                return groups;
+            }
+
+            if (groups.get(0).size() < bestGroups.get(0).size()) {
+                bestGroups = groups;
+            }
         }
 
-        for (Student student: students){
-            assert student.getGroup() != null;
-        }
-
-        FixedPointToBest(students, constraint);
-
-        validifyGroups(groups, constraint);
-
-        AdjustGroupsAfterValidation(groups, constraint);
-
-        return groups;
+        return bestGroups;
     }
 
-    private void FixedPointToBest(List<Student> students, Constraint constraint) {
+    private List<Student> cloneStudents(List<Student> students) {
+        List<Student> newStudents =  new ArrayList<>();
+        for (Student student: students) {
+            newStudents.add(new Student.Builder(student).createStudent());
+        }
+        return newStudents;
+    }
+
+    private void FixedPointToBest(List<Student> students, List<Group> groups, Constraint constraint) {
         boolean isChanged = true;
         while (isChanged) {
             isChanged = false;
             for (Student s1 : students) {
                 for (Student s2 : students) {
-                    if (Util.isSameGroup(s1, s2)) continue;
+                    if (Util.isSameGroup(s1, s2)) {
+                        continue;
+                    }
                     if (constraint.isBetterFitIfSwap(s1, s2)) {
                         Util.swapGroup(s1, s2);
                         isChanged = true;
                     }
                 }
             }
+
+            if (!isChanged) {
+                for (Student s1: students) {
+                    for (Group group: groups) {
+                        if (groups.contains(s1)) continue;
+                        if (constraint.canbeBetterFit(s1, group)) {
+                            group.add(s1);
+                            isChanged = true;
+                        }
+                    }
+                }
+            }
+
         }
     }
 
     private void AdjustGroupsAfterValidation(List<Group> groups, Constraint constraint) {
-        List<Student> invalidStudents = groups.get(0).getStudents();
-        for (Student student : invalidStudents) {
-            for (Group group : groups.subList(1, groups.size())) {
-                if (constraint.studentCanBeFitInGroup(student, group)) {
+        List<Student> invalidStudents = new ArrayList<>(groups.get(0).getStudents());
+
+        for (Student student: invalidStudents) {
+            for (Group group: groups.subList(1, groups.size())) {
+                if (constraint.canBeFit(student, group)) {
                     group.add(student);
                 }
             }
         }
+
         if (constraint.isValidGroup(groups.get(0))) {
             Group newGroup = Group.from(new ArrayList<>());
             List<Student> students = new ArrayList<>(groups.get(0).getStudents());

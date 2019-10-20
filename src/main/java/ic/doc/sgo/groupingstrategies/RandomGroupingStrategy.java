@@ -43,7 +43,7 @@ public class RandomGroupingStrategy implements GroupingStrategy {
             return groups;
         }
 
-        for (int i = numberIntervalOfGroups.first()* number; i < size; i++) {
+        for (int i = constraint.getGroupSizeLowerBound()*number; i < size; i++) {
             int groupId = getRandomIntegerBetween(1, number);
             while (groups.get(groupId).size() >= numberIntervalOfGroups.second()) {
                 groupId = getRandomIntegerBetween(0, number);

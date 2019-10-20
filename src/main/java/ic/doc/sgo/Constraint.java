@@ -46,7 +46,6 @@ public class Constraint {
     }
 
     public boolean isValidGroup(Group group) {
-        int timeZoneDifference = getTimezoneDiffOfGroup(group);
         if (group.size() < groupSizeLowerBound) {
             return false;
         }
@@ -55,14 +54,14 @@ public class Constraint {
             return false;
         }
 
-        if (getTimezoneDiffOfGroup(group) > timeZoneDifference) {
+        if (getTimezoneDiffOfGroup(group) > timezoneDiff) {
             return false;
         }
 
         return true;
     }
 
-    public boolean studentCanBeFitInGroup(Student student, Group group) {
+    public boolean canBeFit(Student student, Group group) {
         Group originalGroup = student.getGroup();
         group.add(student);
         boolean res = isValidGroup(group);
@@ -115,10 +114,38 @@ public class Constraint {
             v2 ++;
         }
         double cv1 = evaluateGroup(g1);
-        double cv2 = evaluateGroup(g2);
-        boolean res = (pv1 + pv2 < cv1 + cv2) && v1 <= v2;
+        double cv2 = evaluateGroup(g2);;
         Util.swapGroup(s1, s2);
-        return res;
+
+        if (v2 > v1) {
+            return true;
+        }
+        if (v2 < v1) {
+            return false;
+        }
+        return cv1 * cv2 > pv1 * pv2;
+    }
+
+    public boolean canbeBetterFit(Student s1, Group g2) {
+        Group g1 = s1.getGroup();
+        int v1 = 0;
+        if (isValidGroup(g1)) {
+            v1 ++;
+        }
+        if (isValidGroup(g2)) {
+            v1 ++;
+        }
+        g2.add(s1);
+        int v2 = 0;
+        if (isValidGroup(g1)) {
+            v2 ++;
+        }
+        if (isValidGroup(g2)) {
+            v2 ++;
+        }
+        g1.add(s1);
+
+        return v2 > v1;
     }
 
     public static class Builder {

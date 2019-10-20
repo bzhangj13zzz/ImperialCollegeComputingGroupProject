@@ -3,9 +3,10 @@ package ic.doc.sgo.groupingstrategies;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ErrorCollector;
 
-import javax.sound.midi.Soundbank;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -16,29 +17,31 @@ import static org.junit.Assert.*;
 
 public class FixedPointStrategyTest {
 
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
+
+    @Rule
+    public ErrorCollector collector = new ErrorCollector();
+
     @Test
-    public void successCasesTest() throws FileNotFoundException {
-        File casesDirectory = new File("src/test/cases/success");
+    public void casesTest() throws FileNotFoundException {
+        File casesDirectory = new File("src/test/cases");
         assertTrue(casesDirectory.exists() && casesDirectory.isDirectory());
         File[] cases = casesDirectory.listFiles();
 
         assert cases != null;
+        System.out.println("Start Running tests for cases");
         for (File file: cases) {
-            System.out.println("Run test " + file.getName());
-            runTestFromFile(file);
-            System.out.println("Pass");
-        }
-    }
-
-    @Test
-    public void failCasesTest() throws FileNotFoundException {
-        File casesDirectory = new File("src/test/cases/fail");
-        assertTrue(casesDirectory.exists() && casesDirectory.isDirectory());
-        File[] cases = casesDirectory.listFiles();
-
-        assert cases != null;
-        for (File file: cases) {
-            runTestFromFile(file);
+            try {
+                System.out.print(file.getName() + " ");
+                runTestFromFile(file);
+            } catch (Throwable t) {
+                System.out.println(ANSI_RED + "FAIL" + ANSI_RESET);
+                collector.addError(t);
+                continue;
+            }
+            System.out.println(ANSI_GREEN + "PASS" + ANSI_RESET);
         }
     }
 
@@ -63,10 +66,10 @@ public class FixedPointStrategyTest {
         int remaining = scanner.nextInt();
 
         List<Group> groups = new FixedPointStrategy().apply(students, constraint);
-        assertEquals(0, groups.get(0).size(), remaining);
         for (Group group: groups.subList(1, groups.size())) {
             assertTrue(constraint.isValidGroup(group));
         }
+        assertEquals(groups.get(0).size(), remaining);
     }
 
 }

@@ -65,4 +65,19 @@ public class RandomGroupingStrategyTest {
         }
     }
 
+    @Test
+    public void allocateStudentsWhoseNumberSmallerThanSize() {
+        Constraint constraint = new Constraint.Builder(4, 4).createConstrain();
+        List<Student> students = new ArrayList<>();
+        int number = 3;
+        for (int i = 0; i < number; i++) {
+            Student student = new Student.Builder(String.valueOf(i)).createStudent();
+            testedStudents.put(student, false);
+            students.add(student);
+        }
+        List<Group> groups = new RandomGroupingStrategy().apply(students, constraint);
+        assertEquals(1, groups.size());
+        assertEquals(groups.get(0).size(), number);
+    }
+
 }
