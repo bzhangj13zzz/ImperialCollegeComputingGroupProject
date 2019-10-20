@@ -32,6 +32,7 @@ public class RandomGroupingStrategy implements GroupingStrategy {
 
         for (int i = 0; i < constraint.getGroupSizeLowerBound() * number; i++) {
             groups.get((i / constraint.getGroupSizeLowerBound())+1).add(students.get(i));
+            assert students.get(i).getGroup() != null;
         }
 
 

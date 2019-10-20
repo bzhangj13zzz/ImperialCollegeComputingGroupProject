@@ -36,7 +36,10 @@ public class Constraint {
         int res = 0;
         for (Student s1 : group.getStudents()) {
             for (Student s2 : group.getStudents()) {
-                res = Math.max(res, TimeZoneCalculator.timeBetween(s1.getTimeZone(), s2.getTimeZone()));
+
+                //TODO: For test;
+                //res = Math.max(res, TimeZoneCalculator.timeBetweenWithTimeZone(s1.getTimeZone(), s2.getTimeZone()));
+                res = Math.max(res, TimeZoneCalculator.timeBetweenWithInteger(s1.getTimeZoneTest(), s2.getTimeZoneTest()));
             }
         }
         return res;
@@ -128,8 +131,9 @@ public class Constraint {
             this.groupSizeUpperBound = groupSizeUpperBound;
         }
 
-        public void setTimezoneDiff(int timezoneDiff) {
+        public Builder setTimezoneDiff(int timezoneDiff) {
             this.timezoneDiff = timezoneDiff;
+            return this;
         }
 
         public Constraint createConstrain() {

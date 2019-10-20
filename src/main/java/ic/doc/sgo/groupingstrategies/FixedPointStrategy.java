@@ -20,6 +20,10 @@ public class FixedPointStrategy implements GroupingStrategy {
             return groups;
         }
 
+        for (Student student: students){
+            assert student.getGroup() != null;
+        }
+
         FixedPointToBest(students, constraint);
 
         validifyGroups(groups, constraint);

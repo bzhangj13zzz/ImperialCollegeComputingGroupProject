@@ -18,6 +18,9 @@ public class Student {
     private final Map<String, JsonElement> additionalAttributes; // never null
     private Group group;
 
+    // TODO: for test, change it later
+    private int timeZoneTest;
+
     private Student(String id, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
                     double workYearNum, @Nullable String cohort, Map<String, JsonElement> additionalAttributes) {
@@ -117,6 +120,16 @@ public class Student {
         this.group = group;
     }
 
+    // TODO: For test
+    public int getTimeZoneTest() {
+        return timeZoneTest;
+    }
+
+    // TODO: For test
+    public void setTimeZoneTest(int timeZoneTest) {
+        this.timeZoneTest = timeZoneTest;
+    }
+
     public static class Builder {
         private final String id;
         private ZoneId timeZone = null;
@@ -176,5 +189,6 @@ public class Student {
             return new Student(id, timeZone, gender, age, career, degree,
                     workYearNum, cohort, additionalAttributes);
         }
+
     }
 }
