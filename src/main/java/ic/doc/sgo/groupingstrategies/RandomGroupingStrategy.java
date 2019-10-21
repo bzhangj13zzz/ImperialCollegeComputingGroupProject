@@ -32,6 +32,7 @@ public class RandomGroupingStrategy implements GroupingStrategy {
 
         for (int i = 0; i < constraint.getGroupSizeLowerBound() * number; i++) {
             groups.get((i / constraint.getGroupSizeLowerBound())+1).add(students.get(i));
+            assert students.get(i).getGroup() != null;
         }
 
 
@@ -42,9 +43,9 @@ public class RandomGroupingStrategy implements GroupingStrategy {
             return groups;
         }
 
-        for (int i = numberIntervalOfGroups.first()* number; i < size; i++) {
+        for (int i = constraint.getGroupSizeLowerBound()*number; i < size; i++) {
             int groupId = getRandomIntegerBetween(1, number);
-            while (groups.get(groupId).size() >= numberIntervalOfGroups.second()) {
+            while (groups.get(groupId).size() >= constraint.getGroupSizeUpperBound()) {
                 groupId = getRandomIntegerBetween(0, number);
             }
             groups.get(groupId).add(students.get(i));

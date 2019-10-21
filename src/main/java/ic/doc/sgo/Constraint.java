@@ -3,8 +3,10 @@ package ic.doc.sgo;
 
 import ic.doc.sgo.groupingstrategies.Util;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Constraint {
     private final int groupSizeLowerBound;
@@ -35,15 +37,22 @@ public class Constraint {
     private int getTimezoneDiffOfGroup(Group group) {
         int res = 0;
         for (Student s1 : group.getStudents()) {
+            Optional<ZoneId> s1TimeZone = s1.getTimeZone();
+            if (!s1TimeZone.isPresent()) {
+                continue;
+            }
             for (Student s2 : group.getStudents()) {
-                res = Math.max(res, TimeZoneCalculator.timeBetween(s1.getTimeZone(), s2.getTimeZone()));
+                Optional<ZoneId> s2TimeZone = s2.getTimeZone();
+                if (!s2TimeZone.isPresent()) {
+                    continue;
+                }
+                res = Math.max(res, TimeZoneCalculator.timeBetween(s1TimeZone.get(), s2TimeZone.get()));
             }
         }
         return res;
     }
 
     public boolean isValidGroup(Group group) {
-        int timeZoneDifference = getTimezoneDiffOfGroup(group);
         if (group.size() < groupSizeLowerBound) {
             return false;
         }
@@ -52,14 +61,14 @@ public class Constraint {
             return false;
         }
 
-        if (getTimezoneDiffOfGroup(group) > timeZoneDifference) {
+        if (getTimezoneDiffOfGroup(group) > timezoneDiff) {
             return false;
         }
 
         return true;
     }
 
-    public boolean studentCanBeFitInGroup(Student student, Group group) {
+    public boolean canBeFit(Student student, Group group) {
         Group originalGroup = student.getGroup();
         group.add(student);
         boolean res = isValidGroup(group);
@@ -112,10 +121,38 @@ public class Constraint {
             v2 ++;
         }
         double cv1 = evaluateGroup(g1);
-        double cv2 = evaluateGroup(g2);
-        boolean res = (pv1 + pv2 < cv1 + cv2) && v1 <= v2;
+        double cv2 = evaluateGroup(g2);;
         Util.swapGroup(s1, s2);
-        return res;
+
+        if (v2 > v1) {
+            return true;
+        }
+        if (v2 < v1) {
+            return false;
+        }
+        return cv1 * cv2 > pv1 * pv2;
+    }
+
+    public boolean canbeBetterFit(Student s1, Group g2) {
+        Group g1 = s1.getGroup();
+        int v1 = 0;
+        if (isValidGroup(g1)) {
+            v1 ++;
+        }
+        if (isValidGroup(g2)) {
+            v1 ++;
+        }
+        g2.add(s1);
+        int v2 = 0;
+        if (isValidGroup(g1)) {
+            v2 ++;
+        }
+        if (isValidGroup(g2)) {
+            v2 ++;
+        }
+        g1.add(s1);
+
+        return v2 > v1;
     }
 
     public static class Builder {
@@ -128,8 +165,9 @@ public class Constraint {
             this.groupSizeUpperBound = groupSizeUpperBound;
         }
 
-        public void setTimezoneDiff(int timezoneDiff) {
+        public Builder setTimezoneDiff(int timezoneDiff) {
             this.timezoneDiff = timezoneDiff;
+            return this;
         }
 
         public Constraint createConstrain() {

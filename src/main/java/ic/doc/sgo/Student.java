@@ -32,6 +32,11 @@ public class Student {
         this.additionalAttributes = additionalAttributes;
     }
 
+    public static Student fromStudent(Student student) {
+        return new Student(student.id, student.timeZone, student.gender, student.age, student.career, student.degree,
+                student.workYearNum, student.cohort, new HashMap<>(student.additionalAttributes));
+    }
+
     @Override
     public String toString() {
         return "Student{" +
@@ -176,5 +181,6 @@ public class Student {
             return new Student(id, timeZone, gender, age, career, degree,
                     workYearNum, cohort, additionalAttributes);
         }
+
     }
 }
