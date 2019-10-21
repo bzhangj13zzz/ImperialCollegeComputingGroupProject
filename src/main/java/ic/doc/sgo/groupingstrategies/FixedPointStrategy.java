@@ -42,7 +42,7 @@ public class FixedPointStrategy implements GroupingStrategy {
     private List<Student> cloneStudents(List<Student> students) {
         List<Student> newStudents =  new ArrayList<>();
         for (Student student: students) {
-            newStudents.add(new Student.Builder(student).createStudent());
+            newStudents.add(Student.fromStudent(student));
         }
         return newStudents;
     }

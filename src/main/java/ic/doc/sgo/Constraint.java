@@ -3,8 +3,10 @@ package ic.doc.sgo;
 
 import ic.doc.sgo.groupingstrategies.Util;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Constraint {
     private final int groupSizeLowerBound;
@@ -35,11 +37,16 @@ public class Constraint {
     private int getTimezoneDiffOfGroup(Group group) {
         int res = 0;
         for (Student s1 : group.getStudents()) {
+            Optional<ZoneId> s1TimeZone = s1.getTimeZone();
+            if (!s1TimeZone.isPresent()) {
+                continue;
+            }
             for (Student s2 : group.getStudents()) {
-
-                //TODO: For test;
-                //res = Math.max(res, TimeZoneCalculator.timeBetweenWithTimeZone(s1.getTimeZone(), s2.getTimeZone()));
-                res = Math.max(res, TimeZoneCalculator.timeBetweenWithInteger(s1.getTimeZoneTest(), s2.getTimeZoneTest()));
+                Optional<ZoneId> s2TimeZone = s2.getTimeZone();
+                if (!s2TimeZone.isPresent()) {
+                    continue;
+                }
+                res = Math.max(res, TimeZoneCalculator.timeBetween(s1TimeZone.get(), s2TimeZone.get()));
             }
         }
         return res;

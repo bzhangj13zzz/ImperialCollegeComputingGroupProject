@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import java.time.ZoneId;
 import java.util.*;
 
-public class Student implements Cloneable{
+public class Student {
     private final String id;
     private final ZoneId timeZone;
     private final String gender;
@@ -17,9 +17,6 @@ public class Student implements Cloneable{
     private final String cohort;
     private final Map<String, JsonElement> additionalAttributes; // never null
     private Group group;
-
-    // TODO: for test, change it later
-    private int timeZoneTest;
 
     private Student(String id, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
@@ -33,6 +30,11 @@ public class Student implements Cloneable{
         this.workYearNum = workYearNum;
         this.cohort = cohort;
         this.additionalAttributes = additionalAttributes;
+    }
+
+    public static Student fromStudent(Student student) {
+        return new Student(student.id, student.timeZone, student.gender, student.age, student.career, student.degree,
+                student.workYearNum, student.cohort, new HashMap<>(student.additionalAttributes));
     }
 
     @Override
@@ -120,16 +122,6 @@ public class Student implements Cloneable{
         this.group = group;
     }
 
-    // TODO: For test
-    public int getTimeZoneTest() {
-        return timeZoneTest;
-    }
-
-    // TODO: For test
-    public void setTimeZoneTest(int timeZoneTest) {
-        this.timeZoneTest = timeZoneTest;
-    }
-
     public static class Builder {
         private final String id;
         private ZoneId timeZone = null;
@@ -139,24 +131,10 @@ public class Student implements Cloneable{
         private String degree = null;
         private double workYearNum = -1.0;
         private String cohort = null;
-
-        //TODO: for test
-        private int timeZoneTest;
         private final Map<String, JsonElement> additionalAttributes = new HashMap<>();
 
         public Builder(String id) {
             this.id = id;
-        }
-        public Builder(Student student) {
-            this.id = student.getId();
-            this.timeZone = student.getTimeZone().orElse(null);
-            this.gender = student.getGender().orElse(null);
-            this.age = student.getAge().orElse(-1);
-            this.career = student.getCareer().orElse(null);
-            this.degree = student.getDegree().orElse(null);
-            this.workYearNum = student.getWorkYearNum().orElse(-1.0);
-            this.cohort = student.getCohort().orElse(null);
-            this.timeZoneTest = student.getTimeZoneTest();
         }
 
         public Builder setTimeZone(ZoneId timeZone) {
@@ -200,10 +178,8 @@ public class Student implements Cloneable{
         }
 
         public Student createStudent() {
-            Student student = new Student(id, timeZone, gender, age, career, degree,
+            return new Student(id, timeZone, gender, age, career, degree,
                     workYearNum, cohort, additionalAttributes);
-            student.setTimeZoneTest(timeZoneTest);
-            return student;
         }
 
     }

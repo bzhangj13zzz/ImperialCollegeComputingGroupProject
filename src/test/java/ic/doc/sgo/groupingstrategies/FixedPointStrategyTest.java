@@ -9,6 +9,7 @@ import org.junit.rules.ErrorCollector;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -56,10 +57,10 @@ public class FixedPointStrategyTest {
 
         List<Student> students = new ArrayList<>();
         for (int i = 0; i < numberOfStudents; i++) {
-            Student student = new Student.Builder(String.valueOf(i)).createStudent();
             int timeZone = scanner.nextInt();
+            String utc = "UTC" + (timeZone >= 0 ? "+" + timeZone : timeZone);
+            Student student = new Student.Builder(String.valueOf(i)).setTimeZone(ZoneId.of(utc)).createStudent();
             assertTrue(-12 <= timeZone && timeZone <= 12);
-            student.setTimeZoneTest(timeZone);
             students.add(student);
         }
 
