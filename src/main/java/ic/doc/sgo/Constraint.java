@@ -11,12 +11,14 @@ import java.util.Optional;
 public class Constraint {
     private final int groupSizeLowerBound;
     private final int groupSizeUpperBound;
-    private final int timezoneDiff;
+    private final Integer timezoneDiff;
+    private final Integer ageDiff;
 
-    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, int timezoneDiff) {
+    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, int timezoneDiff, int ageDiff) {
         this.groupSizeLowerBound = groupSizeLowerBound;
         this.groupSizeUpperBound = groupSizeUpperBound;
         this.timezoneDiff = timezoneDiff;
+        this.ageDiff = ageDiff;
     }
 
     public int getGroupSizeLowerBound() {
@@ -77,6 +79,7 @@ public class Constraint {
     }
 
     public List<Student> getInvalidStudentsFromGroup(Group group) {
+
         List<Student> students = new ArrayList<>(group.getStudents());
         List<Student> removeStudents = new ArrayList<>();
         for (Student student: students) {
@@ -133,7 +136,7 @@ public class Constraint {
         return cv1 * cv2 > pv1 * pv2;
     }
 
-    public boolean canbeBetterFit(Student s1, Group g2) {
+    public boolean canBeBetterFit(Student s1, Group g2) {
         Group g1 = s1.getGroup();
         int v1 = 0;
         if (isValidGroup(g1)) {
@@ -158,7 +161,8 @@ public class Constraint {
     public static class Builder {
         private final int groupSizeLowerBound;
         private final int groupSizeUpperBound;
-        private int timezoneDiff = 12;
+        private Integer timezoneDiff = 12;
+        private Integer ageDiff = 120;
 
         public Builder(int groupSizeLowerBound, int groupSizeUpperBound) {
             this.groupSizeLowerBound = groupSizeLowerBound;
@@ -170,8 +174,21 @@ public class Constraint {
             return this;
         }
 
-        public Constraint createConstrain() {
-            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff);
+        public Builder setAgeDiff(int ageDiff) {
+            this.ageDiff = ageDiff;
+            return this;
         }
+
+        public Constraint createConstrain() {
+            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff);
+        }
+    }
+
+    public Integer getTimezoneDiff() {
+        return timezoneDiff;
+    }
+
+    public Integer getAgeDiff() {
+        return ageDiff;
     }
 }

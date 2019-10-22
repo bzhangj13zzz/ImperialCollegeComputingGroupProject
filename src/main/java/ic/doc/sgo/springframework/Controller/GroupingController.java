@@ -8,18 +8,13 @@ import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.springframework.Service.GroupingService;
 import ic.doc.sgo.studentadapters.JsonStudentAdapter;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Resource;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
@@ -45,7 +40,7 @@ public class GroupingController {
       optionalStudent.ifPresent(studentList::add);
     }
 
-    List<Group> groupList = groupingService.groupStudent(studentList, constraint);
+    List<Group> groupList = (List<Group>) groupingService.groupStudent(studentList, constraint);
     // return a string which is in the form of a JsonObject
     return gson.toJson(getResultJsonObj(groupList));
   }

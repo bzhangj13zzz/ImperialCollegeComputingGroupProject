@@ -5,7 +5,6 @@ import ic.doc.sgo.Student;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static ic.doc.sgo.groupingstrategies.Util.*;
 import static org.junit.Assert.*;
