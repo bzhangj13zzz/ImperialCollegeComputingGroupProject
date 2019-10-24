@@ -4,21 +4,21 @@ package ic.doc.sgo;
 import ic.doc.sgo.groupingstrategies.Util;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Constraint {
     private final int groupSizeLowerBound;
     private final int groupSizeUpperBound;
-    private final Integer timezoneDiff;
-    private final Integer ageDiff;
+    private final int timezoneDiff;
+    private final int ageDiff;
+    private final Map<String, HashMap<String, Integer>> discreteTypes;
 
-    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, int timezoneDiff, int ageDiff) {
+    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, int timezoneDiff, int ageDiff, Map<String, HashMap<String, Integer>> discreteTypes) {
         this.groupSizeLowerBound = groupSizeLowerBound;
         this.groupSizeUpperBound = groupSizeUpperBound;
         this.timezoneDiff = timezoneDiff;
         this.ageDiff = ageDiff;
+        this.discreteTypes = discreteTypes;
     }
 
     public int getGroupSizeLowerBound() {
@@ -158,11 +158,21 @@ public class Constraint {
         return v2 > v1;
     }
 
+    public boolean isGenderMatter() {
+        return this.discreteTypes.containsKey("gender");
+    }
+
+    public Integer getDiscreteAttributeValue(String attribute, String type) {
+        return this.discreteTypes.get(attribute).get(type);
+    }
+
+
     public static class Builder {
         private final int groupSizeLowerBound;
         private final int groupSizeUpperBound;
-        private Integer timezoneDiff = 12;
-        private Integer ageDiff = 120;
+        private int timezoneDiff = -1;
+        private int ageDiff = -1;
+        private Map<String, HashMap<String, Integer>> discreteTypes = new HashMap<>();
 
         public Builder(int groupSizeLowerBound, int groupSizeUpperBound) {
             this.groupSizeLowerBound = groupSizeLowerBound;
@@ -180,15 +190,31 @@ public class Constraint {
         }
 
         public Constraint createConstrain() {
-            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff);
+            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff, this.discreteTypes);
+        }
+
+        public Builder setMinimalMale(int number) {
+            if (!this.discreteTypes.containsKey("gender")) {
+                this.discreteTypes.put("gender", new HashMap<>());
+            }
+            this.discreteTypes.get("gender").put("male", number);
+            return this;
+        }
+
+        public Builder setMinimalFemale(int number) {
+            if (!this.discreteTypes.containsKey("gender")) {
+                this.discreteTypes.put("gender", new HashMap<>());
+            }
+            this.discreteTypes.get("gender").put("female", number);
+            return this;
         }
     }
 
-    public Integer getTimezoneDiff() {
-        return timezoneDiff;
+    public OptionalInt getTimezoneDiff() {
+        return this.timezoneDiff == -1? OptionalInt.empty(): OptionalInt.of(this.timezoneDiff);
     }
 
-    public Integer getAgeDiff() {
-        return ageDiff;
+    public OptionalInt getAgeDiff() {
+        return this.ageDiff == -1? OptionalInt.empty(): OptionalInt.of(this.ageDiff);
     }
 }

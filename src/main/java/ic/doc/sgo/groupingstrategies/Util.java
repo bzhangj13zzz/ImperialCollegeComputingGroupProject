@@ -35,7 +35,7 @@ public final class Util {
         return s1.getGroup() == s2.getGroup();
     }
 
-    static class Pair<S, T> {
+    public static class Pair<S, T> {
         private S fst;
         private T snd;
 

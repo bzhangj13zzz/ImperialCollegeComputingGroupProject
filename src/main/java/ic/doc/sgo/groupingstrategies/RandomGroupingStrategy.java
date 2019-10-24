@@ -46,7 +46,7 @@ public class RandomGroupingStrategy implements GroupingStrategy {
         for (int i = constraint.getGroupSizeLowerBound()*number; i < size; i++) {
             int groupId = getRandomIntegerBetween(1, number);
             while (groups.get(groupId).size() >= constraint.getGroupSizeUpperBound()) {
-                groupId = getRandomIntegerBetween(0, number);
+                groupId = getRandomIntegerBetween(1, number);
             }
             groups.get(groupId).add(students.get(i));
         }
