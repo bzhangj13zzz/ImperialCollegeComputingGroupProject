@@ -2,7 +2,6 @@ package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
 
 import ic.doc.sgo.*;
 
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,8 +10,9 @@ public class Node {
     private String id;
     private final Map<String, Double>  coordinateMap = new HashMap<>();
     private Cluster cluster;
-    private String gender;
+    private final Map<String, String> discreteAttributeType = new HashMap<>();
 
+    public Node() {}
 
     private Node(Student student, Constraint constraint) {
         this.id = student.getId();
@@ -26,7 +26,7 @@ public class Node {
         }
 
         if (constraint.isGenderMatter()) {
-            this.gender = student.getGender().orElse("male");
+            discreteAttributeType.put("gender",  student.getGender().orElse("male"));
         }
     }
 
@@ -54,6 +54,25 @@ public class Node {
     }
 
     public String getGender() {
-        return this.gender;
+        return this.discreteAttributeType.get("gender");
+    }
+
+    public Double getValueOfDimensionOf(String dimensionName) {
+        if (!coordinateMap.containsKey(dimensionName)) {
+            putValueOfDimension(dimensionName, 0.0);
+        }
+        return coordinateMap.get(dimensionName);
+    }
+
+    public boolean isTypeOfAttribute(String attribute, String type) {
+        return discreteAttributeType.get(attribute).equals(type);
+    }
+
+    public Iterable<String> getDimensions() {
+        return this.discreteAttributeType.keySet();
+    }
+
+    public void putValueOfDimension(String dimension, Double value) {
+        this.coordinateMap.put(dimension, value);
     }
 }

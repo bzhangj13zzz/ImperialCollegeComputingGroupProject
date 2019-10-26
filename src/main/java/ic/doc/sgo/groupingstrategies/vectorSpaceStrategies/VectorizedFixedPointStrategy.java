@@ -55,6 +55,34 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
     }
 
     private void fixedPointToBest(List<Node> nodes, List<Cluster> clusters, VectorSpace vectorSpace) {
+        boolean isChanged = true;
+        while (isChanged) {
+            isChanged = false;
+            for (Node n1 : nodes) {
+                for (Node n2 : nodes) {
+                    if (n1.getCluster().equals(n2.getCluster())) {
+                        continue;
+                    }
+                    if (vectorSpace.isBetterFitIfSwap(n1, n2)) {
+                        Util.swapCluster(n1, n2);
+                        isChanged = true;
+                    }
+                }
+            }
+
+            if (!isChanged) {
+                for (Node n: nodes) {
+                    for (Cluster cluster: clusters) {
+                        if (clusters.contains(n)) continue;
+                        if (vectorSpace.canBeBetterFit(n, cluster)) {
+                            cluster.add(n);
+                            isChanged = true;
+                        }
+                    }
+                }
+            }
+
+        }
     }
 
     private List<Cluster> randomClusterWithGender(List<Node> nodes, VectorSpace vectorSpace) {
