@@ -8,9 +8,9 @@ import java.util.Map;
 public class Node {
 
     private String id;
-    private final Map<String, Double>  coordinateMap = new HashMap<>();
+    private Map<String, Double>  coordinateMap = new HashMap<>();
     private Cluster cluster;
-    private final Map<String, String> discreteAttributeType = new HashMap<>();
+    private Map<String, String> discreteAttributeType = new HashMap<>();
 
     public Node() {}
 
@@ -28,6 +28,24 @@ public class Node {
         if (constraint.isGenderMatter()) {
             discreteAttributeType.put("gender",  student.getGender().orElse("male"));
         }
+    }
+
+    public Node(String id, Map<String, Double> coordinateMap, Map<String, String> discreteAttributeType) {
+        this.id = id;
+        this.coordinateMap = coordinateMap;
+        this.discreteAttributeType =discreteAttributeType;
+    }
+
+    public static Node fromNode(Node node) {
+        return new Node(node.getId(), node.getCoordinateMap(), node.getDiscreteAttributeType());
+    }
+
+    public Map<String, Double> getCoordinateMap() {
+        return coordinateMap;
+    }
+
+    public Map<String, String> getDiscreteAttributeType() {
+        return discreteAttributeType;
     }
 
     private double getTimeZoneInteger(Student student) {

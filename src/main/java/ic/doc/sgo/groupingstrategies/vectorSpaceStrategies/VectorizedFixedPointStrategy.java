@@ -26,9 +26,9 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         List<Cluster> bestClusters = randomClusterWithGender(nodes, vectorSpace);
 
         for (int i = 1; i <= 100; i++) {
-            List<Cluster> clusters = randomClusterWithGender(nodes, vectorSpace);
-
-            fixedPointToBest(nodes, clusters, vectorSpace);
+            List<Node> newNodes = cloneNodes(nodes);
+            List<Cluster> clusters = randomClusterWithGender(newNodes, vectorSpace);
+            fixedPointToBest(newNodes, clusters, vectorSpace);
 
             validifyCluster(clusters, vectorSpace);
 
@@ -48,7 +48,34 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         return convertBackStudentsInGroups(bestClusters);
     }
 
+    private List<Node> cloneNodes(List<Node> nodes) {
+        List<Node> newNodes =  new ArrayList<>();
+        for (Node node: nodes) {
+            newNodes.add(Node.fromNode(node));
+        }
+        return newNodes;
+    }
+
     private void AdjustClusterAfterValidation(List<Cluster> clusters, VectorSpace vectorSpace) {
+        List<Node> invalidNodes = new ArrayList<>(clusters.get(0).getNodes());
+
+        for (Node node: invalidNodes) {
+            for (Cluster cluster: clusters.subList(1, clusters.size())) {
+                if (vectorSpace.canBeFit(node, cluster)) {
+                    cluster.add(node);
+                }
+            }
+        }
+
+        if (vectorSpace.isValidCluster(clusters.get(0))) {
+            Cluster newCluster = Cluster.from(new ArrayList<>());
+            List<Node> nodes = new ArrayList<>(clusters.get(0).getNodes());
+            for (Node node: nodes) {
+                newCluster.add(node);
+            }
+            clusters.add(newCluster);
+            newCluster.setId(clusters.indexOf(newCluster));
+        }
     }
 
     private void validifyCluster(List<Cluster> clusters, VectorSpace vectorSpace) {

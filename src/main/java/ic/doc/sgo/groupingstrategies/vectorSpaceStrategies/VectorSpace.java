@@ -156,6 +156,14 @@ public class VectorSpace {
         return q < p;
     }
 
+    public boolean canBeFit(Node node, Cluster cluster) {
+        Cluster originalCluster = node.getCluster();
+        cluster.add(node);
+        boolean res = isValidCluster(cluster);
+        originalCluster.add(node);
+        return res;
+    }
+
 
     class Property {
         private final Double limit;
