@@ -2,9 +2,10 @@ package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
 
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.groupingstrategies.Util;
-import sun.awt.X11.XPropertyCache;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class VectorSpace {
@@ -102,7 +103,7 @@ public class VectorSpace {
         return res;
     }
 
-    private boolean isValidCluster(Cluster cluster) {
+    public boolean isValidCluster(Cluster cluster) {
         for (String attributeName: dimensions.keySet()) {
             Property property = dimensions.get(attributeName);
             if (property.getValidDifference() < cluster.getBiggestDifferenceOf(attributeName, property)) {
@@ -129,6 +130,30 @@ public class VectorSpace {
         c1.add(n);
 
         return v2 > v1;
+    }
+
+    public List<Node> getInvalidStudentsFromGroup(Cluster cluster) {
+        List<Node> nodes = new ArrayList<>(cluster.getNodes());
+        List<Node> removeStudents = new ArrayList<>();
+        for (Node node: nodes) {
+            if (isBetterFitIfRemove(node, cluster)) {
+                removeStudents.add(node);
+                cluster.remove(node);
+                if (isValidCluster(cluster)) {
+                    return removeStudents;
+                }
+            }
+        }
+
+        return nodes;
+    }
+
+    private boolean isBetterFitIfRemove(Node node, Cluster cluster) {
+        double p = evaluateCluster(cluster);
+        cluster.remove(node);
+        double q = evaluateCluster(cluster);
+        cluster.add(node);
+        return q < p;
     }
 
 

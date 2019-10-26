@@ -54,7 +54,7 @@ public class Cluster {
         return true;
     }
 
-    private boolean remove(Node member) {
+    public boolean remove(Node member) {
         if (nodes.contains(member)) {
             nodes.remove(member);
             member.setCluster(null);

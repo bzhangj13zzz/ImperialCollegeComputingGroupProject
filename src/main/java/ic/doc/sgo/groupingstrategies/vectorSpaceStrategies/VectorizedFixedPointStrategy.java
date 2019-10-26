@@ -52,6 +52,25 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
     }
 
     private void validifyCluster(List<Cluster> clusters, VectorSpace vectorSpace) {
+        List<Cluster> removeClusterList = new ArrayList<>();
+        for (Cluster cluster: clusters.subList(1, clusters.size())) {
+            if (!vectorSpace.isValidCluster(cluster)) {
+                for (Node node : vectorSpace.getInvalidStudentsFromGroup(cluster)) {
+                    clusters.get(0).add(node);
+                }
+            }
+            if (cluster.size() == 0) {
+                removeClusterList.add(cluster);
+            }
+        }
+
+        for (Cluster cluster: removeClusterList) {
+            clusters.remove(cluster);
+        }
+
+        for (int i = 0; i < clusters.size(); i++) {
+            clusters.get(i).setId(i);
+        }
     }
 
     private void fixedPointToBest(List<Node> nodes, List<Cluster> clusters, VectorSpace vectorSpace) {
