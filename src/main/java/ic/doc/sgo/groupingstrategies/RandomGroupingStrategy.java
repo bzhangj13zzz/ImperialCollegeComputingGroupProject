@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static ic.doc.sgo.groupingstrategies.Util.assignStudentToGroup;
 import static ic.doc.sgo.groupingstrategies.Util.getRandomIntegerBetween;
 
 public class RandomGroupingStrategy implements GroupingStrategy {
@@ -27,20 +26,29 @@ public class RandomGroupingStrategy implements GroupingStrategy {
         int number = getRandomIntegerBetween(numberIntervalOfGroups.first(), numberIntervalOfGroups.second());
 
         Collections.shuffle(students);
-        for (int i = 0; i < number; i++) {
-            groups.add(Group.of());
+        for (int i = 0; i <= number; i++) {
+            groups.add(Group.of(i));
         }
 
         for (int i = 0; i < constraint.getGroupSizeLowerBound() * number; i++) {
-            assignStudentToGroup(students.get(i), groups.get(i / constraint.getGroupSizeLowerBound()));
+            groups.get((i / constraint.getGroupSizeLowerBound())+1).add(students.get(i));
+            assert students.get(i).getGroup() != null;
         }
 
-        for (int i = numberIntervalOfGroups.first()* number; i < size; i++) {
-            int groupId = getRandomIntegerBetween(0, number - 1);
-            while (groups.get(groupId).size() >= numberIntervalOfGroups.second()) {
-                groupId = getRandomIntegerBetween(0, number - 1);
+
+        if (constraint.getGroupSizeLowerBound() == constraint.getGroupSizeUpperBound()) {
+            for (Student student:students.subList(constraint.getGroupSizeLowerBound()*number, students.size())) {
+                groups.get(0).add(student);
             }
-            assignStudentToGroup(students.get(i), groups.get(groupId));
+            return groups;
+        }
+
+        for (int i = constraint.getGroupSizeLowerBound()*number; i < size; i++) {
+            int groupId = getRandomIntegerBetween(1, number);
+            while (groups.get(groupId).size() >= constraint.getGroupSizeUpperBound()) {
+                groupId = getRandomIntegerBetween(0, number);
+            }
+            groups.get(groupId).add(students.get(i));
         }
 
         return groups;
