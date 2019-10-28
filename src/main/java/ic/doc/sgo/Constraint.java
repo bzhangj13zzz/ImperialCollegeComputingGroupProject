@@ -11,14 +11,47 @@ public class Constraint {
     private final int groupSizeUpperBound;
     private final int timezoneDiff;
     private final int ageDiff;
-    private final Map<String, HashMap<String, Integer>> discreteTypes;
+    private final Integer minMale;
+    private final Integer minFemale;
+    private final Double genderRatio;
+    private final Double genderErrorMargin;
 
-    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, int timezoneDiff, int ageDiff, Map<String, HashMap<String, Integer>> discreteTypes) {
+    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, int timezoneDiff, int ageDiff,
+                      Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin) {
         this.groupSizeLowerBound = groupSizeLowerBound;
         this.groupSizeUpperBound = groupSizeUpperBound;
         this.timezoneDiff = timezoneDiff;
         this.ageDiff = ageDiff;
-        this.discreteTypes = discreteTypes;
+        this.minMale = minMale;
+        this.minFemale = minFemale;
+        this.genderRatio = genderRatio;
+        this.genderErrorMargin = genderErrorMargin;
+    }
+
+    public int getMinMale() {
+        if (genderRatio != null) {
+            assert genderErrorMargin != null;
+            return (int) ((genderRatio-genderErrorMargin)*groupSizeUpperBound);
+        }
+        assert minMale != null;
+        return minMale;
+    }
+
+    public int getMinFemale() {
+        if (genderRatio != null) {
+            assert genderErrorMargin != null;
+            return (int) ((1-genderRatio-genderErrorMargin)*groupSizeUpperBound);
+        }
+        assert minFemale != null;
+        return minFemale;
+    }
+
+    public double getGenderRatio() {
+        return genderRatio;
+    }
+
+    public double getGenderErrorMargin() {
+        return genderErrorMargin;
     }
 
     public int getGroupSizeLowerBound() {
@@ -159,24 +192,42 @@ public class Constraint {
     }
 
     public boolean isGenderMatter() {
-        return this.discreteTypes.containsKey("gender");
+        return minFemale != null || minMale != null || genderRatio != null;
     }
-
-    public Integer getDiscreteAttributeValue(String attribute, String type) {
-        return this.discreteTypes.get(attribute).get(type);
-    }
-
 
     public static class Builder {
         private final int groupSizeLowerBound;
         private final int groupSizeUpperBound;
         private int timezoneDiff = -1;
         private int ageDiff = -1;
-        private Map<String, HashMap<String, Integer>> discreteTypes = new HashMap<>();
+        private Integer minMale;
+        private Integer minFemale;
+        private Double genderRatio;
+        private Double genderErrorMargin;
 
         public Builder(int groupSizeLowerBound, int groupSizeUpperBound) {
             this.groupSizeLowerBound = groupSizeLowerBound;
             this.groupSizeUpperBound = groupSizeUpperBound;
+        }
+
+        public Builder setMinMale(Integer minMale) {
+            this.minMale = minMale;
+            return this;
+        }
+
+        public Builder setMinFemale(Integer minFemale) {
+            this.minFemale = minFemale;
+            return this;
+        }
+
+        public Builder setGenderRatio(Double genderRatio) {
+            this.genderRatio = genderRatio;
+            return this;
+        }
+
+        public Builder setGenderErrorMargin(Double genderErrorMargin) {
+            this.genderErrorMargin = genderErrorMargin;
+            return this;
         }
 
         public Builder setTimezoneDiff(int timezoneDiff) {
@@ -190,24 +241,10 @@ public class Constraint {
         }
 
         public Constraint createConstrain() {
-            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff, this.discreteTypes);
+            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff,
+                    this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin);
         }
 
-        public Builder setMinimalMale(int number) {
-            if (!this.discreteTypes.containsKey("gender")) {
-                this.discreteTypes.put("gender", new HashMap<>());
-            }
-            this.discreteTypes.get("gender").put("male", number);
-            return this;
-        }
-
-        public Builder setMinimalFemale(int number) {
-            if (!this.discreteTypes.containsKey("gender")) {
-                this.discreteTypes.put("gender", new HashMap<>());
-            }
-            this.discreteTypes.get("gender").put("female", number);
-            return this;
-        }
     }
 
     public OptionalInt getTimezoneDiff() {

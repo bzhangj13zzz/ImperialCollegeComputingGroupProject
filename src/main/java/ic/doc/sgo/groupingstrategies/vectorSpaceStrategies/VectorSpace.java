@@ -26,8 +26,8 @@ public class VectorSpace {
 
         if (constraint.isGenderMatter()) {
             discreteAttribute.put("gender", new HashMap<>());
-            discreteAttribute.get("gender").put("male", constraint.getDiscreteAttributeValue("gender", "male"));
-            discreteAttribute.get("gender").put("female", constraint.getDiscreteAttributeValue("gender", "female"));
+            discreteAttribute.get("gender").put("male", constraint.getMinMale());
+            discreteAttribute.get("gender").put("female", constraint.getMinFemale());
         }
 
         this.clusterSizeLowerBound = constraint.getGroupSizeLowerBound();
