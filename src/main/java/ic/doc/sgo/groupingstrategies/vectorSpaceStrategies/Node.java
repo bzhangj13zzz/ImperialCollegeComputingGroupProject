@@ -22,7 +22,7 @@ public class Node {
         }
 
         if (constraint.getAgeDiff().isPresent()) {
-            coordinateMap.put("Age", (double) student.getAge().orElse(0));
+            coordinateMap.put("age", (double) student.getAge().orElse(0));
         }
 
         if (constraint.isGenderMatter()) {
