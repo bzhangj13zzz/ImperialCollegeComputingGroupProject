@@ -20,7 +20,7 @@ public final class TimeZoneUtil {
     // TODO: populate the mapping so that we can avoid some lookup, it will be country name
     //  if the country code is non-standard we use the API.
     private static final Map<String, ZoneId> timeZoneMapping = new HashMap<>();
-    private static final String API_KEY = "";
+    private static final String API_KEY = System.getenv("GOOGLE_API_KEY");
     private static final Gson gson = new Gson();
 
     public static ZoneId getTimeZoneId(String cityName, String countryName) throws Exception {
