@@ -12,8 +12,10 @@ public class Constraint {
     private final int groupSizeUpperBound;
     private final int timezoneDiff;
     private final int ageDiff;
+    // Either both `minMale` and `minFemale` are passed in.
     private final Integer minMale;
     private final Integer minFemale;
+    // Or both `genderRatio` and `genderErrorMargin` are passed in
     private final Double genderRatio;
     private final Double genderErrorMargin;
 
