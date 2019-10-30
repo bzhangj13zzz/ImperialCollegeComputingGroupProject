@@ -17,7 +17,7 @@ import java.util.Optional;
  **/
 final class TimeZoneUtil {
     private static final String JSON_PATH = "src/main/java/ic/doc/sgo/studentadapters/countries_with_timeZones.json";
-    private static final String API_KEY = "";
+    private static final String API_KEY = System.getenv("GOOGLE_API_KEY");
     private static final Gson gson = new Gson();
 
     private TimeZoneUtil() {
