@@ -98,4 +98,5 @@ public class Group {
     public boolean contains(Student member) {
         return students.contains(member);
     }
+
 }

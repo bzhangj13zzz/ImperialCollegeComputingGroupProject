@@ -5,6 +5,7 @@ import ic.doc.sgo.groupingstrategies.Util;
 
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Constraint {
     private final int groupSizeLowerBound;
@@ -106,7 +107,47 @@ public class Constraint {
             return false;
         }
 
+        if (getAgeDiffOfGroup(group) > ageDiff) {
+            return false;
+        }
+
+        if (isGenderMatter() && (getMinFemale() > getFemaleNumberOfGroup(group) || getMinMale() > getMaleNumberOfGroup(group))) {
+            return false;
+        }
+
+
         return true;
+    }
+
+    private int getMaleNumberOfGroup(Group group) {
+        return group.getStudents().stream()
+                .filter(student -> student.getGender().orElse("male").equals("male"))
+                .collect(Collectors.toList()).size();
+    }
+
+    private int getFemaleNumberOfGroup(Group group) {
+        return group.getStudents().stream()
+                .filter(student -> student.getGender().orElse("male").equals("female"))
+                .collect(Collectors.toList()).size();
+    }
+
+    public Integer getAgeDiffOfGroup(Group group) {
+        Integer res = 0;
+        for (Student s1 : group.getStudents()) {
+            OptionalInt a1 = s1.getAge();
+            if (!a1.isPresent()) {
+                continue;
+            }
+            for (Student s2 : group.getStudents()) {
+                OptionalInt a2 = s2.getAge();
+                if (!a2.isPresent()) {
+                    continue;
+                }
+                res = Math.max(res, Math.abs(a2.getAsInt()-a1.getAsInt()));
+            }
+        }
+        return res;
+
     }
 
     public boolean canBeFit(Student student, Group group) {
@@ -201,11 +242,21 @@ public class Constraint {
         return minFemale != null || minMale != null || genderRatio != null;
     }
 
+    public OptionalInt getTimezoneDiff() {
+        return this.timezoneDiff == -1? OptionalInt.empty(): OptionalInt.of(this.timezoneDiff);
+    }
+
+    public OptionalInt getAgeDiff() {
+        return this.ageDiff == -1? OptionalInt.empty(): OptionalInt.of(this.ageDiff);
+    }
+
+
+
     public static class Builder {
         private final int groupSizeLowerBound;
         private final int groupSizeUpperBound;
-        private int timezoneDiff = -1;
-        private int ageDiff = -1;
+        private int timezoneDiff = 12;
+        private int ageDiff = 100;
         private Integer minMale;
         private Integer minFemale;
         private Double genderRatio;
@@ -251,13 +302,5 @@ public class Constraint {
                     this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin);
         }
 
-    }
-
-    public OptionalInt getTimezoneDiff() {
-        return this.timezoneDiff == -1? OptionalInt.empty(): OptionalInt.of(this.timezoneDiff);
-    }
-
-    public OptionalInt getAgeDiff() {
-        return this.ageDiff == -1? OptionalInt.empty(): OptionalInt.of(this.ageDiff);
     }
 }

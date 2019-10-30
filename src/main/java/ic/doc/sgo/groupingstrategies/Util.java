@@ -40,8 +40,8 @@ public final class Util {
     public static void swapCluster(Node n1, Node n2) {
         Cluster c1 = n1.getCluster();
         Cluster c2 = n2.getCluster();
-        c1.add(n1);
-        c2.add(n2);
+        c1.add(n2);
+        c2.add(n1);
     }
 
     public static int booleanToInt(boolean value) {

@@ -57,7 +57,7 @@ public class FixedPointStrategyTest {
         Constraint constraint = gson.fromJson(constraintJsonObject, Constraint.class);
 
         List<Group> groups = GroupingController.getAllocatedGroupFromJson(jsonString,
-                new GroupingService(new TimeZoneCalculator.FixedPointStrategy()));
+                new GroupingService(new FixedPointStrategy()));
 
         for (Group group: groups.subList(1, groups.size())) {
             assertTrue(constraint.isValidGroup(group));

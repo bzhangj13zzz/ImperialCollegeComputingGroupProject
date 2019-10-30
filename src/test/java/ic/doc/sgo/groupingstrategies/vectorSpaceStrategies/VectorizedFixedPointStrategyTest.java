@@ -41,8 +41,8 @@ public class VectorizedFixedPointStrategyTest {
         for (File directory: cases) {
             assertTrue(directory.isDirectory());
             for (File file: Objects.requireNonNull(directory.listFiles())) {
+                System.out.print(file.getName() + " ");
                 try {
-                    System.out.print(file.getName() + " ");
                     runTestFromFile(file);
                 } catch (Throwable t) {
                     System.out.println(ANSI_RED + "FAIL" + ANSI_RESET);

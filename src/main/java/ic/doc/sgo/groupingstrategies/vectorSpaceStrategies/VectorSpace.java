@@ -115,7 +115,7 @@ public class VectorSpace {
 
         for (Attributes attributeName: dimensions.keySet()) {
             Property property = dimensions.get(attributeName);
-            if (property.getValidDifference() < cluster.getBiggestDifferenceOf(attributeName, property)) {
+            if (property.getValidDifference() < getBiggestDifferenceInClusterOf(attributeName, cluster)) {
                 return false;
             }
         }
@@ -131,6 +131,19 @@ public class VectorSpace {
         return true;
     }
 
+    public Double getBiggestDifferenceInClusterOf(Attributes attributeName, Cluster cluster) {
+        assert dimensions.containsKey(attributeName);
+        Property property = dimensions.get(attributeName);
+        Double res = 0.0;
+        for (Node n1: cluster.getNodes()) {
+            for (Node n2: cluster.getNodes()) {
+                res = Math.max(res, property.getDifferenceBetween(n1.getValueOfDimensionOf(attributeName),
+                        n2.getValueOfDimensionOf(attributeName)));
+            }
+        }
+        return res;
+    }
+
     public boolean canBeBetterFit(Node n, Cluster c2) {
         Cluster c1 = n.getCluster();
         int v1 = Util.booleanToInt(isValidCluster(c1)) + Util.booleanToInt(isValidCluster(c2));
@@ -141,27 +154,47 @@ public class VectorSpace {
         return v2 > v1;
     }
 
-    public List<Node> getInvalidStudentsFromGroup(Cluster cluster) {
-        List<Node> nodes = new ArrayList<>(cluster.getNodes());
+    public List<Node> getInvalidNodesFromCluster(Cluster cluster) {
         List<Node> removeStudents = new ArrayList<>();
-        for (Node node: nodes) {
-            if (isBetterFitIfRemove(node, cluster)) {
-                removeStudents.add(node);
-                cluster.remove(node);
-                if (isValidCluster(cluster)) {
-                    return removeStudents;
+        boolean isChange = true;
+        while (isChange) {
+            isChange = false;
+            List<Node> nodes = new ArrayList<>(cluster.getNodes());
+            for (Node node: nodes) {
+                if (isBetterFitIfRemove(node, cluster)) {
+                    removeStudents.add(node);
+                    cluster.remove(node);
+                    isChange = true;
+                    if (isValidCluster(cluster)) {
+                        return removeStudents;
+                    }
                 }
             }
         }
+        List<Node> nodes = new ArrayList<>(cluster.getNodes());
+        for (Node node: nodes) {
+            cluster.remove(node);
+            removeStudents.add(node);
+        }
 
-        return nodes;
+        return removeStudents;
     }
 
     private boolean isBetterFitIfRemove(Node node, Cluster cluster) {
+        assert cluster.contains(node);
         double p = evaluateCluster(cluster);
+        int v1 = Util.booleanToInt(isValidCluster(cluster));
+
         cluster.remove(node);
         double q = evaluateCluster(cluster);
+        int v2 = Util.booleanToInt(isValidCluster(cluster));
+
         cluster.add(node);
+
+        if (v2 > v1) {
+            return true;
+        }
+
         return q < p;
     }
 
@@ -178,8 +211,13 @@ public class VectorSpace {
         return dimensions.get(key).getValidDifference();
     }
 
+    public Property getPropertyOfDimension(Attributes attribute) {
+        assert dimensions.containsKey(attribute);
+        return dimensions.get(attribute);
+    }
 
-    class Property {
+
+    static class Property {
         private final Double limit;
         private final Type type;
         private final Double validDifference;
@@ -201,7 +239,7 @@ public class VectorSpace {
         public double getDifferenceBetween(Double v1, Double v2) {
             double res =  Math.abs(v1 - v2);
             if (type == Type.CIRCLE) {
-                res = Math.min(res, limit-res);
+                res = Math.min(res, limit*2-res);
             }
             return res;
         }

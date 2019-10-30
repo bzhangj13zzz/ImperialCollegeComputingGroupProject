@@ -24,7 +24,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         List<Node> nodes = students.stream().map(student -> Node.createFromStudentWithConstraint(student, constraint))
                 .collect(Collectors.toList());
 
-        List<Cluster> bestClusters = randomClusterWithDiscreteAttribute(nodes, vectorSpace);
+        List<Cluster> bestClusters = null;
 
         for (int i = 1; i <= 100; i++) {
             List<Node> newNodes = cloneNodes(nodes);
@@ -32,8 +32,19 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
             fixedPointToBest(newNodes, clusters, vectorSpace);
 
             validifyCluster(clusters, vectorSpace);
+            for (Cluster cluster: clusters.subList(1, clusters.size())) {
+                assert vectorSpace.isValidCluster(cluster);
+            }
 
             AdjustClusterAfterValidation(clusters, vectorSpace);
+            for (Cluster cluster: clusters.subList(1, clusters.size())) {
+                assert vectorSpace.isValidCluster(cluster);
+            }
+
+            if (bestClusters == null) {
+                bestClusters = clusters;
+                continue;
+            }
 
             if (clusters.get(0).size() == 0) {
                 bestClusters = clusters;
@@ -44,6 +55,10 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
                 bestClusters = clusters;
             }
 
+        }
+
+        for (Cluster cluster: bestClusters.subList(1, bestClusters.size())) {
+            assert vectorSpace.isValidCluster(cluster);
         }
 
         return convertBackStudentsInGroups(bestClusters);
@@ -57,13 +72,18 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         return newNodes;
     }
 
-    private void AdjustClusterAfterValidation(List<Cluster> clusters, VectorSpace vectorSpace) {
-        List<Node> invalidNodes = new ArrayList<>(clusters.get(0).getNodes());
+    private void AdjustClusterAfterValidation(List<Cluster> clusters, VectorSpace vectorSpace) { ;
 
-        for (Node node: invalidNodes) {
-            for (Cluster cluster: clusters.subList(1, clusters.size())) {
-                if (vectorSpace.canBeFit(node, cluster)) {
-                    cluster.add(node);
+        boolean isChange = true;
+        while (isChange) {
+            isChange = false;
+            List<Node> invalidNodes = new ArrayList<>(clusters.get(0).getNodes());
+            for (Node node : invalidNodes) {
+                for (Cluster cluster : clusters.subList(1, clusters.size())) {
+                    if (vectorSpace.canBeFit(node, cluster)) {
+                        cluster.add(node);
+                        isChange = true;
+                    }
                 }
             }
         }
@@ -83,7 +103,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         List<Cluster> removeClusterList = new ArrayList<>();
         for (Cluster cluster: clusters.subList(1, clusters.size())) {
             if (!vectorSpace.isValidCluster(cluster)) {
-                for (Node node : vectorSpace.getInvalidStudentsFromGroup(cluster)) {
+                for (Node node : vectorSpace.getInvalidNodesFromCluster(cluster)) {
                     clusters.get(0).add(node);
                 }
             }

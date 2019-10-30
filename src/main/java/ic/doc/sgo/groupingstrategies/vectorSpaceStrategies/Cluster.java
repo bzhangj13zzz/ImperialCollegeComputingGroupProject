@@ -44,12 +44,12 @@ public class Cluster {
     }
 
     public boolean add(Node member) {
-        if (!this.nodes.contains(member)) {
+        if (!nodes.contains(member)) {
             Cluster origin = member.getCluster();
             if (origin != null) {
                 origin.remove(member);
             }
-            this.nodes.add(member);
+            nodes.add(member);
             member.setCluster(this);
             return true;
         }
@@ -70,17 +70,6 @@ public class Cluster {
         nodeList.forEach(this::add);
     }
 
-    public Double getBiggestDifferenceOf(Attributes dimensionName, VectorSpace.Property property) {
-        Double res = 0.0;
-        for (Node n1: nodes) {
-            for (Node n2: nodes) {
-                res = Math.max(res, property.getDifferenceBetween(n1.getValueOfDimensionOf(dimensionName),
-                                n2.getValueOfDimensionOf(dimensionName)));
-            }
-        }
-        return res;
-    }
-
     public Integer getNumberOf(Attributes attribute, String type) {
         int res = 0;
         for (Node node: nodes) {
@@ -89,5 +78,13 @@ public class Cluster {
             }
         }
         return res;
+    }
+
+    public void clear() {
+        nodes.clear();
+    }
+
+    public boolean contains(Node n1) {
+        return nodes.contains(n1);
     }
 }

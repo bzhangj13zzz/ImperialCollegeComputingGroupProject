@@ -72,9 +72,14 @@ public class Node {
         return this.id;
     }
 
+    public String getTypeOfDiscreteAttributeOf(Attributes attributes) {
+        assert discreteAttributeType.containsKey(attributes);
+        return discreteAttributeType.get(attributes);
+
+    }
+
     public String getGender() {
-        assert discreteAttributeType.containsKey(Attributes.GENDER);
-        return this.discreteAttributeType.get(Attributes.GENDER);
+        return getTypeOfDiscreteAttributeOf(Attributes.GENDER);
     }
 
     public Double getValueOfDimensionOf(Attributes dimensionName) {
@@ -89,7 +94,7 @@ public class Node {
     }
 
     public Iterable<Attributes> getDimensions() {
-        return this.discreteAttributeType.keySet();
+        return this.coordinateMap.keySet();
     }
 
     public void putValueOfDimension(Attributes dimension, Double value) {
