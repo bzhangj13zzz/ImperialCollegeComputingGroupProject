@@ -40,6 +40,7 @@ public class VectorizedFixedPointStrategyTest {
         System.out.println("Start Running tests for cases");
         for (File directory: cases) {
             assertTrue(directory.isDirectory());
+            System.out.println("Testing for " + directory.getName());
             for (File file: Objects.requireNonNull(directory.listFiles())) {
                 System.out.print(file.getName() + " ");
                 try {
@@ -51,6 +52,7 @@ public class VectorizedFixedPointStrategyTest {
                 }
                 System.out.println(ANSI_GREEN + "PASS" + ANSI_RESET);
             }
+            System.out.println();
         }
     }
 

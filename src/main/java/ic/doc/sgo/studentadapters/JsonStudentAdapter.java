@@ -60,6 +60,9 @@ public class JsonStudentAdapter implements StudentAdapter {
                 case "timezone":
                     studentBuilder.setTimeZone(ZoneId.of(studentJson.get(key).getAsString()));
                     break;
+                case "age":
+                    studentBuilder.setAge(studentJson.get(key).getAsInt());
+                    break;
                 default:
                     studentBuilder.addAttribute(key, studentJson.get(key));
             }

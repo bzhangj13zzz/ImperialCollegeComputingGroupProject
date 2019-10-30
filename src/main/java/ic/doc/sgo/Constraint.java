@@ -245,7 +245,7 @@ public class Constraint {
     }
 
     public OptionalInt getTimezoneDiff() {
-        return this.timezoneDiff == -1? OptionalInt.empty(): OptionalInt.of(this.timezoneDiff);
+        return this.timezoneDiff == -1? OptionalInt.of(12): OptionalInt.of(this.timezoneDiff);
     }
 
     public OptionalInt getAgeDiff() {

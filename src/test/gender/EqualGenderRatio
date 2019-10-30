@@ -1,7 +1,7 @@
 {
     "filters": {
         "genderRatio": 0.5,
-        "errorMargin": 0,
+        "genderErrorMargin": 0,
         "groupSizeLowerBound": 2,
         "groupSizeUpperBound": 2
     },
