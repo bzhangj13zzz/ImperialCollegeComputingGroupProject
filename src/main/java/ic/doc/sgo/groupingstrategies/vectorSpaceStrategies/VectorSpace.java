@@ -1,5 +1,6 @@
 package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
 
+import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.groupingstrategies.Util;
 
@@ -10,24 +11,27 @@ import java.util.Map;
 
 public class VectorSpace {
 
-    private final Map<String, Property> dimensions = new HashMap<>();
+    private final Map<Attributes, Property> dimensions = new HashMap<>();
     private final int clusterSizeLowerBound;
     private final int clusterSizeUpperBound;
-    private final Map<String, HashMap<String, Integer>> discreteAttribute = new HashMap<>();
+    private final Map<Attributes, HashMap<String, Integer>> discreteAttribute = new HashMap<>();
 
     public VectorSpace(Constraint constraint) {
         if (constraint.getTimezoneDiff().isPresent()) {
-            dimensions.put("timeZone", new Property(12.0, Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
+            dimensions.put(Attributes.TIMEZONE, new Property(12.0, Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
         }
 
         if (constraint.getAgeDiff().isPresent()) {
-            dimensions.put("age", new Property(120.0, Type.LINE, (double) constraint.getAgeDiff().getAsInt()));
+            dimensions.put(Attributes.AGE, new Property(120.0, Type.LINE, (double) constraint.getAgeDiff().getAsInt()));
         }
 
+        discreteAttribute.put(Attributes.GENDER, new HashMap<>());
+        discreteAttribute.get(Attributes.GENDER).put("male", 0);
+        discreteAttribute.get(Attributes.GENDER).put("female", 0);
         if (constraint.isGenderMatter()) {
-            discreteAttribute.put("gender", new HashMap<>());
-            discreteAttribute.get("gender").put("male", constraint.getMinMale());
-            discreteAttribute.get("gender").put("female", constraint.getMinFemale());
+            assert constraint.getMinMale() + constraint.getMinFemale() <= constraint.getGroupSizeLowerBound();
+            discreteAttribute.get(Attributes.GENDER).put("male", constraint.getMinMale());
+            discreteAttribute.get(Attributes.GENDER).put("female", constraint.getMinFemale());
         }
 
         this.clusterSizeLowerBound = constraint.getGroupSizeLowerBound();
@@ -42,7 +46,8 @@ public class VectorSpace {
         return clusterSizeUpperBound;
     }
 
-    public int getDiscreteAttributeValue(String attribute, String type) {
+    public int getDiscreteAttributeValue(Attributes attribute, String type) {
+        assert discreteAttribute.containsKey(attribute);
         return discreteAttribute.get(attribute).get(type);
     }
 
@@ -80,7 +85,7 @@ public class VectorSpace {
 
     public double getDistanceBetween(Node node, Node centerNode) {
         double sum = 0.0;
-        for (String dimension: node.getDimensions()) {
+        for (Attributes dimension: node.getDimensions()) {
             double value = Math.abs(node.getValueOfDimensionOf(dimension) - centerNode.getValueOfDimensionOf(dimension));
             sum += Math.pow(value, 2);
         }
@@ -90,13 +95,13 @@ public class VectorSpace {
     public Node getCenterNode(Cluster cluster) {
         Node res = new Node();
         for (Node node: cluster.getNodes()) {
-            for (String dimension: node.getDimensions()) {
+            for (Attributes dimension: node.getDimensions()) {
                 double lastValue = res.getValueOfDimensionOf(dimension);
                 res.putValueOfDimension(dimension, lastValue + node.getValueOfDimensionOf(dimension));
             }
         }
 
-        for (String dimension: res.getDimensions()) {
+        for (Attributes dimension: res.getDimensions()) {
             double lastValue = res.getValueOfDimensionOf(dimension);
             res.putValueOfDimension(dimension, lastValue/cluster.size());
         }
@@ -104,14 +109,18 @@ public class VectorSpace {
     }
 
     public boolean isValidCluster(Cluster cluster) {
-        for (String attributeName: dimensions.keySet()) {
+        if (cluster.size() < clusterSizeLowerBound || cluster.size() > clusterSizeUpperBound) {
+            return false;
+        }
+
+        for (Attributes attributeName: dimensions.keySet()) {
             Property property = dimensions.get(attributeName);
             if (property.getValidDifference() < cluster.getBiggestDifferenceOf(attributeName, property)) {
                 return false;
             }
         }
 
-        for (String attributeName: discreteAttribute.keySet()) {
+        for (Attributes attributeName: discreteAttribute.keySet()) {
             HashMap<String, Integer> valueMap = discreteAttribute.get(attributeName);
             for (String type: valueMap.keySet()) {
                 if (valueMap.get(type) > cluster.getNumberOf(attributeName, type)) {
@@ -162,6 +171,11 @@ public class VectorSpace {
         boolean res = isValidCluster(cluster);
         originalCluster.add(node);
         return res;
+    }
+
+    public Double getDimensionValue(Attributes key) {
+        assert dimensions.containsKey(key);
+        return dimensions.get(key).getValidDifference();
     }
 
 

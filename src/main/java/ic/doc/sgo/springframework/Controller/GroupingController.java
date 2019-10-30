@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
+import ic.doc.sgo.groupingstrategies.GroupingStrategy;
+import ic.doc.sgo.groupingstrategies.RandomGroupingStrategy;
 import ic.doc.sgo.springframework.Service.GroupingService;
 import ic.doc.sgo.studentadapters.JsonStudentAdapter;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,13 @@ public class GroupingController {
   @PostMapping(value = "/allocateGroups")
   public @ResponseBody String groupStudents(@RequestBody String json) {
     Gson gson = new Gson();
+    List<Group> groupList = getAllocatedGroupFromJson(json, groupingService);
+    // return a string which is in the form of a JsonObject
+    return gson.toJson(getResultJsonObj(groupList));
+  }
+
+  public static List<Group> getAllocatedGroupFromJson(String json, GroupingService groupingService) {
+    Gson gson = new Gson();
     JsonObject parsedJson = gson.fromJson(json, JsonObject.class);
     JsonArray studentsJsonArray = parsedJson.getAsJsonArray("students");
     JsonObject constraintJsonObject = parsedJson.getAsJsonObject("filters");
@@ -36,13 +45,10 @@ public class GroupingController {
     LocalDate now = LocalDate.now();
     for (int i = 0; i < studentsJsonArray.size(); i++) {
       Optional<Student> optionalStudent =
-          new JsonStudentAdapter(studentsJsonArray.get(i).getAsJsonObject(), now).toStudent();
+              new JsonStudentAdapter(studentsJsonArray.get(i).getAsJsonObject(), now).toStudent();
       optionalStudent.ifPresent(studentList::add);
     }
-
-    List<Group> groupList = (List<Group>) groupingService.groupStudent(studentList, constraint);
-    // return a string which is in the form of a JsonObject
-    return gson.toJson(getResultJsonObj(groupList));
+    return groupingService.groupStudent(studentList, constraint);
   }
 
   private JsonObject getResultJsonObj(List<Group> groupList) {

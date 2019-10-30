@@ -8,9 +8,9 @@ import java.util.Map;
 public class Node {
 
     private String id;
-    private Map<String, Double>  coordinateMap = new HashMap<>();
+    private Map<Attributes, Double>  coordinateMap = new HashMap<>();
     private Cluster cluster;
-    private Map<String, String> discreteAttributeType = new HashMap<>();
+    private Map<Attributes, String> discreteAttributeType = new HashMap<>();
 
     public Node() {}
 
@@ -18,19 +18,20 @@ public class Node {
         this.id = student.getId();
 
         if (constraint.getTimezoneDiff().isPresent()) {
-            coordinateMap.put("timeZone", getTimeZoneInteger(student));
+            coordinateMap.put(Attributes.TIMEZONE, getTimeZoneInteger(student));
         }
 
         if (constraint.getAgeDiff().isPresent()) {
-            coordinateMap.put("age", (double) student.getAge().orElse(0));
+            coordinateMap.put(Attributes.AGE, (double) student.getAge().orElse(0));
         }
 
+        discreteAttributeType.put(Attributes.GENDER,  "male");
         if (constraint.isGenderMatter()) {
-            discreteAttributeType.put("gender",  student.getGender().orElse("male"));
+            discreteAttributeType.put(Attributes.GENDER,  student.getGender().orElse("male"));
         }
     }
 
-    public Node(String id, Map<String, Double> coordinateMap, Map<String, String> discreteAttributeType) {
+    public Node(String id, Map<Attributes, Double> coordinateMap, Map<Attributes, String> discreteAttributeType) {
         this.id = id;
         this.coordinateMap = coordinateMap;
         this.discreteAttributeType =discreteAttributeType;
@@ -40,11 +41,11 @@ public class Node {
         return new Node(node.getId(), node.getCoordinateMap(), node.getDiscreteAttributeType());
     }
 
-    public Map<String, Double> getCoordinateMap() {
+    public Map<Attributes, Double> getCoordinateMap() {
         return coordinateMap;
     }
 
-    public Map<String, String> getDiscreteAttributeType() {
+    public Map<Attributes, String> getDiscreteAttributeType() {
         return discreteAttributeType;
     }
 
@@ -72,25 +73,26 @@ public class Node {
     }
 
     public String getGender() {
-        return this.discreteAttributeType.get("gender");
+        assert discreteAttributeType.containsKey(Attributes.GENDER);
+        return this.discreteAttributeType.get(Attributes.GENDER);
     }
 
-    public Double getValueOfDimensionOf(String dimensionName) {
+    public Double getValueOfDimensionOf(Attributes dimensionName) {
         if (!coordinateMap.containsKey(dimensionName)) {
             putValueOfDimension(dimensionName, 0.0);
         }
         return coordinateMap.get(dimensionName);
     }
 
-    public boolean isTypeOfAttribute(String attribute, String type) {
+    public boolean isTypeOfAttribute(Attributes attribute, String type) {
         return discreteAttributeType.get(attribute).equals(type);
     }
 
-    public Iterable<String> getDimensions() {
+    public Iterable<Attributes> getDimensions() {
         return this.discreteAttributeType.keySet();
     }
 
-    public void putValueOfDimension(String dimension, Double value) {
+    public void putValueOfDimension(Attributes dimension, Double value) {
         this.coordinateMap.put(dimension, value);
     }
 }

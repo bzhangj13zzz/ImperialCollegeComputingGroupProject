@@ -57,6 +57,9 @@ public class JsonStudentAdapter implements StudentAdapter {
                 case "cohort":
                     studentBuilder.setCohort(studentJson.get(key).getAsString());
                     break;
+                case "timezone":
+                    studentBuilder.setTimeZone(ZoneId.of(studentJson.get(key).getAsString()));
+                    break;
                 default:
                     studentBuilder.addAttribute(key, studentJson.get(key));
             }

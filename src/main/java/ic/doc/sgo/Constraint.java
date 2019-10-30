@@ -29,20 +29,26 @@ public class Constraint {
     }
 
     public int getMinMale() {
+        assert isGenderMatter();
         if (genderRatio != null) {
             assert genderErrorMargin != null;
             return (int) ((genderRatio-genderErrorMargin)*groupSizeUpperBound);
         }
-        assert minMale != null;
+        if (minMale == null) {
+            return  0;
+        }
         return minMale;
     }
 
     public int getMinFemale() {
+        assert isGenderMatter();
         if (genderRatio != null) {
             assert genderErrorMargin != null;
             return (int) ((1-genderRatio-genderErrorMargin)*groupSizeUpperBound);
         }
-        assert minFemale != null;
+        if (minFemale == null) {
+            return  0;
+        }
         return minFemale;
     }
 

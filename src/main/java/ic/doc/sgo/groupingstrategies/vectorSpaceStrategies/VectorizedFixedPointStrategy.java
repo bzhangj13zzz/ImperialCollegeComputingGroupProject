@@ -1,5 +1,6 @@
 package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
 
+import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
@@ -23,11 +24,11 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         List<Node> nodes = students.stream().map(student -> Node.createFromStudentWithConstraint(student, constraint))
                 .collect(Collectors.toList());
 
-        List<Cluster> bestClusters = randomClusterWithGender(nodes, vectorSpace);
+        List<Cluster> bestClusters = randomClusterWithDiscreteAttribute(nodes, vectorSpace);
 
         for (int i = 1; i <= 100; i++) {
             List<Node> newNodes = cloneNodes(nodes);
-            List<Cluster> clusters = randomClusterWithGender(newNodes, vectorSpace);
+            List<Cluster> clusters = randomClusterWithDiscreteAttribute(newNodes, vectorSpace);
             fixedPointToBest(newNodes, clusters, vectorSpace);
 
             validifyCluster(clusters, vectorSpace);
@@ -131,9 +132,9 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         }
     }
 
-    private List<Cluster> randomClusterWithGender(List<Node> nodes, VectorSpace vectorSpace) {
-        List<Node> maleNodes = nodes.stream().filter(node -> node.getGender() == "male").collect(Collectors.toList());
-        List<Node> femaleNode = nodes.stream().filter(node -> node.getGender() == "female").collect(Collectors.toList());
+    private List<Cluster> randomClusterWithDiscreteAttribute(List<Node> nodes, VectorSpace vectorSpace) {
+        List<Node> maleNodes = nodes.stream().filter(node -> node.getGender().equals("male")).collect(Collectors.toList());
+        List<Node> femaleNode = nodes.stream().filter(node -> node.getGender().equals("female")).collect(Collectors.toList());
 
 
         Util.Pair<Integer, Integer> numberIntervalOfGroups = Util.getNumberInterval(nodes.size(),
@@ -141,10 +142,10 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         int number = getRandomIntegerBetween(numberIntervalOfGroups.first(), numberIntervalOfGroups.second());
 
         List<Cluster> maleCluster = randomCluster(maleNodes,
-                vectorSpace.getDiscreteAttributeValue("gender", "male"),
+                vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"),
                 number);
         List<Cluster> femaleCluster = randomCluster(femaleNode,
-                vectorSpace.getDiscreteAttributeValue("gender", "female"),
+                vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"),
                 number);
 
         // combine cluster id smaller than numbers
@@ -180,7 +181,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
     }
 
     private List<Cluster> randomCluster(List<Node> nodes, int clusterSize, int number) {
-        assert clusterSize*number < nodes.size();
+        assert clusterSize*number <= nodes.size();
         List<Cluster> res = new ArrayList<>();
         for (int i = 0; i <= number; i++) {
             res.add(Cluster.of(i));

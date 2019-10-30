@@ -1,5 +1,7 @@
 package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
 
+import ic.doc.sgo.Attributes;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,10 +66,11 @@ public class Cluster {
     }
 
     public void addAll(List<Node> nodes) {
-        nodes.forEach(this::add);
+        List<Node> nodeList = new ArrayList<>(nodes);
+        nodeList.forEach(this::add);
     }
 
-    public Double getBiggestDifferenceOf(String dimensionName, VectorSpace.Property property) {
+    public Double getBiggestDifferenceOf(Attributes dimensionName, VectorSpace.Property property) {
         Double res = 0.0;
         for (Node n1: nodes) {
             for (Node n2: nodes) {
@@ -78,7 +81,7 @@ public class Cluster {
         return res;
     }
 
-    public Integer getNumberOf(String attribute, String type) {
+    public Integer getNumberOf(Attributes attribute, String type) {
         int res = 0;
         for (Node node: nodes) {
             if (node.isTypeOfAttribute(attribute, type)) {
