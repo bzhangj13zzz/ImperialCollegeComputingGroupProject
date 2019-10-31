@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 public class Constraint {
     private final int groupSizeLowerBound;
     private final int groupSizeUpperBound;
-    private final int timezoneDiff;
-    private final int ageDiff;
+    private final Integer timezoneDiff;
+    private final Integer ageDiff;
     // Either both `minMale` and `minFemale` are passed in.
     private final Integer minMale;
     private final Integer minFemale;
@@ -19,8 +19,8 @@ public class Constraint {
     private final Double genderRatio;
     private final Double genderErrorMargin;
 
-    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, int timezoneDiff, int ageDiff,
-                      Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin) {
+    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, Integer timezoneDiff, Integer ageDiff,
+                       Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin) {
         this.groupSizeLowerBound = groupSizeLowerBound;
         this.groupSizeUpperBound = groupSizeUpperBound;
         this.timezoneDiff = timezoneDiff;
@@ -29,6 +29,20 @@ public class Constraint {
         this.minFemale = minFemale;
         this.genderRatio = genderRatio;
         this.genderErrorMargin = genderErrorMargin;
+    }
+
+    @Override
+    public String toString() {
+        return "Constraint{" +
+                "groupSizeLowerBound=" + groupSizeLowerBound +
+                ", groupSizeUpperBound=" + groupSizeUpperBound +
+                ", timezoneDiff=" + timezoneDiff +
+                ", ageDiff=" + ageDiff +
+                ", minMale=" + minMale +
+                ", minFemale=" + minFemale +
+                ", genderRatio=" + genderRatio +
+                ", genderErrorMargin=" + genderErrorMargin +
+                '}';
     }
 
     public int getMinMale() {
@@ -105,11 +119,11 @@ public class Constraint {
             return false;
         }
 
-        if (getTimezoneDiffOfGroup(group) > timezoneDiff) {
+        if (isTimeMatter() && getTimezoneDiffOfGroup(group) > timezoneDiff) {
             return false;
         }
 
-        if (getAgeDiffOfGroup(group) > ageDiff) {
+        if (isAgeMatter() && getAgeDiffOfGroup(group) > ageDiff) {
             return false;
         }
 
@@ -119,6 +133,14 @@ public class Constraint {
 
 
         return true;
+    }
+
+    private boolean isAgeMatter() {
+        return ageDiff != null;
+    }
+
+    private boolean isTimeMatter() {
+        return timezoneDiff != null;
     }
 
     private int getMaleNumberOfGroup(Group group) {
@@ -257,8 +279,8 @@ public class Constraint {
     public static class Builder {
         private final int groupSizeLowerBound;
         private final int groupSizeUpperBound;
-        private int timezoneDiff = 12;
-        private int ageDiff = 100;
+        private Integer timezoneDiff = 12;
+        private Integer ageDiff = 100;
         private Integer minMale;
         private Integer minFemale;
         private Double genderRatio;
