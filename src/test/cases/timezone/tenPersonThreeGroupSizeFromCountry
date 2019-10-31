@@ -1,0 +1,22 @@
+{
+	"filters": {
+		"groupSizeLowerBound": 3,
+		"groupSizeUpperBound": 3,
+		"timezoneDiff": 0
+	},
+
+	"students" : [
+		{"id":"1", "country":"United Kingdom", "currentCity":"London"},
+		{"id":"2", "country":"France", "currentCity":"Paris"},
+		{"id":"3", "country":"United Kingdom", "currentCity":"London"},
+		{"id":"4", "country":"France", "currentCity":"Paris"},
+		{"id":"5", "country":"United Kingdom", "currentCity":"London"},
+		{"id":"6", "country":"France", "currentCity":"Paris"},
+		{"id":"7", "country":"United Kingdom", "currentCity":"London"},
+		{"id":"8", "country":"France", "currentCity":"Paris"},
+		{"id":"9", "country":"United Kingdom", "currentCity":"London"},
+		{"id":"10", "country":"France", "currentCity":"Paris"}
+		],
+
+    "remaining": 4
+}

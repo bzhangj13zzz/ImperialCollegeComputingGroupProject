@@ -15,6 +15,7 @@ public class VectorSpace {
     private final int clusterSizeLowerBound;
     private final int clusterSizeUpperBound;
     private final Map<Attributes, HashMap<String, Integer>> discreteAttribute = new HashMap<>();
+    private double eps = 0.00001;
 
     public VectorSpace(Constraint constraint) {
         if (constraint.getTimezoneDiff().isPresent()) {
@@ -70,7 +71,7 @@ public class VectorSpace {
         if (v2 < v1) {
             return false;
         }
-        return cv1 + cv2 < pv1 + pv2;
+        return cv1 + cv2 + eps < pv1 + pv2;
     }
 
     // get average distance to center node
