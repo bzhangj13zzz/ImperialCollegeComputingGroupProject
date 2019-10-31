@@ -6,6 +6,8 @@ import ic.doc.sgo.Student;
 import ic.doc.sgo.groupingstrategies.GroupingStrategy;
 import ic.doc.sgo.groupingstrategies.RandomGroupingStrategy;
 import java.util.List;
+
+import ic.doc.sgo.groupingstrategies.vectorSpaceStrategies.VectorizedFixedPointStrategy;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +15,7 @@ public class GroupingService {
   private final GroupingStrategy groupingStrategy;
 
   public GroupingService() {
-    this.groupingStrategy = new RandomGroupingStrategy();
+    this.groupingStrategy = new VectorizedFixedPointStrategy();
   }
 
   public GroupingService(GroupingStrategy groupingStrategy) {
