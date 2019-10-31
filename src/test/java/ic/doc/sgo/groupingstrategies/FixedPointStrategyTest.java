@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
+import ic.doc.sgo.Student;
 import ic.doc.sgo.TimeZoneCalculator;
 import ic.doc.sgo.springframework.Controller.GroupingController;
 import ic.doc.sgo.springframework.Service.GroupingService;
@@ -51,18 +52,18 @@ public class FixedPointStrategyTest {
     private void runTestFromFile(File file) throws IOException {
         String jsonString = IOUtils.toString(new FileInputStream(file), Charsets.UTF_8);
         Gson gson = new Gson();
-        JsonObject parsedJson = gson.fromJson(jsonString, JsonObject.class);
-        JsonObject constraintJsonObject = parsedJson.getAsJsonObject("filters");
-        int remaining = parsedJson.get("remaining").getAsInt();
-        Constraint constraint = gson.fromJson(constraintJsonObject, Constraint.class);
+        Constraint constraint = GroupingController.getConstraintFromJson(jsonString);
+        List<Student> students = GroupingController.getStudentFromJson(jsonString);
 
-//        List<Group> groups = GroupingController.getAllocatedGroupFromJson(jsonString,
-//                new GroupingService(new FixedPointStrategy()));
-//
-//        for (Group group: groups.subList(1, groups.size())) {
-//            assertTrue(constraint.isValidGroup(group));
-//        }
-//        assertEquals(groups.get(0).size(), remaining);
+        JsonObject parsedJson = gson.fromJson(jsonString, JsonObject.class);
+        int remaining = parsedJson.get("remaining").getAsInt();
+
+        List<Group> groups = new FixedPointStrategy().apply(students, constraint);
+
+        for (Group group: groups.subList(1, groups.size())) {
+            assertTrue(constraint.isValidGroup(group));
+        }
+        assertEquals(groups.get(0).size(), remaining);
     }
 
 }

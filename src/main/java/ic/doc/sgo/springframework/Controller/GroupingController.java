@@ -27,20 +27,24 @@ public class GroupingController {
   @PostMapping(value = "/allocateGroups")
   public @ResponseBody String groupStudents(@RequestBody String json) {
     Gson gson = new Gson();
-    List<Group> groupList = getAllocatedGroupFromJson(json, groupingService);
+    List<Student> students = getStudentFromJson(json);
+    Constraint constraint = getConstraintFromJson(json);
+    List<Group> groupList = groupingService.groupStudent(students, constraint);
     // return a string which is in the form of a JsonObject
     return gson.toJson(getResultJsonObj(groupList));
   }
 
-  public static List<Group> getAllocatedGroupFromJson(String json, GroupingService groupingService) {
+  public static Constraint getConstraintFromJson(String json) {
+    Gson gson = new Gson();
+    JsonObject parsedJson = gson.fromJson(json, JsonObject.class);
+    JsonObject constraintJsonObject = parsedJson.getAsJsonObject("filters");
+    return gson.fromJson(constraintJsonObject, Constraint.class);
+  }
+
+  public static List<Student> getStudentFromJson(String json) {
     Gson gson = new Gson();
     JsonObject parsedJson = gson.fromJson(json, JsonObject.class);
     JsonArray studentsJsonArray = parsedJson.getAsJsonArray("students");
-    JsonObject constraintJsonObject = parsedJson.getAsJsonObject("filters");
-
-    // Use Gson to convert json to object
-    Constraint constraint = gson.fromJson(constraintJsonObject, Constraint.class);
-
     List<Student> studentList = new ArrayList<>();
     LocalDate now = LocalDate.now();
     for (int i = 0; i < studentsJsonArray.size(); i++) {
@@ -48,7 +52,7 @@ public class GroupingController {
               new JsonStudentAdapter(studentsJsonArray.get(i).getAsJsonObject(), now).toStudent();
       optionalStudent.ifPresent(studentList::add);
     }
-    return groupingService.groupStudent(studentList, constraint);
+    return studentList;
   }
 
   private JsonObject getResultJsonObj(List<Group> groupList) {
