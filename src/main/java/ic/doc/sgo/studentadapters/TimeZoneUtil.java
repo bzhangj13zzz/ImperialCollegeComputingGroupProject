@@ -1,16 +1,25 @@
 package ic.doc.sgo.studentadapters;
 
-import com.google.gson.*;
-import com.neovisionaries.i18n.CountryCode;
-
-import java.io.*;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import javax.validation.constraints.NotNull;
 
 /**
  * Utility class that handles time zone.
@@ -19,6 +28,8 @@ final class TimeZoneUtil {
     private static final String JSON_PATH = "src/main/java/ic/doc/sgo/studentadapters/countries_with_timeZones.json";
     private static final String API_KEY = System.getenv("GOOGLE_API_KEY");
     private static final Gson gson = new Gson();
+    private static final LoadingCache<CityCountry, ZoneId> cache =
+        buildCache(200, 30, TimeUnit.DAYS);
 
     private TimeZoneUtil() {
     }
@@ -29,10 +40,7 @@ final class TimeZoneUtil {
             return lookup.get();
         }
 
-        String cityAndCountry = cityName + " " + countryName;
-        // Call the API to get the Location.
-        Location location = getLocationFromCityAndCountry(cityAndCountry);
-        return getZoneIdFromLocation(location);
+        return cache.get(new CityCountry(cityName, countryName));
     }
 
     private static Optional<ZoneId> lookUpTimezoneJson(String cityName, String countryName) {
@@ -111,6 +119,22 @@ final class TimeZoneUtil {
         return content.toString();
     }
 
+    private static LoadingCache<CityCountry, ZoneId> buildCache(int maxSize, long duration,
+        @NotNull java.util.concurrent.TimeUnit unit) {
+        return CacheBuilder.newBuilder()
+            .maximumSize(maxSize)
+            .expireAfterWrite(duration, unit)
+            .build(
+                new CacheLoader<CityCountry, ZoneId>() {
+                    public ZoneId load(CityCountry cityCountry) throws Exception {
+                        String cityAndCountry = cityCountry.city + " " + cityCountry.country;
+                        // Call the API to get the Location.
+                        Location location = getLocationFromCityAndCountry(cityAndCountry);
+                        return getZoneIdFromLocation(location);
+                    }
+                });
+    }
+
 
     private static class Location {
         private String latitude;
@@ -119,6 +143,34 @@ final class TimeZoneUtil {
         private Location(String latitude, String longitude) {
             this.latitude = latitude;
             this.longitude = longitude;
+        }
+    }
+
+    private static class CityCountry {
+        String city;
+        String country;
+
+        CityCountry(String city, String country) {
+            this.city = city;
+            this.country = country;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            CityCountry that = (CityCountry) o;
+            return Objects.equals(city, that.city) &&
+                Objects.equals(country, that.country);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(city, country);
         }
     }
 }

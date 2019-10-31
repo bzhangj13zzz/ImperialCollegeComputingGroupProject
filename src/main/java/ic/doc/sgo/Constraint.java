@@ -4,19 +4,63 @@ package ic.doc.sgo;
 import ic.doc.sgo.groupingstrategies.Util;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Constraint {
     private final int groupSizeLowerBound;
     private final int groupSizeUpperBound;
     private final int timezoneDiff;
+    private final int ageDiff;
+    // Either both `minMale` and `minFemale` are passed in.
+    private final Integer minMale;
+    private final Integer minFemale;
+    // Or both `genderRatio` and `genderErrorMargin` are passed in
+    private final Double genderRatio;
+    private final Double genderErrorMargin;
 
-    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, int timezoneDiff) {
+    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, int timezoneDiff, int ageDiff,
+                      Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin) {
         this.groupSizeLowerBound = groupSizeLowerBound;
         this.groupSizeUpperBound = groupSizeUpperBound;
         this.timezoneDiff = timezoneDiff;
+        this.ageDiff = ageDiff;
+        this.minMale = minMale;
+        this.minFemale = minFemale;
+        this.genderRatio = genderRatio;
+        this.genderErrorMargin = genderErrorMargin;
+    }
+
+    public int getMinMale() {
+        assert isGenderMatter();
+        if (genderRatio != null) {
+            assert genderErrorMargin != null;
+            return (int) ((genderRatio-genderErrorMargin)*groupSizeUpperBound);
+        }
+        if (minMale == null) {
+            return  0;
+        }
+        return minMale;
+    }
+
+    public int getMinFemale() {
+        assert isGenderMatter();
+        if (genderRatio != null) {
+            assert genderErrorMargin != null;
+            return (int) ((1-genderRatio-genderErrorMargin)*groupSizeUpperBound);
+        }
+        if (minFemale == null) {
+            return  0;
+        }
+        return minFemale;
+    }
+
+    public double getGenderRatio() {
+        return genderRatio;
+    }
+
+    public double getGenderErrorMargin() {
+        return genderErrorMargin;
     }
 
     public int getGroupSizeLowerBound() {
@@ -65,7 +109,47 @@ public class Constraint {
             return false;
         }
 
+        if (getAgeDiffOfGroup(group) > ageDiff) {
+            return false;
+        }
+
+        if (isGenderMatter() && (getMinFemale() > getFemaleNumberOfGroup(group) || getMinMale() > getMaleNumberOfGroup(group))) {
+            return false;
+        }
+
+
         return true;
+    }
+
+    private int getMaleNumberOfGroup(Group group) {
+        return group.getStudents().stream()
+                .filter(student -> student.getGender().orElse("male").equals("male"))
+                .collect(Collectors.toList()).size();
+    }
+
+    private int getFemaleNumberOfGroup(Group group) {
+        return group.getStudents().stream()
+                .filter(student -> student.getGender().orElse("male").equals("female"))
+                .collect(Collectors.toList()).size();
+    }
+
+    public Integer getAgeDiffOfGroup(Group group) {
+        Integer res = 0;
+        for (Student s1 : group.getStudents()) {
+            OptionalInt a1 = s1.getAge();
+            if (!a1.isPresent()) {
+                continue;
+            }
+            for (Student s2 : group.getStudents()) {
+                OptionalInt a2 = s2.getAge();
+                if (!a2.isPresent()) {
+                    continue;
+                }
+                res = Math.max(res, Math.abs(a2.getAsInt()-a1.getAsInt()));
+            }
+        }
+        return res;
+
     }
 
     public boolean canBeFit(Student student, Group group) {
@@ -77,6 +161,7 @@ public class Constraint {
     }
 
     public List<Student> getInvalidStudentsFromGroup(Group group) {
+
         List<Student> students = new ArrayList<>(group.getStudents());
         List<Student> removeStudents = new ArrayList<>();
         for (Student student: students) {
@@ -133,7 +218,7 @@ public class Constraint {
         return cv1 * cv2 > pv1 * pv2;
     }
 
-    public boolean canbeBetterFit(Student s1, Group g2) {
+    public boolean canBeBetterFit(Student s1, Group g2) {
         Group g1 = s1.getGroup();
         int v1 = 0;
         if (isValidGroup(g1)) {
@@ -155,14 +240,53 @@ public class Constraint {
         return v2 > v1;
     }
 
+    public boolean isGenderMatter() {
+        return minFemale != null || minMale != null || genderRatio != null;
+    }
+
+    public OptionalInt getTimezoneDiff() {
+        return this.timezoneDiff == -1? OptionalInt.of(12): OptionalInt.of(this.timezoneDiff);
+    }
+
+    public OptionalInt getAgeDiff() {
+        return this.ageDiff == -1? OptionalInt.empty(): OptionalInt.of(this.ageDiff);
+    }
+
+
+
     public static class Builder {
         private final int groupSizeLowerBound;
         private final int groupSizeUpperBound;
         private int timezoneDiff = 12;
+        private int ageDiff = 100;
+        private Integer minMale;
+        private Integer minFemale;
+        private Double genderRatio;
+        private Double genderErrorMargin;
 
         public Builder(int groupSizeLowerBound, int groupSizeUpperBound) {
             this.groupSizeLowerBound = groupSizeLowerBound;
             this.groupSizeUpperBound = groupSizeUpperBound;
+        }
+
+        public Builder setMinMale(Integer minMale) {
+            this.minMale = minMale;
+            return this;
+        }
+
+        public Builder setMinFemale(Integer minFemale) {
+            this.minFemale = minFemale;
+            return this;
+        }
+
+        public Builder setGenderRatio(Double genderRatio) {
+            this.genderRatio = genderRatio;
+            return this;
+        }
+
+        public Builder setGenderErrorMargin(Double genderErrorMargin) {
+            this.genderErrorMargin = genderErrorMargin;
+            return this;
         }
 
         public Builder setTimezoneDiff(int timezoneDiff) {
@@ -170,8 +294,15 @@ public class Constraint {
             return this;
         }
 
-        public Constraint createConstrain() {
-            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff);
+        public Builder setAgeDiff(int ageDiff) {
+            this.ageDiff = ageDiff;
+            return this;
         }
+
+        public Constraint createConstrain() {
+            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff,
+                    this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin);
+        }
+
     }
 }

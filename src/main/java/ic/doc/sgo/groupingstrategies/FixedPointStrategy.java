@@ -67,7 +67,7 @@ public class FixedPointStrategy implements GroupingStrategy {
                 for (Student s1: students) {
                     for (Group group: groups) {
                         if (groups.contains(s1)) continue;
-                        if (constraint.canbeBetterFit(s1, group)) {
+                        if (constraint.canBeBetterFit(s1, group)) {
                             group.add(s1);
                             isChanged = true;
                         }

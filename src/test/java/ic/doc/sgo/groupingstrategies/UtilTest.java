@@ -1,11 +1,13 @@
 package ic.doc.sgo.groupingstrategies;
 
+import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
+import ic.doc.sgo.groupingstrategies.vectorSpaceStrategies.Cluster;
+import ic.doc.sgo.groupingstrategies.vectorSpaceStrategies.Node;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static ic.doc.sgo.groupingstrategies.Util.*;
 import static org.junit.Assert.*;
@@ -15,6 +17,13 @@ public class UtilTest {
     Student s2 = new Student.Builder(String.valueOf(2)).createStudent();
     Group g1 = Group.from(new ArrayList<>());
     Group g2 = Group.from(new ArrayList<>());
+
+    Constraint dummyConstraint = new Constraint.Builder(0,0).createConstrain();
+    Node n1 = Node.createFromStudentWithConstraint(s1, dummyConstraint);
+    Node n2 = Node.createFromStudentWithConstraint(s2, dummyConstraint);
+    Cluster c1 = Cluster.from(new ArrayList<>());
+    Cluster c2 = Cluster.from(new ArrayList<>());
+
 
     @Test
     public void testGetNumberInterval() {
@@ -74,5 +83,20 @@ public class UtilTest {
         g2.add(s1);
         assertFalse(isSameGroup(s1, s2));
 
+    }
+
+
+    @Test
+    public void testSwapCluster() {
+        c1.add(n1);
+        c2.add(n2);
+
+        swapCluster(n1, n2);
+        assertSame(n1.getCluster(), c2);
+        assertSame(n2.getCluster(), c1);
+        assertTrue(c1.contains(n2));
+        assertTrue(c2.contains(n1));
+        assertFalse(c1.contains(n1));
+        assertFalse(c2.contains(n2));
     }
 }

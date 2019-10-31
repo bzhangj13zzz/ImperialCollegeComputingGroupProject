@@ -2,6 +2,8 @@ package ic.doc.sgo.groupingstrategies;
 
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
+import ic.doc.sgo.groupingstrategies.vectorSpaceStrategies.Cluster;
+import ic.doc.sgo.groupingstrategies.vectorSpaceStrategies.Node;
 
 import java.util.Random;
 
@@ -35,7 +37,18 @@ public final class Util {
         return s1.getGroup() == s2.getGroup();
     }
 
-    static class Pair<S, T> {
+    public static void swapCluster(Node n1, Node n2) {
+        Cluster c1 = n1.getCluster();
+        Cluster c2 = n2.getCluster();
+        c1.add(n2);
+        c2.add(n1);
+    }
+
+    public static int booleanToInt(boolean value) {
+        return value? 1: 0;
+    }
+
+    public static class Pair<S, T> {
         private S fst;
         private T snd;
 
