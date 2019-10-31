@@ -135,14 +135,6 @@ public class Constraint {
         return true;
     }
 
-    private boolean isAgeMatter() {
-        return ageDiff != null;
-    }
-
-    private boolean isTimeMatter() {
-        return timezoneDiff != null;
-    }
-
     private int getMaleNumberOfGroup(Group group) {
         return group.getStudents().stream()
                 .filter(student -> student.getGender().orElse("male").equals("male"))
@@ -264,6 +256,14 @@ public class Constraint {
 
     public boolean isGenderMatter() {
         return minFemale != null || minMale != null || genderRatio != null;
+    }
+
+    public boolean isAgeMatter() {
+        return ageDiff != null;
+    }
+
+    public boolean isTimeMatter() {
+        return timezoneDiff != null;
     }
 
     public OptionalInt getTimezoneDiff() {
