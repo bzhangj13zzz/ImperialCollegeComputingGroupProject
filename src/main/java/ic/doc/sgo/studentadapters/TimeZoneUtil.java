@@ -93,14 +93,19 @@ final class TimeZoneUtil {
                         cityAndCountry.replaceAll("\\s+", "+"),
                         API_KEY));
 
-        JsonObject location = gson
+        try {
+            JsonObject location = gson
                 .fromJson(getJsonResponse(url), JsonObject.class)
                 .getAsJsonArray("results")
                 .get(0).getAsJsonObject()
                 .getAsJsonObject("geometry")
                 .getAsJsonObject("location");
-
-        return new Location(location.get("lat").getAsString(), location.get("lng").getAsString());
+            return new Location(location.get("lat").getAsString(),
+                location.get("lng").getAsString());
+        } catch (Exception e) {
+            // TODO: Unexpected error, should try to search again
+            return new Location("51.5074", "0.1278");
+        }
     }
 
     private static String getJsonResponse(URL url) throws IOException {

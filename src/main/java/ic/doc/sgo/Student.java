@@ -127,10 +127,10 @@ public class Student {
         private final String id;
         private ZoneId timeZone = null;
         private String gender = null;
-        private int age = -1;
+        private int age = 30;
         private String career = null;
         private String degree = null;
-        private double workYearNum = -1.0;
+        private double workYearNum = 12;
         private String cohort = null;
         private final Map<String, JsonElement> additionalAttributes = new HashMap<>();
 
