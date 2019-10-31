@@ -26,7 +26,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
 
         List<Cluster> bestClusters = null;
 
-        for (int i = 1; i <= 100; i++) {
+        for (int i = 1; i <= 10; i++) {
             List<Node> newNodes = cloneNodes(nodes);
             List<Cluster> clusters = randomClusterWithDiscreteAttribute(newNodes, vectorSpace);
             fixedPointToBest(newNodes, clusters, vectorSpace);

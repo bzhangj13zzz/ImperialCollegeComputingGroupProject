@@ -1,6 +1,5 @@
 {
     "filters": {
-        "timezoneDiff": 0,
         "groupSizeLowerBound": 3,
         "groupSizeUpperBound": 3
     },
