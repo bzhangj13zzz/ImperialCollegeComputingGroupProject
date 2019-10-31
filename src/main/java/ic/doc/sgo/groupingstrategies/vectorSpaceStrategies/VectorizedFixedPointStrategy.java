@@ -201,14 +201,14 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
     }
 
     private List<Cluster> randomCluster(List<Node> nodes, int clusterSize, int number) {
-        assert clusterSize*number <= nodes.size();
+        //assert clusterSize*number <= nodes.size();
         List<Cluster> res = new ArrayList<>();
         for (int i = 0; i <= number; i++) {
             res.add(Cluster.of(i));
         }
 
 
-        for (int i = 0; i < number*clusterSize; i++) {
+        for (int i = 0; i < Math.min(number*clusterSize, nodes.size()); i++) {
             res.get((i/clusterSize)+1).add(nodes.get(i));
         }
 
