@@ -12,16 +12,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GroupingService {
-  private final GroupingStrategy groupingStrategy;
-
-  public GroupingService(GroupingStrategy groupingStrategy) {
-    this.groupingStrategy = groupingStrategy;
-  }
 
   public List<Group> groupStudent(List<Student> studentList, Constraint constraint) {
-    if (groupingStrategy!=null) {
-      return groupingStrategy.apply(studentList, constraint);
-    }
     return new VectorizedFixedPointStrategy().apply(studentList,constraint);
   }
 }
