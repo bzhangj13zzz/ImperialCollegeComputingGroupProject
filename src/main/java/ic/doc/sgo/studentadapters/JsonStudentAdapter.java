@@ -37,7 +37,7 @@ public class JsonStudentAdapter implements StudentAdapter {
                     cityName = studentJson.get(key).getAsString();
                     break;
                 case "gender":
-                    studentBuilder.setGender(studentJson.get(key).getAsString());
+                    studentBuilder.setGender(studentJson.get(key).getAsString().trim().toLowerCase());
                     break;
                 case "dob":
                     String dobStr = studentJson.get(key).getAsString();
