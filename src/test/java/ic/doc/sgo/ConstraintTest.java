@@ -2,8 +2,6 @@ package ic.doc.sgo;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 
 //TODO: need to be tested
 public class ConstraintTest {

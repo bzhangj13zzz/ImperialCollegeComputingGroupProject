@@ -3,11 +3,9 @@ package ic.doc.sgo.studentadapters;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+
+import javax.validation.constraints.NotNull;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,7 +17,6 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import javax.validation.constraints.NotNull;
 
 /**
  * Utility class that handles time zone.
@@ -29,7 +26,7 @@ final class TimeZoneUtil {
     private static final String API_KEY = System.getenv("GOOGLE_API_KEY");
     private static final Gson gson = new Gson();
     private static final LoadingCache<CityCountry, ZoneId> cache =
-        buildCache(200, 30, TimeUnit.DAYS);
+            buildCache(200, 30, TimeUnit.DAYS);
 
     private TimeZoneUtil() {
     }
@@ -72,12 +69,12 @@ final class TimeZoneUtil {
     private static ZoneId getZoneIdFromLocation(Location location) throws Exception {
         URL url = new URL(
                 String.format(
-                "https://maps.googleapis.com/maps/api/timezone/json?timestamp=%d&location=%s,%s&key=%s",
-                // Convert the timestamp from milliseconds into second.
-                (new Date()).getTime() / 1000,
-                location.latitude,
-                location.longitude,
-                API_KEY));
+                        "https://maps.googleapis.com/maps/api/timezone/json?timestamp=%d&location=%s,%s&key=%s",
+                        // Convert the timestamp from milliseconds into second.
+                        (new Date()).getTime() / 1000,
+                        location.latitude,
+                        location.longitude,
+                        API_KEY));
 
         return ZoneId.of(gson
                 .fromJson(getJsonResponse(url), JsonObject.class)
@@ -95,13 +92,13 @@ final class TimeZoneUtil {
 
         try {
             JsonObject location = gson
-                .fromJson(getJsonResponse(url), JsonObject.class)
-                .getAsJsonArray("results")
-                .get(0).getAsJsonObject()
-                .getAsJsonObject("geometry")
-                .getAsJsonObject("location");
+                    .fromJson(getJsonResponse(url), JsonObject.class)
+                    .getAsJsonArray("results")
+                    .get(0).getAsJsonObject()
+                    .getAsJsonObject("geometry")
+                    .getAsJsonObject("location");
             return new Location(location.get("lat").getAsString(),
-                location.get("lng").getAsString());
+                    location.get("lng").getAsString());
         } catch (Exception e) {
             // TODO: Unexpected error, should try to search again
             return new Location("51.5074", "0.1278");
@@ -125,19 +122,19 @@ final class TimeZoneUtil {
     }
 
     private static LoadingCache<CityCountry, ZoneId> buildCache(int maxSize, long duration,
-        @NotNull java.util.concurrent.TimeUnit unit) {
+                                                                @NotNull java.util.concurrent.TimeUnit unit) {
         return CacheBuilder.newBuilder()
-            .maximumSize(maxSize)
-            .expireAfterWrite(duration, unit)
-            .build(
-                new CacheLoader<CityCountry, ZoneId>() {
-                    public ZoneId load(CityCountry cityCountry) throws Exception {
-                        String cityAndCountry = cityCountry.city + " " + cityCountry.country;
-                        // Call the API to get the Location.
-                        Location location = getLocationFromCityAndCountry(cityAndCountry);
-                        return getZoneIdFromLocation(location);
-                    }
-                });
+                .maximumSize(maxSize)
+                .expireAfterWrite(duration, unit)
+                .build(
+                        new CacheLoader<CityCountry, ZoneId>() {
+                            public ZoneId load(CityCountry cityCountry) throws Exception {
+                                String cityAndCountry = cityCountry.city + " " + cityCountry.country;
+                                // Call the API to get the Location.
+                                Location location = getLocationFromCityAndCountry(cityAndCountry);
+                                return getZoneIdFromLocation(location);
+                            }
+                        });
     }
 
 
@@ -170,7 +167,7 @@ final class TimeZoneUtil {
             }
             CityCountry that = (CityCountry) o;
             return Objects.equals(city, that.city) &&
-                Objects.equals(country, that.country);
+                    Objects.equals(country, that.country);
         }
 
         @Override

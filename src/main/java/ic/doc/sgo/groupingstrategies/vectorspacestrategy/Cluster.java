@@ -70,7 +70,7 @@ class Cluster {
 
     Integer getNumberOf(Attributes attribute, String type) {
         int res = 0;
-        for (Node node: nodes) {
+        for (Node node : nodes) {
             if (node.isTypeOfAttribute(attribute, type)) {
                 res++;
             }

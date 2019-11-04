@@ -34,12 +34,12 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
             fixedPointToBest(newNodes, clusters, vectorSpace);
 
             validifyCluster(clusters, vectorSpace);
-            for (Cluster cluster: clusters.subList(1, clusters.size())) {
+            for (Cluster cluster : clusters.subList(1, clusters.size())) {
                 assert vectorSpace.isValidCluster(cluster);
             }
 
             AdjustClusterAfterValidation(clusters, vectorSpace);
-            for (Cluster cluster: clusters.subList(1, clusters.size())) {
+            for (Cluster cluster : clusters.subList(1, clusters.size())) {
                 assert vectorSpace.isValidCluster(cluster);
             }
 
@@ -59,7 +59,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
 
         }
 
-        for (Cluster cluster: bestClusters.subList(1, bestClusters.size())) {
+        for (Cluster cluster : bestClusters.subList(1, bestClusters.size())) {
             assert vectorSpace.isValidCluster(cluster);
         }
 
@@ -67,14 +67,15 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
     }
 
     private List<Node> cloneNodes(List<Node> nodes) {
-        List<Node> newNodes =  new ArrayList<>();
-        for (Node node: nodes) {
+        List<Node> newNodes = new ArrayList<>();
+        for (Node node : nodes) {
             newNodes.add(Node.fromNode(node));
         }
         return newNodes;
     }
 
-    private void AdjustClusterAfterValidation(List<Cluster> clusters, VectorSpace vectorSpace) { ;
+    private void AdjustClusterAfterValidation(List<Cluster> clusters, VectorSpace vectorSpace) {
+        ;
 
         boolean isChange = true;
         while (isChange) {
@@ -93,7 +94,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         if (vectorSpace.isValidCluster(clusters.get(0))) {
             Cluster newCluster = Cluster.from(new ArrayList<>());
             List<Node> nodes = new ArrayList<>(clusters.get(0).getNodes());
-            for (Node node: nodes) {
+            for (Node node : nodes) {
                 newCluster.add(node);
             }
             clusters.add(newCluster);
@@ -103,7 +104,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
 
     private void validifyCluster(List<Cluster> clusters, VectorSpace vectorSpace) {
         List<Cluster> removeClusterList = new ArrayList<>();
-        for (Cluster cluster: clusters.subList(1, clusters.size())) {
+        for (Cluster cluster : clusters.subList(1, clusters.size())) {
             if (!vectorSpace.isValidCluster(cluster)) {
                 for (Node node : vectorSpace.getInvalidNodesFromCluster(cluster)) {
                     clusters.get(0).add(node);
@@ -114,7 +115,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
             }
         }
 
-        for (Cluster cluster: removeClusterList) {
+        for (Cluster cluster : removeClusterList) {
             clusters.remove(cluster);
         }
 
@@ -140,8 +141,8 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
             }
 
             if (!isChanged) {
-                for (Node n: nodes) {
-                    for (Cluster cluster: clusters) {
+                for (Node n : nodes) {
+                    for (Cluster cluster : clusters) {
                         if (clusters.contains(n)) continue;
                         if (vectorSpace.canBeBetterFit(n, cluster)) {
                             cluster.add(n);
@@ -210,11 +211,11 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         }
 
 
-        for (int i = 0; i < Math.min(number*clusterSize, nodes.size()); i++) {
-            res.get((i/clusterSize)+1).add(nodes.get(i));
+        for (int i = 0; i < Math.min(number * clusterSize, nodes.size()); i++) {
+            res.get((i / clusterSize) + 1).add(nodes.get(i));
         }
 
-        for (int i = number*clusterSize; i < nodes.size(); i++) {
+        for (int i = number * clusterSize; i < nodes.size(); i++) {
             res.get(0).add(nodes.get(i));
         }
 
@@ -223,7 +224,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
 
     private List<Group> convertBackStudentsInGroups(List<Cluster> clusters) {
         List<Group> res = new ArrayList<>();
-        for (Cluster cluster: clusters) {
+        for (Cluster cluster : clusters) {
             List<Student> students = cluster.getNodes()
                     .stream()
                     .map(node -> idToStudents.get(node.getId()))

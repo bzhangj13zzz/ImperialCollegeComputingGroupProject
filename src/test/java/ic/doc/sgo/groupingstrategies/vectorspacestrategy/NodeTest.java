@@ -79,7 +79,7 @@ public class NodeTest {
     public void createCorrectNodeFromStudent() {
         Double nodeTime = n1.getValueOfDimensionOf(Attributes.TIMEZONE);
         Double studentTime = (double) TimeZoneCalculator.timeZoneInInteger(s1.getTimeZone().orElse(null));
-        assertTrue(Math.abs(nodeTime-studentTime) <= eps);
+        assertTrue(Math.abs(nodeTime - studentTime) <= eps);
 
         Double nodeAge = n1.getValueOfDimensionOf(Attributes.AGE);
         Double studentAge = (double) s1.getAge().orElse(-1);

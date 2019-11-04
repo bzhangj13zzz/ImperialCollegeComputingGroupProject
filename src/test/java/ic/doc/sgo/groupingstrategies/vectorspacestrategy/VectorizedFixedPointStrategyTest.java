@@ -19,7 +19,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class VectorizedFixedPointStrategyTest {
 
@@ -39,10 +40,10 @@ public class VectorizedFixedPointStrategyTest {
 
         assert cases != null;
         System.out.println("Start Running tests for cases");
-        for (File directory: cases) {
+        for (File directory : cases) {
             assertTrue(directory.isDirectory());
             System.out.println("Testing for " + directory.getName());
-            for (File file: Objects.requireNonNull(directory.listFiles())) {
+            for (File file : Objects.requireNonNull(directory.listFiles())) {
                 System.out.print(file.getName() + " ");
                 try {
                     runTestFromFile(file);
@@ -68,7 +69,7 @@ public class VectorizedFixedPointStrategyTest {
 
         List<Group> groups = new FixedPointStrategy().apply(students, constraint);
 
-        for (Group group: groups.subList(1, groups.size())) {
+        for (Group group : groups.subList(1, groups.size())) {
             assertTrue(constraint.isValidGroup(group));
         }
         assertEquals(groups.get(0).size(), remaining);

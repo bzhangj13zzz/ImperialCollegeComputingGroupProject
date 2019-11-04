@@ -15,7 +15,7 @@ class VectorSpace {
     private final double eps = 0.00001;
 
     VectorSpace(Map<Attributes, Property> dimensions, int clusterSizeLowerBound, int clusterSizeUpperBound,
-                       Map<Attributes, HashMap<String, Integer>> discreteAttribute) {
+                Map<Attributes, HashMap<String, Integer>> discreteAttribute) {
         this.dimensions = dimensions;
         this.clusterSizeLowerBound = clusterSizeLowerBound;
         this.clusterSizeUpperBound = clusterSizeUpperBound;
@@ -43,9 +43,10 @@ class VectorSpace {
         double pv2 = evaluateCluster(c2);
 
         Node.swapCluster(n1, n2);
-        int v2 =  booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
+        int v2 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
         double cv1 = evaluateCluster(c1);
-        double cv2 = evaluateCluster(c2);;
+        double cv2 = evaluateCluster(c2);
+        ;
         Node.swapCluster(n1, n2);
 
         if (v2 > v1) {
@@ -61,15 +62,15 @@ class VectorSpace {
     private double evaluateCluster(Cluster cluster) {
         Node centerNode = getCenterNode(cluster);
         double sum = 0.0;
-        for (Node node: cluster.getNodes()) {
+        for (Node node : cluster.getNodes()) {
             sum += getDistanceBetween(node, centerNode);
         }
-        return sum/cluster.size();
+        return sum / cluster.size();
     }
 
     double getDistanceBetween(Node node, Node centerNode) {
         double sum = 0.0;
-        for (Attributes dimension: node.getDimensions()) {
+        for (Attributes dimension : node.getDimensions()) {
             double value = Math.abs(node.getValueOfDimensionOf(dimension) - centerNode.getValueOfDimensionOf(dimension));
             sum += Math.pow(value, 2);
         }
@@ -78,16 +79,16 @@ class VectorSpace {
 
     Node getCenterNode(Cluster cluster) {
         Node res = new Node();
-        for (Node node: cluster.getNodes()) {
-            for (Attributes dimension: node.getDimensions()) {
+        for (Node node : cluster.getNodes()) {
+            for (Attributes dimension : node.getDimensions()) {
                 double lastValue = res.getValueOfDimensionOf(dimension);
                 res.putValueOfDimension(dimension, lastValue + node.getValueOfDimensionOf(dimension));
             }
         }
 
-        for (Attributes dimension: res.getDimensions()) {
+        for (Attributes dimension : res.getDimensions()) {
             double lastValue = res.getValueOfDimensionOf(dimension);
-            res.putValueOfDimension(dimension, lastValue/cluster.size());
+            res.putValueOfDimension(dimension, lastValue / cluster.size());
         }
         return res;
     }
@@ -97,16 +98,16 @@ class VectorSpace {
             return false;
         }
 
-        for (Attributes attributeName: dimensions.keySet()) {
+        for (Attributes attributeName : dimensions.keySet()) {
             Property property = dimensions.get(attributeName);
             if (property.getValidDifference() < getBiggestDifferenceInClusterOf(attributeName, cluster)) {
                 return false;
             }
         }
 
-        for (Attributes attributeName: discreteAttribute.keySet()) {
+        for (Attributes attributeName : discreteAttribute.keySet()) {
             HashMap<String, Integer> valueMap = discreteAttribute.get(attributeName);
-            for (String type: valueMap.keySet()) {
+            for (String type : valueMap.keySet()) {
                 if (valueMap.get(type) > cluster.getNumberOf(attributeName, type)) {
                     return false;
                 }
@@ -119,8 +120,8 @@ class VectorSpace {
         assert dimensions.containsKey(attributeName);
         Property property = dimensions.get(attributeName);
         double res = 0.0;
-        for (Node n1: cluster.getNodes()) {
-            for (Node n2: cluster.getNodes()) {
+        for (Node n1 : cluster.getNodes()) {
+            for (Node n2 : cluster.getNodes()) {
                 res = Math.max(res, property.getDifferenceBetween(n1.getValueOfDimensionOf(attributeName),
                         n2.getValueOfDimensionOf(attributeName)));
             }
@@ -144,7 +145,7 @@ class VectorSpace {
         while (isChange) {
             isChange = false;
             List<Node> nodes = new ArrayList<>(cluster.getNodes());
-            for (Node node: nodes) {
+            for (Node node : nodes) {
                 if (isBetterFitIfRemove(node, cluster)) {
                     removeStudents.add(node);
                     cluster.remove(node);
@@ -156,7 +157,7 @@ class VectorSpace {
             }
         }
         List<Node> nodes = new ArrayList<>(cluster.getNodes());
-        for (Node node: nodes) {
+        for (Node node : nodes) {
             cluster.remove(node);
             removeStudents.add(node);
         }
@@ -183,7 +184,7 @@ class VectorSpace {
     }
 
     private int booleanToInt(boolean value) {
-        return value? 1: 0;
+        return value ? 1 : 0;
     }
 
     boolean canBeFit(Node node, Cluster cluster) {
@@ -225,9 +226,9 @@ class VectorSpace {
         }
 
         double getDifferenceBetween(Double v1, Double v2) {
-            double res =  Math.abs(v1 - v2);
+            double res = Math.abs(v1 - v2);
             if (type == Type.CIRCLE) {
-                res = Math.min(res, limit*2-res);
+                res = Math.min(res, limit * 2 - res);
             }
             return res;
         }

@@ -6,18 +6,20 @@ import com.google.gson.JsonObject;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
-import ic.doc.sgo.TimeZoneCalculator;
 import ic.doc.sgo.springframework.Controller.GroupingController;
-import ic.doc.sgo.springframework.Service.GroupingService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FixedPointStrategyTest {
 
@@ -36,7 +38,7 @@ public class FixedPointStrategyTest {
 
         assert cases != null;
         System.out.println("Start Running tests for cases");
-        for (File file: cases) {
+        for (File file : cases) {
             try {
                 System.out.print(file.getName() + " ");
                 runTestFromFile(file);
@@ -60,7 +62,7 @@ public class FixedPointStrategyTest {
 
         List<Group> groups = new FixedPointStrategy().apply(students, constraint);
 
-        for (Group group: groups.subList(1, groups.size())) {
+        for (Group group : groups.subList(1, groups.size())) {
             assertTrue(constraint.isValidGroup(group));
         }
         assertEquals(groups.get(0).size(), remaining);

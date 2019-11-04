@@ -2,7 +2,10 @@ package ic.doc.sgo;
 
 
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 public class Constraint {
@@ -47,10 +50,10 @@ public class Constraint {
         assert isGenderMatter();
         if (genderRatio != null) {
             assert genderErrorMargin != null;
-            return (int) ((genderRatio-genderErrorMargin)*groupSizeUpperBound);
+            return (int) ((genderRatio - genderErrorMargin) * groupSizeUpperBound);
         }
         if (minMale == null) {
-            return  0;
+            return 0;
         }
         return minMale;
     }
@@ -59,10 +62,10 @@ public class Constraint {
         assert isGenderMatter();
         if (genderRatio != null) {
             assert genderErrorMargin != null;
-            return (int) ((1-genderRatio-genderErrorMargin)*groupSizeUpperBound);
+            return (int) ((1 - genderRatio - genderErrorMargin) * groupSizeUpperBound);
         }
         if (minFemale == null) {
-            return  0;
+            return 0;
         }
         return minFemale;
     }
@@ -157,7 +160,7 @@ public class Constraint {
                 if (!a2.isPresent()) {
                     continue;
                 }
-                res = Math.max(res, Math.abs(a2.getAsInt()-a1.getAsInt()));
+                res = Math.max(res, Math.abs(a2.getAsInt() - a1.getAsInt()));
             }
         }
         return res;
@@ -176,7 +179,7 @@ public class Constraint {
 
         List<Student> students = new ArrayList<>(group.getStudents());
         List<Student> removeStudents = new ArrayList<>();
-        for (Student student: students) {
+        for (Student student : students) {
             if (isBetterFitIfRemove(student, group)) {
                 removeStudents.add(student);
                 group.remove(student);
@@ -202,23 +205,24 @@ public class Constraint {
         Group g2 = s2.getGroup();
         int v1 = 0;
         if (isValidGroup(g1)) {
-            v1 ++;
+            v1++;
         }
         if (isValidGroup(g2)) {
-            v1 ++;
+            v1++;
         }
         double pv1 = evaluateGroup(g1);
         double pv2 = evaluateGroup(g2);
         Student.swapGroup(s1, s2);
         int v2 = 0;
         if (isValidGroup(g1)) {
-            v2 ++;
+            v2++;
         }
         if (isValidGroup(g2)) {
-            v2 ++;
+            v2++;
         }
         double cv1 = evaluateGroup(g1);
-        double cv2 = evaluateGroup(g2);;
+        double cv2 = evaluateGroup(g2);
+        ;
         Student.swapGroup(s1, s2);
 
         if (v2 > v1) {
@@ -234,18 +238,18 @@ public class Constraint {
         Group g1 = s1.getGroup();
         int v1 = 0;
         if (isValidGroup(g1)) {
-            v1 ++;
+            v1++;
         }
         if (isValidGroup(g2)) {
-            v1 ++;
+            v1++;
         }
         g2.add(s1);
         int v2 = 0;
         if (isValidGroup(g1)) {
-            v2 ++;
+            v2++;
         }
         if (isValidGroup(g2)) {
-            v2 ++;
+            v2++;
         }
         g1.add(s1);
 
@@ -265,13 +269,12 @@ public class Constraint {
     }
 
     public OptionalInt getTimezoneDiff() {
-        return this.timezoneDiff == null? OptionalInt.of(12): OptionalInt.of(this.timezoneDiff);
+        return this.timezoneDiff == null ? OptionalInt.of(12) : OptionalInt.of(this.timezoneDiff);
     }
 
     public OptionalInt getAgeDiff() {
-        return this.ageDiff == null? OptionalInt.empty(): OptionalInt.of(this.ageDiff);
+        return this.ageDiff == null ? OptionalInt.empty() : OptionalInt.of(this.ageDiff);
     }
-
 
 
     public static class Builder {

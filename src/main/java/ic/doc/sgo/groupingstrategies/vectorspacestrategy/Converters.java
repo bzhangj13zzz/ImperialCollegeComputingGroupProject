@@ -10,7 +10,8 @@ import java.util.Map;
 
 final class Converters {
 
-    private Converters() {}
+    private Converters() {
+    }
 
     static VectorSpace VectorSpaceFromConstraint(Constraint constraint) {
         Map<Attributes, VectorSpace.Property> dimensions = new HashMap<>();
@@ -43,7 +44,7 @@ final class Converters {
     static Node NodeFromStudentAndConstraint(Student student, Constraint constraint) {
 
         String id;
-        Map<Attributes, Double>  coordinateMap = new HashMap<>();
+        Map<Attributes, Double> coordinateMap = new HashMap<>();
         Map<Attributes, String> discreteAttributeType = new HashMap<>();
 
         id = student.getId();
@@ -57,9 +58,9 @@ final class Converters {
             coordinateMap.put(Attributes.AGE, (double) student.getAge().orElse(0));
         }
 
-        discreteAttributeType.put(Attributes.GENDER,  "male");
+        discreteAttributeType.put(Attributes.GENDER, "male");
         if (constraint.isGenderMatter()) {
-            discreteAttributeType.put(Attributes.GENDER,  student.getGender().orElse("male"));
+            discreteAttributeType.put(Attributes.GENDER, student.getGender().orElse("male"));
         }
 
         return new Node(id, coordinateMap, discreteAttributeType);

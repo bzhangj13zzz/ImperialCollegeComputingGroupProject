@@ -31,19 +31,19 @@ public class RandomGroupingStrategy implements GroupingStrategy {
         }
 
         for (int i = 0; i < constraint.getGroupSizeLowerBound() * number; i++) {
-            groups.get((i / constraint.getGroupSizeLowerBound())+1).add(students.get(i));
+            groups.get((i / constraint.getGroupSizeLowerBound()) + 1).add(students.get(i));
             assert students.get(i).getGroup() != null;
         }
 
 
         if (constraint.getGroupSizeLowerBound() == constraint.getGroupSizeUpperBound()) {
-            for (Student student:students.subList(constraint.getGroupSizeLowerBound()*number, students.size())) {
+            for (Student student : students.subList(constraint.getGroupSizeLowerBound() * number, students.size())) {
                 groups.get(0).add(student);
             }
             return groups;
         }
 
-        for (int i = constraint.getGroupSizeLowerBound()*number; i < size; i++) {
+        for (int i = constraint.getGroupSizeLowerBound() * number; i < size; i++) {
             int groupId = getRandomIntegerBetween(1, number);
             while (groups.get(groupId).size() >= constraint.getGroupSizeUpperBound()) {
                 groupId = getRandomIntegerBetween(1, number);

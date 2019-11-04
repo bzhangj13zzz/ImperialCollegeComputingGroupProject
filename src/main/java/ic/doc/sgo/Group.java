@@ -1,6 +1,9 @@
 package ic.doc.sgo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class Group {
     public static final int UNKNOWN_ID = -1;
@@ -26,7 +29,7 @@ public class Group {
         return new Group(id, members);
     }
 
-    public static Group of(Student...members) {
+    public static Group of(Student... members) {
         return new Group(new ArrayList<>(Arrays.asList(members)));
     }
 

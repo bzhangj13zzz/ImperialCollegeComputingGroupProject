@@ -40,7 +40,7 @@ public class StrategyUtilTest {
             assertTrue(r <= b);
             t--;
         }
-        int r = getRandomIntegerBetween(34,30);
+        int r = getRandomIntegerBetween(34, 30);
         assertEquals(30, r);
     }
 

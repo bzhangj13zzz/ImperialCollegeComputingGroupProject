@@ -4,9 +4,10 @@ import org.junit.Test;
 
 import java.time.ZoneId;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class TimeZoneCalculatorTest { ;
+public class TimeZoneCalculatorTest {
+    ;
 
     @Test
     public void timeBetween() {

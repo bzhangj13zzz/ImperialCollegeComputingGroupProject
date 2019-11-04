@@ -86,14 +86,14 @@ public class VectorSpaceTest {
         assertEquals(4, vectorSpace.getClusterSizeLowerBound());
         assertEquals(5, vectorSpace.getClusterSizeUpperBound());
         Double timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE);
-        assertTrue( 2-eps <= timeZoneDiff && timeZoneDiff <= 2+eps);
+        assertTrue(2 - eps <= timeZoneDiff && timeZoneDiff <= 2 + eps);
 
         //Age
-        testConstraint = new Constraint.Builder(4 , 4)
+        testConstraint = new Constraint.Builder(4, 4)
                 .setAgeDiff(3).createConstrain();
         vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
         Double ageDiff = vectorSpace.getDimensionValue(Attributes.AGE);
-        assertTrue( 3-eps <= ageDiff && ageDiff <= 3 + eps);
+        assertTrue(3 - eps <= ageDiff && ageDiff <= 3 + eps);
 
         //Gender
         testConstraint = new Constraint.Builder(4, 4)
@@ -125,9 +125,9 @@ public class VectorSpaceTest {
         assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"));
         assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"));
         timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE);
-        assertTrue( 2-eps <= timeZoneDiff && timeZoneDiff <= 2+eps);
+        assertTrue(2 - eps <= timeZoneDiff && timeZoneDiff <= 2 + eps);
         ageDiff = vectorSpace.getDimensionValue(Attributes.AGE);
-        assertTrue( 3-eps <= ageDiff && ageDiff <= 3 + eps);
+        assertTrue(3 - eps <= ageDiff && ageDiff <= 3 + eps);
 
     }
 
@@ -142,7 +142,6 @@ public class VectorSpaceTest {
         c1.clear();
         c1.addAll(new ArrayList<>(Arrays.asList(n1, n2, n3, n4, n5)));
         assertFalse(vectorSpace.isValidCluster(c1));
-
 
 
         // test invalid timezone
@@ -198,15 +197,15 @@ public class VectorSpaceTest {
     @Test
     public void testPropertyCalculation() {
         VectorSpace.Property property = new VectorSpace.Property(12.0, VectorSpace.Type.CIRCLE, 0.0);
-        assertTrue(Math.abs(property.getDifferenceBetween(1.0,1.0)- 0.0) <= eps);
-        assertTrue(Math.abs(property.getDifferenceBetween(1.0,-11.0)- 12.0) <= eps);
-        assertTrue(Math.abs(property.getDifferenceBetween(1.0,3.0)- 2.0) <= eps);
-        assertTrue(Math.abs(property.getDifferenceBetween(-1.0,-11.0)- 10.0) <= eps);
-        assertTrue(Math.abs(property.getDifferenceBetween(2.0,-4.0)- 6.0) <= eps);
-        assertTrue(Math.abs(property.getDifferenceBetween(1.0,-8.0)- 9.0) <= eps);
-        assertTrue(Math.abs(property.getDifferenceBetween(-4.0,-3.0)- 1.0) <= eps);
-        assertTrue(Math.abs(property.getDifferenceBetween(-4.0,12.0)- 8.0) <= eps);
-        assertTrue(Math.abs(property.getDifferenceBetween(-3.0,12.0)- 9.0) <= eps);
+        assertTrue(Math.abs(property.getDifferenceBetween(1.0, 1.0) - 0.0) <= eps);
+        assertTrue(Math.abs(property.getDifferenceBetween(1.0, -11.0) - 12.0) <= eps);
+        assertTrue(Math.abs(property.getDifferenceBetween(1.0, 3.0) - 2.0) <= eps);
+        assertTrue(Math.abs(property.getDifferenceBetween(-1.0, -11.0) - 10.0) <= eps);
+        assertTrue(Math.abs(property.getDifferenceBetween(2.0, -4.0) - 6.0) <= eps);
+        assertTrue(Math.abs(property.getDifferenceBetween(1.0, -8.0) - 9.0) <= eps);
+        assertTrue(Math.abs(property.getDifferenceBetween(-4.0, -3.0) - 1.0) <= eps);
+        assertTrue(Math.abs(property.getDifferenceBetween(-4.0, 12.0) - 8.0) <= eps);
+        assertTrue(Math.abs(property.getDifferenceBetween(-3.0, 12.0) - 9.0) <= eps);
     }
 
 }

@@ -74,7 +74,6 @@ public class ClusterTest {
     private Node n7 = Converters.NodeFromStudentAndConstraint(s7, constraint);
 
 
-
     @Test
     public void ableToAddStudent() {
         assertEquals(0, c1.size());

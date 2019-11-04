@@ -6,6 +6,7 @@ enum Attributes {
     GENDER("gender");
 
     private final String name;
+
     Attributes(String name) {
         this.name = name;
     }

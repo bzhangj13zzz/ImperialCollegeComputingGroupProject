@@ -6,16 +6,17 @@ import java.util.Map;
 class Node {
 
     private String id;
-    private Map<Attributes, Double>  coordinateMap = new HashMap<>();
+    private Map<Attributes, Double> coordinateMap = new HashMap<>();
     private Cluster cluster;
     private Map<Attributes, String> discreteAttributeType = new HashMap<>();
 
-    Node() {}
+    Node() {
+    }
 
     Node(String id, Map<Attributes, Double> coordinateMap, Map<Attributes, String> discreteAttributeType) {
         this.id = id;
         this.coordinateMap = coordinateMap;
-        this.discreteAttributeType =discreteAttributeType;
+        this.discreteAttributeType = discreteAttributeType;
     }
 
     static Node fromNode(Node node) {

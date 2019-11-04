@@ -14,14 +14,14 @@ public class JsonFormatUtilTest {
         assertThat(JsonFormatUtil.yearNumStringToDouble(null), is(0.0));
         assertThat(JsonFormatUtil.yearNumStringToDouble(""), is(0.0));
         assertThat(JsonFormatUtil.yearNumStringToDouble("12"), is(0.0));
-        assertThat(JsonFormatUtil.yearNumStringToDouble("12y 10m"), is(12.0 + 10.0/12.0));
+        assertThat(JsonFormatUtil.yearNumStringToDouble("12y 10m"), is(12.0 + 10.0 / 12.0));
         assertThat(JsonFormatUtil.yearNumStringToDouble("12y"), is(12.0));
-        assertThat(JsonFormatUtil.yearNumStringToDouble("12y10m"), is(12.0 + 10.0/12.0));
-        assertThat(JsonFormatUtil.yearNumStringToDouble("12 y10m"), is(12.0 + 10.0/12.0));
-        assertThat(JsonFormatUtil.yearNumStringToDouble("12 y10 m"), is(12.0 + 10.0/12.0));
-        assertThat(JsonFormatUtil.yearNumStringToDouble("12 y 10 m "), is(12.0 + 10.0/12.0));
-        assertThat(JsonFormatUtil.yearNumStringToDouble(" 12 y 10 m "), is(12.0 + 10.0/12.0));
-        assertThat(JsonFormatUtil.yearNumStringToDouble(" 10 m "), is(10.0/12.0));
+        assertThat(JsonFormatUtil.yearNumStringToDouble("12y10m"), is(12.0 + 10.0 / 12.0));
+        assertThat(JsonFormatUtil.yearNumStringToDouble("12 y10m"), is(12.0 + 10.0 / 12.0));
+        assertThat(JsonFormatUtil.yearNumStringToDouble("12 y10 m"), is(12.0 + 10.0 / 12.0));
+        assertThat(JsonFormatUtil.yearNumStringToDouble("12 y 10 m "), is(12.0 + 10.0 / 12.0));
+        assertThat(JsonFormatUtil.yearNumStringToDouble(" 12 y 10 m "), is(12.0 + 10.0 / 12.0));
+        assertThat(JsonFormatUtil.yearNumStringToDouble(" 10 m "), is(10.0 / 12.0));
     }
 
     @Test
