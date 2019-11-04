@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class Cluster {
+public class Cluster {
     private final List<Node> nodes;
     private int id;
 
@@ -33,11 +33,11 @@ class Cluster {
         return nodes.size();
     }
 
-    List<Node> getNodes() {
+    public List<Node> getNodes() {
         return this.nodes;
     }
 
-    int getId() {
+    public int getId() {
         return id;
     }
 

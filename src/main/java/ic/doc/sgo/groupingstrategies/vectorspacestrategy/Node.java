@@ -3,7 +3,7 @@ package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 import java.util.HashMap;
 import java.util.Map;
 
-class Node {
+public class Node {
 
     private String id;
     private Map<Attributes, Double> coordinateMap = new HashMap<>();
@@ -46,7 +46,7 @@ class Node {
         c2.add(n1);
     }
 
-    String getId() {
+    public String getId() {
         return this.id;
     }
 

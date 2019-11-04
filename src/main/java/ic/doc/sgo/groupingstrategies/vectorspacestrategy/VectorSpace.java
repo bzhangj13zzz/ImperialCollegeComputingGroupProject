@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class VectorSpace {
+public class VectorSpace {
 
     private final Map<Attributes, Property> dimensions;
     private final int clusterSizeLowerBound;
@@ -93,7 +93,7 @@ class VectorSpace {
         return res;
     }
 
-    boolean isValidCluster(Cluster cluster) {
+    public boolean isValidCluster(Cluster cluster) {
         if (cluster.size() < clusterSizeLowerBound || cluster.size() > clusterSizeUpperBound) {
             return false;
         }
@@ -207,6 +207,10 @@ class VectorSpace {
 
     public boolean containDimension(Attributes attribute) {
         return dimensions.containsKey(attribute);
+    }
+
+    public boolean isNoConstraint() {
+        return dimensions.isEmpty();
     }
 
 

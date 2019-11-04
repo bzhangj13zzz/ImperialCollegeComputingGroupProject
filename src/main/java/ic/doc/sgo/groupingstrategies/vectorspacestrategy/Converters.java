@@ -8,12 +8,12 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
-final class Converters {
+public final class Converters {
 
     private Converters() {
     }
 
-    static VectorSpace VectorSpaceFromConstraint(Constraint constraint) {
+    public static VectorSpace VectorSpaceFromConstraint(Constraint constraint) {
         Map<Attributes, VectorSpace.Property> dimensions = new HashMap<>();
         int clusterSizeLowerBound;
         int clusterSizeUpperBound;
@@ -45,7 +45,7 @@ final class Converters {
         return new VectorSpace(dimensions, clusterSizeLowerBound, clusterSizeUpperBound, discreteAttribute);
     }
 
-    static Node NodeFromStudentAndConstraint(Student student, Constraint constraint) {
+    public static Node NodeFromStudentAndConstraint(Student student, Constraint constraint) {
 
         String id;
         Map<Attributes, Double> coordinateMap = new HashMap<>();
