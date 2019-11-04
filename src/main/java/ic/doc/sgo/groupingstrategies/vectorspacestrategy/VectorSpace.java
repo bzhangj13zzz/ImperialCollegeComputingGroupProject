@@ -1,7 +1,4 @@
-package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
-
-import ic.doc.sgo.Attributes;
-import ic.doc.sgo.groupingstrategies.StrategyUtil;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,12 +38,12 @@ class VectorSpace {
     boolean isBetterFitIfSwap(Node n1, Node n2) {
         Cluster c1 = n1.getCluster();
         Cluster c2 = n2.getCluster();
-        int v1 = StrategyUtil.booleanToInt(isValidCluster(c1)) + StrategyUtil.booleanToInt(isValidCluster(c2));
+        int v1 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
         double pv1 = evaluateCluster(c1);
         double pv2 = evaluateCluster(c2);
 
         Node.swapCluster(n1, n2);
-        int v2 =  StrategyUtil.booleanToInt(isValidCluster(c1)) + StrategyUtil.booleanToInt(isValidCluster(c2));
+        int v2 =  booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
         double cv1 = evaluateCluster(c1);
         double cv2 = evaluateCluster(c2);;
         Node.swapCluster(n1, n2);
@@ -133,9 +130,9 @@ class VectorSpace {
 
     boolean canBeBetterFit(Node n, Cluster c2) {
         Cluster c1 = n.getCluster();
-        int v1 = StrategyUtil.booleanToInt(isValidCluster(c1)) + StrategyUtil.booleanToInt(isValidCluster(c2));
+        int v1 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
         c2.add(n);
-        int v2 = StrategyUtil.booleanToInt(isValidCluster(c1)) + StrategyUtil.booleanToInt(isValidCluster(c2));
+        int v2 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
         c1.add(n);
 
         return v2 > v1;
@@ -170,11 +167,11 @@ class VectorSpace {
     private boolean isBetterFitIfRemove(Node node, Cluster cluster) {
         assert cluster.contains(node);
         double p = evaluateCluster(cluster);
-        int v1 = StrategyUtil.booleanToInt(isValidCluster(cluster));
+        int v1 = booleanToInt(isValidCluster(cluster));
 
         cluster.remove(node);
         double q = evaluateCluster(cluster);
-        int v2 = StrategyUtil.booleanToInt(isValidCluster(cluster));
+        int v2 = booleanToInt(isValidCluster(cluster));
 
         cluster.add(node);
 
@@ -183,6 +180,10 @@ class VectorSpace {
         }
 
         return q < p;
+    }
+
+    private int booleanToInt(boolean value) {
+        return value? 1: 0;
     }
 
     boolean canBeFit(Node node, Cluster cluster) {

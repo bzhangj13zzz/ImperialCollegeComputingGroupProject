@@ -1,6 +1,4 @@
-package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
-
-import ic.doc.sgo.Attributes;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,6 +1,6 @@
-package ic.doc.sgo;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
-public enum Attributes {
+enum Attributes {
     TIMEZONE("timezone"),
     AGE("age"),
     GENDER("gender");

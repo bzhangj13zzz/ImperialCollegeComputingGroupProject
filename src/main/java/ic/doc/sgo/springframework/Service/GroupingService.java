@@ -6,7 +6,7 @@ import ic.doc.sgo.Student;
 
 import java.util.List;
 
-import ic.doc.sgo.groupingstrategies.vectorspacestrategies.VectorizedFixedPointStrategy;
+import ic.doc.sgo.groupingstrategies.vectorspacestrategy.VectorizedFixedPointStrategy;
 import org.springframework.stereotype.Service;
 
 @Service

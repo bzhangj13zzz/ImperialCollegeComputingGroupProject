@@ -20,11 +20,6 @@ public final class StrategyUtil {
         return r.nextInt((b - a) + 1) + a;
     }
 
-
-    public static int booleanToInt(boolean value) {
-        return value? 1: 0;
-    }
-
     public static class Pair<S, T> {
         private S fst;
         private T snd;

@@ -1,6 +1,5 @@
-package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
-import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Student;
 import org.junit.Test;

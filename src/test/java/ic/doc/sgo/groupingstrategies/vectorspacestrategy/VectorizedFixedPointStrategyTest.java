@@ -1,4 +1,4 @@
-package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
