@@ -102,4 +102,12 @@ public class Group {
         return students.contains(member);
     }
 
+    public void clear() {
+        students.clear();
+    }
+
+    public void addAll(ArrayList<Student> students) {
+        List<Student> studentList = new ArrayList<>(students);
+        studentList.forEach(this::add);
+    }
 }

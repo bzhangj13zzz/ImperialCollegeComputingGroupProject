@@ -76,62 +76,6 @@ public class VectorSpaceTest {
     private Cluster c2 = Cluster.from(new ArrayList<>());
 
     @Test
-    public void createCorrectVectorSpaceFromConstrain() {
-
-        //Timezone
-        Constraint testConstraint = new Constraint.Builder(4, 5)
-                .setTimezoneDiff(2).createConstrain();
-        assertTrue(testConstraint.getTimezoneDiff().isPresent());
-        VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
-        assertEquals(4, vectorSpace.getClusterSizeLowerBound());
-        assertEquals(5, vectorSpace.getClusterSizeUpperBound());
-        Double timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE);
-        assertTrue(2 - eps <= timeZoneDiff && timeZoneDiff <= 2 + eps);
-
-        //Age
-        testConstraint = new Constraint.Builder(4, 4)
-                .setAgeDiff(3).createConstrain();
-        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
-        Double ageDiff = vectorSpace.getDimensionValue(Attributes.AGE);
-        assertTrue(3 - eps <= ageDiff && ageDiff <= 3 + eps);
-
-        //Gender
-        testConstraint = new Constraint.Builder(4, 4)
-                .setMinFemale(3).createConstrain();
-        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
-        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"));
-        assertEquals(0, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"));
-
-        testConstraint = new Constraint.Builder(5, 6)
-                .setGenderRatio(0.6)
-                .setGenderErrorMargin(0.1)
-                .createConstrain();
-        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
-        assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"));
-        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"));
-
-        //ALERT: every time add an new Attribute, add corresponding test here.
-
-        //Mix
-        testConstraint = new Constraint.Builder(5, 6)
-                .setGenderRatio(0.6)
-                .setGenderErrorMargin(0.1)
-                .setTimezoneDiff(2)
-                .setAgeDiff(3)
-                .createConstrain();
-        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
-        assertEquals(5, vectorSpace.getClusterSizeLowerBound());
-        assertEquals(6, vectorSpace.getClusterSizeUpperBound());
-        assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"));
-        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"));
-        timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE);
-        assertTrue(2 - eps <= timeZoneDiff && timeZoneDiff <= 2 + eps);
-        ageDiff = vectorSpace.getDimensionValue(Attributes.AGE);
-        assertTrue(3 - eps <= ageDiff && ageDiff <= 3 + eps);
-
-    }
-
-    @Test
     public void testIsValidCluster() {
 
         // test lower bound

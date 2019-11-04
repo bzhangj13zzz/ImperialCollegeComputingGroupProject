@@ -56,10 +56,6 @@ class Node {
 
     }
 
-    String getGender() {
-        return getTypeOfDiscreteAttributeOf(Attributes.GENDER);
-    }
-
     Double getValueOfDimensionOf(Attributes dimensionName) {
         if (!coordinateMap.containsKey(dimensionName)) {
             putValueOfDimension(dimensionName, 0.0);
@@ -77,5 +73,9 @@ class Node {
 
     void putValueOfDimension(Attributes dimension, Double value) {
         this.coordinateMap.put(dimension, value);
+    }
+
+    public boolean containDimension(Attributes attribute) {
+        return coordinateMap.containsKey(attribute);
     }
 }

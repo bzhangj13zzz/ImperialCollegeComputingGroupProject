@@ -156,8 +156,12 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
     }
 
     private List<Cluster> randomClusterWithDiscreteAttribute(List<Node> nodes, VectorSpace vectorSpace) {
-        List<Node> maleNodes = nodes.stream().filter(node -> node.getGender().equals("male")).collect(Collectors.toList());
-        List<Node> femaleNode = nodes.stream().filter(node -> node.getGender().equals("female")).collect(Collectors.toList());
+        List<Node> maleNodes = nodes.stream().
+                filter(node -> node.getTypeOfDiscreteAttributeOf(Attributes.GENDER).equals("male"))
+                .collect(Collectors.toList());
+        List<Node> femaleNode = nodes.stream()
+                .filter(node -> node.getTypeOfDiscreteAttributeOf(Attributes.GENDER).equals("female"))
+                .collect(Collectors.toList());
 
 
         StrategyUtil.Pair<Integer, Integer> numberIntervalOfGroups = StrategyUtil.getNumberInterval(nodes.size(),

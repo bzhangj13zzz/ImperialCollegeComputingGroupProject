@@ -19,12 +19,16 @@ final class Converters {
         int clusterSizeUpperBound;
         Map<Attributes, HashMap<String, Integer>> discreteAttribute = new HashMap<>();
 
-        if (constraint.getTimezoneDiff().isPresent()) {
+        if (constraint.isTimeMatter()) {
             dimensions.put(Attributes.TIMEZONE, new VectorSpace.Property(12.0, VectorSpace.Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
         }
 
-        if (constraint.getAgeDiff().isPresent()) {
+        if (constraint.isAgeMatter()) {
             dimensions.put(Attributes.AGE, new VectorSpace.Property(120.0, VectorSpace.Type.LINE, (double) constraint.getAgeDiff().getAsInt()));
+        }
+
+        if (constraint.isSameGender()) {
+            dimensions.put(Attributes.GENDER, new VectorSpace.Property(2.0, VectorSpace.Type.LINE, 0.0));
         }
 
         discreteAttribute.put(Attributes.GENDER, new HashMap<>());
@@ -49,13 +53,17 @@ final class Converters {
 
         id = student.getId();
 
-        if (constraint.getTimezoneDiff().isPresent()) {
+        if (constraint.isTimeMatter()) {
             coordinateMap.put(Attributes.TIMEZONE,
                     (double) TimeZoneCalculator.timeZoneInInteger(student.getTimeZone().orElse(ZoneId.of("UTC+0"))));
         }
 
-        if (constraint.getAgeDiff().isPresent()) {
+        if (constraint.isAgeMatter()) {
             coordinateMap.put(Attributes.AGE, (double) student.getAge().orElse(0));
+        }
+
+        if (constraint.isSameGender()) {
+            coordinateMap.put(Attributes.GENDER, (double) genderToInteger(student.getGender().orElse("male")));
         }
 
         discreteAttributeType.put(Attributes.GENDER, "male");
@@ -64,6 +72,10 @@ final class Converters {
         }
 
         return new Node(id, coordinateMap, discreteAttributeType);
+    }
+
+    private static int genderToInteger(String gender) {
+        return gender.equals("male")? 0: 1;
     }
 
 }

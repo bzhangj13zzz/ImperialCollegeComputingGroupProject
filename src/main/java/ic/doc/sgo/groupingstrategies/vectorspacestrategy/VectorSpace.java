@@ -205,6 +205,10 @@ class VectorSpace {
         return dimensions.get(attribute);
     }
 
+    public boolean containDimension(Attributes attribute) {
+        return dimensions.containsKey(attribute);
+    }
+
 
     static class Property {
         private final Double limit;

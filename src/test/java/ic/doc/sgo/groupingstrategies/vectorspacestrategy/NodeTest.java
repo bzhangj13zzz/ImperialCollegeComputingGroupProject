@@ -14,12 +14,18 @@ import static org.junit.Assert.*;
 public class NodeTest {
     private Double eps = 1e-6;
 
+    private Constraint constraintForSameGender = new Constraint.Builder(3, 4)
+            .setIsSameGender()
+            .createConstrain();
+
     private Constraint constraint = new Constraint.Builder(3, 4)
             .setMinFemale(1)
             .setMinMale(2)
             .setTimezoneDiff(2)
             .setAgeDiff(3)
             .createConstrain();
+
+    private VectorSpace vectorSpaceForSameGender = Converters.VectorSpaceFromConstraint(constraintForSameGender);
 
     private VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint);
 
@@ -72,22 +78,10 @@ public class NodeTest {
     private Node n6 = Converters.NodeFromStudentAndConstraint(s6, constraint);
     private Node n7 = Converters.NodeFromStudentAndConstraint(s7, constraint);
 
+    private Node nodeForSameGender = Converters.NodeFromStudentAndConstraint(s1, constraintForSameGender);
+
     private final Cluster c1 = Cluster.from(new ArrayList<>());
     private final Cluster c2 = Cluster.from(new ArrayList<>());
-
-    @Test
-    public void createCorrectNodeFromStudent() {
-        Double nodeTime = n1.getValueOfDimensionOf(Attributes.TIMEZONE);
-        Double studentTime = (double) TimeZoneCalculator.timeZoneInInteger(s1.getTimeZone().orElse(null));
-        assertTrue(Math.abs(nodeTime - studentTime) <= eps);
-
-        Double nodeAge = n1.getValueOfDimensionOf(Attributes.AGE);
-        Double studentAge = (double) s1.getAge().orElse(-1);
-        assertTrue(Math.abs(nodeAge - studentAge) <= eps);
-
-        assertEquals(n1.getGender(), s1.getGender().orElse(""));
-        assertEquals(n3.getGender(), s3.getGender().orElse(""));
-    }
 
     @Test
     public void returnCorrectDimensions() {
