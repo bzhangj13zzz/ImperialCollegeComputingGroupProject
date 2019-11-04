@@ -70,7 +70,7 @@ class VectorSpace {
         return sum/cluster.size();
     }
 
-    public double getDistanceBetween(Node node, Node centerNode) {
+    double getDistanceBetween(Node node, Node centerNode) {
         double sum = 0.0;
         for (Attributes dimension: node.getDimensions()) {
             double value = Math.abs(node.getValueOfDimensionOf(dimension) - centerNode.getValueOfDimensionOf(dimension));
@@ -79,7 +79,7 @@ class VectorSpace {
         return Math.sqrt(sum);
     }
 
-    public Node getCenterNode(Cluster cluster) {
+    Node getCenterNode(Cluster cluster) {
         Node res = new Node();
         for (Node node: cluster.getNodes()) {
             for (Attributes dimension: node.getDimensions()) {
@@ -95,7 +95,7 @@ class VectorSpace {
         return res;
     }
 
-    public boolean isValidCluster(Cluster cluster) {
+    boolean isValidCluster(Cluster cluster) {
         if (cluster.size() < clusterSizeLowerBound || cluster.size() > clusterSizeUpperBound) {
             return false;
         }
@@ -118,10 +118,10 @@ class VectorSpace {
         return true;
     }
 
-    public Double getBiggestDifferenceInClusterOf(Attributes attributeName, Cluster cluster) {
+    Double getBiggestDifferenceInClusterOf(Attributes attributeName, Cluster cluster) {
         assert dimensions.containsKey(attributeName);
         Property property = dimensions.get(attributeName);
-        Double res = 0.0;
+        double res = 0.0;
         for (Node n1: cluster.getNodes()) {
             for (Node n2: cluster.getNodes()) {
                 res = Math.max(res, property.getDifferenceBetween(n1.getValueOfDimensionOf(attributeName),
@@ -131,7 +131,7 @@ class VectorSpace {
         return res;
     }
 
-    public boolean canBeBetterFit(Node n, Cluster c2) {
+    boolean canBeBetterFit(Node n, Cluster c2) {
         Cluster c1 = n.getCluster();
         int v1 = StrategyUtil.booleanToInt(isValidCluster(c1)) + StrategyUtil.booleanToInt(isValidCluster(c2));
         c2.add(n);
@@ -141,7 +141,7 @@ class VectorSpace {
         return v2 > v1;
     }
 
-    public List<Node> getInvalidNodesFromCluster(Cluster cluster) {
+    List<Node> getInvalidNodesFromCluster(Cluster cluster) {
         List<Node> removeStudents = new ArrayList<>();
         boolean isChange = true;
         while (isChange) {
@@ -185,7 +185,7 @@ class VectorSpace {
         return q < p;
     }
 
-    public boolean canBeFit(Node node, Cluster cluster) {
+    boolean canBeFit(Node node, Cluster cluster) {
         Cluster originalCluster = node.getCluster();
         cluster.add(node);
         boolean res = isValidCluster(cluster);
@@ -193,12 +193,12 @@ class VectorSpace {
         return res;
     }
 
-    public Double getDimensionValue(Attributes key) {
+    Double getDimensionValue(Attributes key) {
         assert dimensions.containsKey(key);
         return dimensions.get(key).getValidDifference();
     }
 
-    public Property getPropertyOfDimension(Attributes attribute) {
+    Property getPropertyOfDimension(Attributes attribute) {
         assert dimensions.containsKey(attribute);
         return dimensions.get(attribute);
     }
@@ -209,21 +209,21 @@ class VectorSpace {
         private final Type type;
         private final Double validDifference;
 
-        public Property(Double limit, Type type, Double validDifference) {
+        Property(Double limit, Type type, Double validDifference) {
             this.limit = limit;
             this.type = type;
             this.validDifference = validDifference;
         }
 
-        public Double getLimit() {
+        Double getLimit() {
             return limit;
         }
 
-        public Type getType() {
+        Type getType() {
             return type;
         }
 
-        public double getDifferenceBetween(Double v1, Double v2) {
+        double getDifferenceBetween(Double v1, Double v2) {
             double res =  Math.abs(v1 - v2);
             if (type == Type.CIRCLE) {
                 res = Math.min(res, limit*2-res);
@@ -231,7 +231,7 @@ class VectorSpace {
             return res;
         }
 
-        public Double getValidDifference() {
+        Double getValidDifference() {
             return validDifference;
         }
     }

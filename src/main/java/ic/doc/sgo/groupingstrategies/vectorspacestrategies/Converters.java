@@ -9,7 +9,7 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Converters {
+final class Converters {
 
     private Converters() {}
 
@@ -45,7 +45,6 @@ public final class Converters {
 
         String id;
         Map<Attributes, Double>  coordinateMap = new HashMap<>();
-        Cluster cluster = null;
         Map<Attributes, String> discreteAttributeType = new HashMap<>();
 
         id = student.getId();
@@ -64,7 +63,7 @@ public final class Converters {
             discreteAttributeType.put(Attributes.GENDER,  student.getGender().orElse("male"));
         }
 
-        return new Node(id, coordinateMap, cluster, discreteAttributeType);
+        return new Node(id, coordinateMap, discreteAttributeType);
     }
 
 }
