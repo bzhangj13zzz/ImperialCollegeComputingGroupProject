@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static ic.doc.sgo.groupingstrategies.Util.getRandomIntegerBetween;
+import static ic.doc.sgo.groupingstrategies.StrategyUtil.getRandomIntegerBetween;
 
 public class RandomGroupingStrategy implements GroupingStrategy {
 
@@ -21,7 +21,7 @@ public class RandomGroupingStrategy implements GroupingStrategy {
             groups.get(0).setId(0);
             return groups;
         }
-        Util.Pair<Integer, Integer> numberIntervalOfGroups = Util.getNumberInterval(students.size(),
+        StrategyUtil.Pair<Integer, Integer> numberIntervalOfGroups = StrategyUtil.getNumberInterval(students.size(),
                 constraint.getGroupSizeLowerBound(), constraint.getGroupSizeUpperBound());
         int number = getRandomIntegerBetween(numberIntervalOfGroups.first(), numberIntervalOfGroups.second());
 

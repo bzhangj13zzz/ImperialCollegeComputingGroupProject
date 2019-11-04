@@ -122,6 +122,17 @@ public class Student {
         this.group = group;
     }
 
+    public static boolean isSameGroup(Student s1, Student s2) {
+        return s1.getGroup() == s2.getGroup();
+    }
+
+    public static void swapGroup(Student s1, Student s2) {
+        Group g1 = s1.getGroup();
+        Group g2 = s2.getGroup();
+        g2.add(s1);
+        g1.add(s2);
+    }
+
 
     public static class Builder {
         private final String id;

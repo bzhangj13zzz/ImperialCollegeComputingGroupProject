@@ -1,35 +1,26 @@
-package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
 
-import ic.doc.sgo.*;
+import ic.doc.sgo.Attributes;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Node {
+class Node {
 
     private String id;
     private Map<Attributes, Double>  coordinateMap = new HashMap<>();
     private Cluster cluster;
     private Map<Attributes, String> discreteAttributeType = new HashMap<>();
 
-    public Node() {}
+    Node() {}
 
-    private Node(Student student, Constraint constraint) {
-        this.id = student.getId();
-
-        if (constraint.getTimezoneDiff().isPresent()) {
-            coordinateMap.put(Attributes.TIMEZONE, getTimeZoneInteger(student));
-        }
-
-        if (constraint.getAgeDiff().isPresent()) {
-            coordinateMap.put(Attributes.AGE, (double) student.getAge().orElse(0));
-        }
-
-        discreteAttributeType.put(Attributes.GENDER,  "male");
-        if (constraint.isGenderMatter()) {
-            discreteAttributeType.put(Attributes.GENDER,  student.getGender().orElse("male"));
-        }
+    public Node(String id, Map<Attributes, Double> coordinateMap, Cluster cluster, Map<Attributes, String> discreteAttributeType) {
+        this.id = id;
+        this.coordinateMap = coordinateMap;
+        this.cluster = cluster;
+        this.discreteAttributeType = discreteAttributeType;
     }
+
 
     public Node(String id, Map<Attributes, Double> coordinateMap, Map<Attributes, String> discreteAttributeType) {
         this.id = id;
@@ -49,23 +40,19 @@ public class Node {
         return discreteAttributeType;
     }
 
-    private double getTimeZoneInteger(Student student) {
-        if (student.getTimeZone().isPresent()) {
-            return (double) TimeZoneCalculator.timeZoneInInteger(student.getTimeZone().get());
-        }
-        return 0.0;
-    }
-
-    public static Node createFromStudentWithConstraint(Student student, Constraint constraint) {
-        return new Node(student, constraint);
-    }
-
     public Cluster getCluster() {
         return this.cluster;
     }
 
     public void setCluster(Cluster cluster) {
         this.cluster = cluster;
+    }
+
+    public static void swapCluster(Node n1, Node n2) {
+        Cluster c1 = n1.getCluster();
+        Cluster c2 = n2.getCluster();
+        c1.add(n2);
+        c2.add(n1);
     }
 
     public String getId() {

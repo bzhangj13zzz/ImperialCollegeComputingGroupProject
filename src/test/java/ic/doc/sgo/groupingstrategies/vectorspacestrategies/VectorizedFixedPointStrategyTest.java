@@ -1,4 +1,4 @@
-package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
 
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
@@ -8,7 +8,6 @@ import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.groupingstrategies.FixedPointStrategy;
 import ic.doc.sgo.springframework.Controller.GroupingController;
-import ic.doc.sgo.springframework.Service.GroupingService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;

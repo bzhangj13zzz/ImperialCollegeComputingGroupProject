@@ -1,27 +1,26 @@
-package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
 
 import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.groupingstrategies.GroupingStrategy;
-import ic.doc.sgo.groupingstrategies.Util;
+import ic.doc.sgo.groupingstrategies.StrategyUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ic.doc.sgo.groupingstrategies.Util.getRandomIntegerBetween;
+import static ic.doc.sgo.groupingstrategies.StrategyUtil.getRandomIntegerBetween;
 
 public class VectorizedFixedPointStrategy implements GroupingStrategy {
-
 
     private Map<String, Student> idToStudents = new HashMap<>();
 
     @Override
     public List<Group> apply(List<Student> students, Constraint constraint) {
-        VectorSpace vectorSpace = new VectorSpace(constraint);
+        VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint);
         students.forEach(student -> idToStudents.put(student.getId(), student));
-        List<Node> nodes = students.stream().map(student -> Node.createFromStudentWithConstraint(student, constraint))
+        List<Node> nodes = students.stream().map(student -> Converters.NodeFromStudentAndConstraint(student, constraint))
                 .collect(Collectors.toList());
 
         List<Cluster> bestClusters = null;
@@ -135,7 +134,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
                         continue;
                     }
                     if (vectorSpace.isBetterFitIfSwap(n1, n2)) {
-                        Util.swapCluster(n1, n2);
+                        Node.swapCluster(n1, n2);
                         isChanged = true;
                     }
                 }
@@ -161,7 +160,7 @@ public class VectorizedFixedPointStrategy implements GroupingStrategy {
         List<Node> femaleNode = nodes.stream().filter(node -> node.getGender().equals("female")).collect(Collectors.toList());
 
 
-        Util.Pair<Integer, Integer> numberIntervalOfGroups = Util.getNumberInterval(nodes.size(),
+        StrategyUtil.Pair<Integer, Integer> numberIntervalOfGroups = StrategyUtil.getNumberInterval(nodes.size(),
                 vectorSpace.getClusterSizeLowerBound(), vectorSpace.getClusterSizeUpperBound());
         int number = getRandomIntegerBetween(numberIntervalOfGroups.first(), numberIntervalOfGroups.second());
 

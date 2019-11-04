@@ -1,69 +1,55 @@
-package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
 
 import ic.doc.sgo.Attributes;
-import ic.doc.sgo.Constraint;
-import ic.doc.sgo.groupingstrategies.Util;
+import ic.doc.sgo.groupingstrategies.StrategyUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VectorSpace {
+class VectorSpace {
 
-    private final Map<Attributes, Property> dimensions = new HashMap<>();
+    private final Map<Attributes, Property> dimensions;
     private final int clusterSizeLowerBound;
     private final int clusterSizeUpperBound;
-    private final Map<Attributes, HashMap<String, Integer>> discreteAttribute = new HashMap<>();
-    private double eps = 0.00001;
+    private final Map<Attributes, HashMap<String, Integer>> discreteAttribute;
 
-    public VectorSpace(Constraint constraint) {
-        if (constraint.getTimezoneDiff().isPresent()) {
-            dimensions.put(Attributes.TIMEZONE, new Property(12.0, Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
-        }
+    private final double eps = 0.00001;
 
-        if (constraint.getAgeDiff().isPresent()) {
-            dimensions.put(Attributes.AGE, new Property(120.0, Type.LINE, (double) constraint.getAgeDiff().getAsInt()));
-        }
-
-        discreteAttribute.put(Attributes.GENDER, new HashMap<>());
-        discreteAttribute.get(Attributes.GENDER).put("male", 0);
-        discreteAttribute.get(Attributes.GENDER).put("female", 0);
-        if (constraint.isGenderMatter()) {
-            assert constraint.getMinMale() + constraint.getMinFemale() <= constraint.getGroupSizeLowerBound();
-            discreteAttribute.get(Attributes.GENDER).put("male", constraint.getMinMale());
-            discreteAttribute.get(Attributes.GENDER).put("female", constraint.getMinFemale());
-        }
-
-        this.clusterSizeLowerBound = constraint.getGroupSizeLowerBound();
-        this.clusterSizeUpperBound = constraint.getGroupSizeUpperBound();
+    VectorSpace(Map<Attributes, Property> dimensions, int clusterSizeLowerBound, int clusterSizeUpperBound,
+                       Map<Attributes, HashMap<String, Integer>> discreteAttribute) {
+        this.dimensions = dimensions;
+        this.clusterSizeLowerBound = clusterSizeLowerBound;
+        this.clusterSizeUpperBound = clusterSizeUpperBound;
+        this.discreteAttribute = discreteAttribute;
     }
 
-    public int getClusterSizeLowerBound() {
+    int getClusterSizeLowerBound() {
         return clusterSizeLowerBound;
     }
 
-    public int getClusterSizeUpperBound() {
+    int getClusterSizeUpperBound() {
         return clusterSizeUpperBound;
     }
 
-    public int getDiscreteAttributeValue(Attributes attribute, String type) {
+    int getDiscreteAttributeValue(Attributes attribute, String type) {
         assert discreteAttribute.containsKey(attribute);
         return discreteAttribute.get(attribute).get(type);
     }
 
-    public boolean isBetterFitIfSwap(Node n1, Node n2) {
+    boolean isBetterFitIfSwap(Node n1, Node n2) {
         Cluster c1 = n1.getCluster();
         Cluster c2 = n2.getCluster();
-        int v1 = Util.booleanToInt(isValidCluster(c1)) + Util.booleanToInt(isValidCluster(c2));
+        int v1 = StrategyUtil.booleanToInt(isValidCluster(c1)) + StrategyUtil.booleanToInt(isValidCluster(c2));
         double pv1 = evaluateCluster(c1);
         double pv2 = evaluateCluster(c2);
 
-        Util.swapCluster(n1, n2);
-        int v2 =  Util.booleanToInt(isValidCluster(c1)) + Util.booleanToInt(isValidCluster(c2));
+        Node.swapCluster(n1, n2);
+        int v2 =  StrategyUtil.booleanToInt(isValidCluster(c1)) + StrategyUtil.booleanToInt(isValidCluster(c2));
         double cv1 = evaluateCluster(c1);
         double cv2 = evaluateCluster(c2);;
-        Util.swapCluster(n1, n2);
+        Node.swapCluster(n1, n2);
 
         if (v2 > v1) {
             return true;
@@ -147,9 +133,9 @@ public class VectorSpace {
 
     public boolean canBeBetterFit(Node n, Cluster c2) {
         Cluster c1 = n.getCluster();
-        int v1 = Util.booleanToInt(isValidCluster(c1)) + Util.booleanToInt(isValidCluster(c2));
+        int v1 = StrategyUtil.booleanToInt(isValidCluster(c1)) + StrategyUtil.booleanToInt(isValidCluster(c2));
         c2.add(n);
-        int v2 = Util.booleanToInt(isValidCluster(c1)) + Util.booleanToInt(isValidCluster(c2));
+        int v2 = StrategyUtil.booleanToInt(isValidCluster(c1)) + StrategyUtil.booleanToInt(isValidCluster(c2));
         c1.add(n);
 
         return v2 > v1;
@@ -184,11 +170,11 @@ public class VectorSpace {
     private boolean isBetterFitIfRemove(Node node, Cluster cluster) {
         assert cluster.contains(node);
         double p = evaluateCluster(cluster);
-        int v1 = Util.booleanToInt(isValidCluster(cluster));
+        int v1 = StrategyUtil.booleanToInt(isValidCluster(cluster));
 
         cluster.remove(node);
         double q = evaluateCluster(cluster);
-        int v2 = Util.booleanToInt(isValidCluster(cluster));
+        int v2 = StrategyUtil.booleanToInt(isValidCluster(cluster));
 
         cluster.add(node);
 

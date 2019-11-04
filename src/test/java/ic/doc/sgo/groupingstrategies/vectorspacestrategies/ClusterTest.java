@@ -1,4 +1,4 @@
-package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
 
 import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
@@ -23,7 +23,7 @@ public class ClusterTest {
             .setAgeDiff(3)
             .createConstrain();
 
-    private VectorSpace vectorSpace = new VectorSpace(constraint);
+    private VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint);
 
     private Student s1 = new Student.Builder("1")
             .setTimeZone(ZoneId.of("UTC+1"))
@@ -66,13 +66,13 @@ public class ClusterTest {
             .setTimeZone(ZoneId.of("UTC+1"))
             .createStudent();
 
-    private Node n1 = Node.createFromStudentWithConstraint(s1, constraint);
-    private Node n2 = Node.createFromStudentWithConstraint(s2, constraint);
-    private Node n3 = Node.createFromStudentWithConstraint(s3, constraint);
-    private Node n4 = Node.createFromStudentWithConstraint(s4, constraint);
-    private Node n5 = Node.createFromStudentWithConstraint(s5, constraint);
-    private Node n6 = Node.createFromStudentWithConstraint(s6, constraint);
-    private Node n7 = Node.createFromStudentWithConstraint(s7, constraint);
+    private Node n1 = Converters.NodeFromStudentAndConstraint(s1, constraint);
+    private Node n2 = Converters.NodeFromStudentAndConstraint(s2, constraint);
+    private Node n3 = Converters.NodeFromStudentAndConstraint(s3, constraint);
+    private Node n4 = Converters.NodeFromStudentAndConstraint(s4, constraint);
+    private Node n5 = Converters.NodeFromStudentAndConstraint(s5, constraint);
+    private Node n6 = Converters.NodeFromStudentAndConstraint(s6, constraint);
+    private Node n7 = Converters.NodeFromStudentAndConstraint(s7, constraint);
 
 
 

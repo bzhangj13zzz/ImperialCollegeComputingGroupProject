@@ -53,11 +53,11 @@ public class FixedPointStrategy implements GroupingStrategy {
             isChanged = false;
             for (Student s1 : students) {
                 for (Student s2 : students) {
-                    if (Util.isSameGroup(s1, s2)) {
+                    if (Student.isSameGroup(s1, s2)) {
                         continue;
                     }
                     if (constraint.isBetterFitIfSwap(s1, s2)) {
-                        Util.swapGroup(s1, s2);
+                        Student.swapGroup(s1, s2);
                         isChanged = true;
                     }
                 }

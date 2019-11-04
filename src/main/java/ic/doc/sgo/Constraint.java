@@ -1,8 +1,6 @@
 package ic.doc.sgo;
 
 
-import ic.doc.sgo.groupingstrategies.Util;
-
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -211,7 +209,7 @@ public class Constraint {
         }
         double pv1 = evaluateGroup(g1);
         double pv2 = evaluateGroup(g2);
-        Util.swapGroup(s1, s2);
+        Student.swapGroup(s1, s2);
         int v2 = 0;
         if (isValidGroup(g1)) {
             v2 ++;
@@ -221,7 +219,7 @@ public class Constraint {
         }
         double cv1 = evaluateGroup(g1);
         double cv2 = evaluateGroup(g2);;
-        Util.swapGroup(s1, s2);
+        Student.swapGroup(s1, s2);
 
         if (v2 > v1) {
             return true;

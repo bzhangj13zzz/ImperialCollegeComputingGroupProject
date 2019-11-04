@@ -1,4 +1,4 @@
-package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
 
 import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
@@ -22,7 +22,7 @@ public class VectorSpaceTest {
             .setAgeDiff(3)
             .createConstrain();
 
-    private VectorSpace vectorSpace = new VectorSpace(constraint);
+    private VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint);
 
     private Student s1 = new Student.Builder("1")
             .setTimeZone(ZoneId.of("UTC+1"))
@@ -65,13 +65,13 @@ public class VectorSpaceTest {
             .setTimeZone(ZoneId.of("UTC+1"))
             .createStudent();
 
-    private Node n1 = Node.createFromStudentWithConstraint(s1, constraint);
-    private Node n2 = Node.createFromStudentWithConstraint(s2, constraint);
-    private Node n3 = Node.createFromStudentWithConstraint(s3, constraint);
-    private Node n4 = Node.createFromStudentWithConstraint(s4, constraint);
-    private Node n5 = Node.createFromStudentWithConstraint(s5, constraint);
-    private Node n6 = Node.createFromStudentWithConstraint(s6, constraint);
-    private Node n7 = Node.createFromStudentWithConstraint(s7, constraint);
+    private Node n1 = Converters.NodeFromStudentAndConstraint(s1, constraint);
+    private Node n2 = Converters.NodeFromStudentAndConstraint(s2, constraint);
+    private Node n3 = Converters.NodeFromStudentAndConstraint(s3, constraint);
+    private Node n4 = Converters.NodeFromStudentAndConstraint(s4, constraint);
+    private Node n5 = Converters.NodeFromStudentAndConstraint(s5, constraint);
+    private Node n6 = Converters.NodeFromStudentAndConstraint(s6, constraint);
+    private Node n7 = Converters.NodeFromStudentAndConstraint(s7, constraint);
 
     private Cluster c1 = Cluster.from(new ArrayList<>());
     private Cluster c2 = Cluster.from(new ArrayList<>());
@@ -83,7 +83,7 @@ public class VectorSpaceTest {
         Constraint testConstraint = new Constraint.Builder(4, 5)
                 .setTimezoneDiff(2).createConstrain();
         assertTrue(testConstraint.getTimezoneDiff().isPresent());
-        VectorSpace vectorSpace = new VectorSpace(testConstraint);
+        VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
         assertEquals(4, vectorSpace.getClusterSizeLowerBound());
         assertEquals(5, vectorSpace.getClusterSizeUpperBound());
         Double timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE);
@@ -92,14 +92,14 @@ public class VectorSpaceTest {
         //Age
         testConstraint = new Constraint.Builder(4 , 4)
                 .setAgeDiff(3).createConstrain();
-        vectorSpace = new VectorSpace(testConstraint);
+        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
         Double ageDiff = vectorSpace.getDimensionValue(Attributes.AGE);
         assertTrue( 3-eps <= ageDiff && ageDiff <= 3 + eps);
 
         //Gender
         testConstraint = new Constraint.Builder(4, 4)
                 .setMinFemale(3).createConstrain();
-        vectorSpace = new VectorSpace(testConstraint);
+        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
         assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"));
         assertEquals(0, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"));
 
@@ -107,7 +107,7 @@ public class VectorSpaceTest {
                 .setGenderRatio(0.6)
                 .setGenderErrorMargin(0.1)
                 .createConstrain();
-        vectorSpace = new VectorSpace(testConstraint);
+        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
         assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"));
         assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"));
 
@@ -120,7 +120,7 @@ public class VectorSpaceTest {
                 .setTimezoneDiff(2)
                 .setAgeDiff(3)
                 .createConstrain();
-        vectorSpace = new VectorSpace(testConstraint);
+        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
         assertEquals(5, vectorSpace.getClusterSizeLowerBound());
         assertEquals(6, vectorSpace.getClusterSizeUpperBound());
         assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"));

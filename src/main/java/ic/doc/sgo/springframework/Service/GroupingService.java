@@ -3,11 +3,10 @@ package ic.doc.sgo.springframework.Service;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
-import ic.doc.sgo.groupingstrategies.GroupingStrategy;
-import ic.doc.sgo.groupingstrategies.RandomGroupingStrategy;
+
 import java.util.List;
 
-import ic.doc.sgo.groupingstrategies.vectorSpaceStrategies.VectorizedFixedPointStrategy;
+import ic.doc.sgo.groupingstrategies.vectorspacestrategies.VectorizedFixedPointStrategy;
 import org.springframework.stereotype.Service;
 
 @Service

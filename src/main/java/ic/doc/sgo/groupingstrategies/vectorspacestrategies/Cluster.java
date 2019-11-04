@@ -1,4 +1,4 @@
-package ic.doc.sgo.groupingstrategies.vectorSpaceStrategies;
+package ic.doc.sgo.groupingstrategies.vectorspacestrategies;
 
 import ic.doc.sgo.Attributes;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Cluster {
+class Cluster {
     private final List<Node> nodes;
     private int id;
 
