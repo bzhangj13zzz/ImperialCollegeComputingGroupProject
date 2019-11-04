@@ -37,7 +37,7 @@ public class JsonStudentAdapter implements StudentAdapter {
                     cityName = studentJson.get(key).getAsString();
                     break;
                 case "gender":
-                    studentBuilder.setGender(studentJson.get(key).getAsString());
+                    studentBuilder.setGender(studentJson.get(key).getAsString().trim().toLowerCase());
                     break;
                 case "dob":
                     String dobStr = studentJson.get(key).getAsString();
@@ -56,6 +56,12 @@ public class JsonStudentAdapter implements StudentAdapter {
                     break;
                 case "cohort":
                     studentBuilder.setCohort(studentJson.get(key).getAsString());
+                    break;
+                case "timezone":
+                    studentBuilder.setTimeZone(ZoneId.of(studentJson.get(key).getAsString()));
+                    break;
+                case "age":
+                    studentBuilder.setAge(studentJson.get(key).getAsInt());
                     break;
                 default:
                     studentBuilder.addAttribute(key, studentJson.get(key));

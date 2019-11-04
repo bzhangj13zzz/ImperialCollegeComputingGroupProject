@@ -1,0 +1,24 @@
+{
+    "filters": {
+        "timezoneDiff": 2,
+        "groupSizeLowerBound": 3,
+        "groupSizeUpperBound": 3
+    },
+
+    "students": [
+        {id: "0", "timezone": "UTC+0"},
+        {id: "1", "timezone": "UTC+1"},
+        {id: "2", "timezone": "UTC+2"},
+        {id: "3", "timezone": "UTC+5"},
+        {id: "4", "timezone": "UTC+6"},
+        {id: "5", "timezone": "UTC+7"},
+        {id: "6", "timezone": "UTC+12"},
+        {id: "7", "timezone": "UTC-11"},
+        {id: "8", "timezone": "UTC-10"},
+        {id: "9", "timezone": "UTC-4"},
+        {id: "10", "timezone": "UTC-3"},
+        {id: "11", "timezone": "UTC-5"}
+    ],
+
+    "remaining": 0
+}

@@ -45,7 +45,7 @@ public class JsonStudentAdapterTest {
         json.addProperty("workYearNum", "15y");
         json.addProperty("cohort", "18J");
         Student student = new Student.Builder("123")
-                .setGender("Male")
+                .setGender("male")
                 .setAge(38)
                 .setTimeZone(ZoneId.of("Europe/London"))
                 .setCareer("Biology")

@@ -40,8 +40,8 @@ public class FixedPointStrategy implements GroupingStrategy {
     }
 
     private List<Student> cloneStudents(List<Student> students) {
-        List<Student> newStudents =  new ArrayList<>();
-        for (Student student: students) {
+        List<Student> newStudents = new ArrayList<>();
+        for (Student student : students) {
             newStudents.add(Student.fromStudent(student));
         }
         return newStudents;
@@ -53,21 +53,21 @@ public class FixedPointStrategy implements GroupingStrategy {
             isChanged = false;
             for (Student s1 : students) {
                 for (Student s2 : students) {
-                    if (Util.isSameGroup(s1, s2)) {
+                    if (Student.isSameGroup(s1, s2)) {
                         continue;
                     }
                     if (constraint.isBetterFitIfSwap(s1, s2)) {
-                        Util.swapGroup(s1, s2);
+                        Student.swapGroup(s1, s2);
                         isChanged = true;
                     }
                 }
             }
 
             if (!isChanged) {
-                for (Student s1: students) {
-                    for (Group group: groups) {
+                for (Student s1 : students) {
+                    for (Group group : groups) {
                         if (groups.contains(s1)) continue;
-                        if (constraint.canbeBetterFit(s1, group)) {
+                        if (constraint.canBeBetterFit(s1, group)) {
                             group.add(s1);
                             isChanged = true;
                         }
@@ -81,8 +81,8 @@ public class FixedPointStrategy implements GroupingStrategy {
     private void AdjustGroupsAfterValidation(List<Group> groups, Constraint constraint) {
         List<Student> invalidStudents = new ArrayList<>(groups.get(0).getStudents());
 
-        for (Student student: invalidStudents) {
-            for (Group group: groups.subList(1, groups.size())) {
+        for (Student student : invalidStudents) {
+            for (Group group : groups.subList(1, groups.size())) {
                 if (constraint.canBeFit(student, group)) {
                     group.add(student);
                 }
@@ -92,7 +92,7 @@ public class FixedPointStrategy implements GroupingStrategy {
         if (constraint.isValidGroup(groups.get(0))) {
             Group newGroup = Group.from(new ArrayList<>());
             List<Student> students = new ArrayList<>(groups.get(0).getStudents());
-            for (Student student: students) {
+            for (Student student : students) {
                 newGroup.add(student);
             }
             groups.add(newGroup);
@@ -102,7 +102,7 @@ public class FixedPointStrategy implements GroupingStrategy {
 
     private void validifyGroups(List<Group> groups, Constraint constraint) {
         List<Group> removeGroupList = new ArrayList<>();
-        for (Group group: groups.subList(1, groups.size())) {
+        for (Group group : groups.subList(1, groups.size())) {
             if (!constraint.isValidGroup(group)) {
                 for (Student student : constraint.getInvalidStudentsFromGroup(group)) {
                     groups.get(0).add(student);
@@ -113,7 +113,7 @@ public class FixedPointStrategy implements GroupingStrategy {
             }
         }
 
-        for (Group group: removeGroupList) {
+        for (Group group : removeGroupList) {
             groups.remove(group);
         }
 
