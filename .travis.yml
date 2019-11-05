@@ -16,4 +16,4 @@ deploy:
   api_key: 4788febb-d90c-45f5-84c3-d31d91a7f423
   app:
     master: organiser-app
-    cd: organiser-app-dev
+    sprint: organiser-app-dev
