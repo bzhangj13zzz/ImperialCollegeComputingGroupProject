@@ -65,7 +65,27 @@ public class VectorSpace {
         for (Node node : cluster.getNodes()) {
             sum += getDistanceBetween(node, centerNode);
         }
-        return sum / cluster.size();
+
+        int cnt = 0;
+        for (Attributes attributes: discreteAttribute.keySet()) {
+            for (String type: discreteAttribute.get(attributes).keySet()) {
+                int target = getDiscreteAttributeValue(attributes, type);
+                int number = getDiscreteAttributeNumberInCluster(cluster, attributes, type);
+                sum += Math.min(target - number, 0);
+                cnt++;
+            }
+        }
+        return sum / (cluster.size()+cnt);
+    }
+
+    private int getDiscreteAttributeNumberInCluster(Cluster cluster, Attributes attributes, String type) {
+        int res=0;
+        for (Node node: cluster.getNodes()) {
+            if (node.getTypeOfDiscreteAttributeOf(attributes).equals(type)) {
+                res++;
+            }
+        }
+        return res;
     }
 
     double getDistanceBetween(Node node, Node centerNode) {

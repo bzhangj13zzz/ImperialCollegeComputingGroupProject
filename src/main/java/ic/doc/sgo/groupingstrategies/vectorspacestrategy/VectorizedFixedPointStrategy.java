@@ -18,7 +18,8 @@ public class VectorizedFixedPointStrategy {
 
         for (int i = 1; i <= 10; i++) {
             List<Node> newNodes = cloneNodes(nodes);
-            List<Cluster> clusters = randomClusterWithDiscreteAttribute(newNodes, vectorSpace);
+            List<Cluster> clusters = randomAllocateNodes(newNodes, vectorSpace);
+            //List<Cluster> clusters = randomClusterWithDiscreteAttribute(newNodes, vectorSpace);
             //TODO: If there is no constraint, get out
             fixedPointToBest(newNodes, clusters, vectorSpace);
 
@@ -48,6 +49,47 @@ public class VectorizedFixedPointStrategy {
 
         }
         return bestClusters;
+    }
+
+    private static List<Cluster> randomAllocateNodes(List<Node> nodes, VectorSpace vectorSpace) {
+        int size = nodes.size();
+        List<Cluster> cluster = new ArrayList<>();
+        if (size < vectorSpace.getClusterSizeLowerBound()) {
+            cluster.add(Cluster.from(nodes));
+            cluster.get(0).setId(0);
+            return cluster;
+        }
+        StrategyUtil.Pair<Integer, Integer> numberIntervalOfGroups = StrategyUtil.getNumberInterval(nodes.size(),
+                vectorSpace.getClusterSizeLowerBound(), vectorSpace.getClusterSizeUpperBound());
+        int number = getRandomIntegerBetween(numberIntervalOfGroups.first(), numberIntervalOfGroups.second());
+
+        Collections.shuffle(nodes);
+        for (int i = 0; i <= number; i++) {
+            cluster.add(Cluster.of(i));
+        }
+
+        for (int i = 0; i < vectorSpace.getClusterSizeLowerBound() * number; i++) {
+            cluster.get((i / vectorSpace.getClusterSizeLowerBound()) + 1).add(nodes.get(i));
+            assert nodes.get(i).getCluster() != null;
+        }
+
+
+        if (vectorSpace.getClusterSizeLowerBound() == vectorSpace.getClusterSizeUpperBound()) {
+            for (Node node: nodes.subList(vectorSpace.getClusterSizeLowerBound() * number, nodes.size())) {
+                cluster.get(0).add(node);
+            }
+            return cluster;
+        }
+
+        for (int i = vectorSpace.getClusterSizeLowerBound() * number; i < size; i++) {
+            int groupId = getRandomIntegerBetween(1, number);
+            while (cluster.get(groupId).size() >= vectorSpace.getClusterSizeUpperBound()) {
+                groupId = getRandomIntegerBetween(1, number);
+            }
+            cluster.get(groupId).add(nodes.get(i));
+        }
+
+        return cluster;
     }
 
     private static List<Node> cloneNodes(List<Node> nodes) {
