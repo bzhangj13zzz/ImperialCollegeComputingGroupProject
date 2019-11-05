@@ -13,8 +13,7 @@ jobs:
       script: mvn test
 deploy:
   provider: heroku
-  api_key:
-    secure: 4788febb-d90c-45f5-84c3-d31d91a7f423
+  api_key: 4788febb-d90c-45f5-84c3-d31d91a7f423
   app:
     master: organiser-app
-    sprint: organiser-app-dev
+    cd: organiser-app-dev
