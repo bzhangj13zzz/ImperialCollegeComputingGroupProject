@@ -15,7 +15,6 @@ public class VectorizedFixedPointStrategy {
 
     public static List<Cluster> apply(List<Node> nodes, VectorSpace vectorSpace) {
         List<Cluster> bestClusters = null;
-
         for (int i = 1; i <= 10; i++) {
             List<Node> newNodes = cloneNodes(nodes);
             List<Cluster> clusters = randomAllocateNodes(newNodes, vectorSpace);
@@ -46,7 +45,6 @@ public class VectorizedFixedPointStrategy {
             if (clusters.get(0).size() < bestClusters.get(0).size()) {
                 bestClusters = clusters;
             }
-
         }
         return bestClusters;
     }
@@ -68,7 +66,7 @@ public class VectorizedFixedPointStrategy {
             cluster.add(Cluster.of(i));
         }
 
-        for (int i = 0; i < vectorSpace.getClusterSizeLowerBound() * number; i++) {
+        for (int i = 0; i < Math.min(vectorSpace.getClusterSizeLowerBound() * number, nodes.size()); i++) {
             cluster.get((i / vectorSpace.getClusterSizeLowerBound()) + 1).add(nodes.get(i));
             assert nodes.get(i).getCluster() != null;
         }
@@ -81,11 +79,12 @@ public class VectorizedFixedPointStrategy {
             return cluster;
         }
 
-        for (int i = vectorSpace.getClusterSizeLowerBound() * number; i < size; i++) {
+        for (int i = Math.min(vectorSpace.getClusterSizeLowerBound() * number, nodes.size()); i < nodes.size(); i++) {
             int groupId = getRandomIntegerBetween(1, number);
             while (cluster.get(groupId).size() >= vectorSpace.getClusterSizeUpperBound()) {
                 groupId = getRandomIntegerBetween(1, number);
             }
+            assert  i < nodes.size();
             cluster.get(groupId).add(nodes.get(i));
         }
 
@@ -115,6 +114,18 @@ public class VectorizedFixedPointStrategy {
                 }
             }
         }
+
+//        List<Node> leftNodes = new ArrayList<>(clusters.get(0).getNodes());
+//        List<Cluster> leftClusters = randomAllocateNodes(leftNodes, vectorSpace);
+//        fixedPointToBest(leftNodes, leftClusters, vectorSpace);
+//        validifyCluster(leftClusters, vectorSpace);
+//        clusters.addAll(leftClusters.subList(1, leftClusters.size()));
+//        clusters.remove(0);
+//        clusters.add(0, leftClusters.get(0));
+//
+//        for (int i = 0; i < clusters.size(); i++) {
+//            clusters.get(i).setId(i);
+//        }
 
         if (vectorSpace.isValidCluster(clusters.get(0))) {
             Cluster newCluster = Cluster.from(new ArrayList<>());
@@ -160,6 +171,10 @@ public class VectorizedFixedPointStrategy {
                     }
                     if (vectorSpace.isBetterFitIfSwap(n1, n2)) {
                         Node.swapCluster(n1, n2);
+                        Cluster c1 = n1.getCluster();
+                        Cluster c2 = n2.getCluster();
+                        c1.setCurrentValue(c1.getTargetValue());
+                        c2.setCurrentValue(c2.getTargetValue());
                         isChanged = true;
                     }
                 }

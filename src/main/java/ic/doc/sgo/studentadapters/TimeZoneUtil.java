@@ -109,7 +109,7 @@ final class TimeZoneUtil {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         int status = connection.getResponseCode();
-        System.out.println(status);
+        //System.out.println(status);
 
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;

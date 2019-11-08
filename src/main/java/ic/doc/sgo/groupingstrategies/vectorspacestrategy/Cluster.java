@@ -3,10 +3,13 @@ package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.OptionalDouble;
 
 public class Cluster {
     private final List<Node> nodes;
     private int id;
+    private  Double currentValue;
+    private Double targetValue;
 
     Cluster(List<Node> nodes) {
         this.nodes = nodes;
@@ -49,6 +52,7 @@ public class Cluster {
             }
             nodes.add(member);
             member.setCluster(this);
+            this.currentValue = null;
             return true;
         }
         return true;
@@ -58,6 +62,7 @@ public class Cluster {
         if (nodes.contains(member)) {
             nodes.remove(member);
             member.setCluster(null);
+            this.currentValue = null;
             return true;
         }
         return false;
@@ -80,9 +85,27 @@ public class Cluster {
 
     void clear() {
         nodes.clear();
+        this.currentValue = null;
     }
 
     boolean contains(Node n1) {
         return nodes.contains(n1);
+    }
+
+    public Double getCurrentValue() {
+        return this.currentValue;
+    }
+
+    public void setCurrentValue(Double v) {
+        this.currentValue = v;
+    }
+
+
+    public void setTargetValue(double v) {
+        this.targetValue = v;
+    }
+
+    public Double getTargetValue() {
+        return targetValue;
     }
 }

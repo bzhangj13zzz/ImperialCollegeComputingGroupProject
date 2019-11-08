@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,24 +40,31 @@ public class FixedPointStrategyTest {
         assertTrue(casesDirectory.exists() && casesDirectory.isDirectory());
         File[] cases = casesDirectory.listFiles();
 
+        Instant start = Instant.now();
         assert cases != null;
-        System.out.println("Start Running tests for cases");
+        System.out.println("Start Running tests for cases\n");
         for (File directory : cases) {
             assertTrue(directory.isDirectory());
             System.out.println("Testing for " + directory.getName());
+            if (directory.getName().equals("misc")) continue;
             for (File file : Objects.requireNonNull(directory.listFiles())) {
                 System.out.print(file.getName() + " ");
+                Instant testStart = Instant.now();
+                String resultString = ANSI_GREEN + "PASS" + ANSI_RESET;
                 try {
                     runTestFromFile(file);
                 } catch (Throwable t) {
-                    System.out.println(ANSI_RED + "FAIL" + ANSI_RESET);
+                    resultString = ANSI_RED + "FAIL" + ANSI_RESET;
                     collector.addError(t);
-                    continue;
                 }
-                System.out.println(ANSI_GREEN + "PASS" + ANSI_RESET);
+                Instant testEnd = Instant.now();
+                System.out.println( resultString + ", " + Duration.between(testStart, testEnd).toMillis() + " millisecond");
             }
             System.out.println();
         }
+        Instant end = Instant.now();
+        Duration testTaken =  Duration.between(start, end);
+        System.out.println("Total Time taken: " + testTaken.toMillis() + " millisecond");
     }
 
     private void runTestFromFile(File file) throws IOException {
@@ -64,14 +73,17 @@ public class FixedPointStrategyTest {
         Constraint constraint = GroupingController.getConstraintFromJson(jsonString);
         List<Student> students = GroupingController.getStudentFromJson(jsonString);
 
-        JsonObject parsedJson = gson.fromJson(jsonString, JsonObject.class);
-        int remaining = parsedJson.get("remaining").getAsInt();
+
 
         List<Group> groups = new FixedPointStrategy().apply(students, constraint);
 
         for (Group group : groups.subList(1, groups.size())) {
             assertTrue(constraint.isValidGroup(group));
         }
+
+        System.out.println("Unallocated Students: " + groups.get(0).size());
+        JsonObject parsedJson = gson.fromJson(jsonString, JsonObject.class);
+        int remaining = parsedJson.get("remaining").getAsInt();
         assertEquals(groups.get(0).size(), remaining);
     }
 

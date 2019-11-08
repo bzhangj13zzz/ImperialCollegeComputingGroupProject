@@ -46,8 +46,13 @@ public class VectorSpace {
         int v2 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
         double cv1 = evaluateCluster(c1);
         double cv2 = evaluateCluster(c2);
-        ;
+
         Node.swapCluster(n1, n2);
+
+        c1.setCurrentValue(pv1);
+        c2.setCurrentValue(pv2);
+        c1.setTargetValue(cv1);
+        c2.setTargetValue(cv2);
 
         if (v2 > v1) {
             return true;
@@ -60,8 +65,12 @@ public class VectorSpace {
 
     // get average distance to center node
     private double evaluateCluster(Cluster cluster) {
+        if (cluster.getCurrentValue() != null) {
+            return cluster.getCurrentValue();
+        }
+
         Node centerNode = getCenterNode(cluster);
-        double sum = 0.0;
+        Double sum = 0.0;
         for (Node node : cluster.getNodes()) {
             sum += getDistanceBetween(node, centerNode);
         }
@@ -75,7 +84,8 @@ public class VectorSpace {
                 cnt++;
             }
         }
-        return sum / (cluster.size()+cnt);
+
+        return  sum/ (cluster.size() + cnt);
     }
 
     private int getDiscreteAttributeNumberInCluster(Cluster cluster, Attributes attributes, String type) {
@@ -151,11 +161,16 @@ public class VectorSpace {
 
     boolean canBeBetterFit(Node n, Cluster c2) {
         Cluster c1 = n.getCluster();
+        Double pv1 = c1.getCurrentValue();
+        Double pv2 = c2.getCurrentValue();
+
         int v1 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
         c2.add(n);
         int v2 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
         c1.add(n);
 
+        c1.setCurrentValue(pv1);
+        c2.setCurrentValue(pv2);
         return v2 > v1;
     }
 
@@ -169,6 +184,7 @@ public class VectorSpace {
                 if (isBetterFitIfRemove(node, cluster)) {
                     removeStudents.add(node);
                     cluster.remove(node);
+                    cluster.setCurrentValue(cluster.getTargetValue());
                     isChange = true;
                     if (isValidCluster(cluster)) {
                         return removeStudents;
@@ -187,7 +203,7 @@ public class VectorSpace {
 
     private boolean isBetterFitIfRemove(Node node, Cluster cluster) {
         assert cluster.contains(node);
-        double p = evaluateCluster(cluster);
+        Double p = evaluateCluster(cluster);
         int v1 = booleanToInt(isValidCluster(cluster));
 
         cluster.remove(node);
@@ -195,6 +211,8 @@ public class VectorSpace {
         int v2 = booleanToInt(isValidCluster(cluster));
 
         cluster.add(node);
+        cluster.setCurrentValue(p);
+        cluster.setTargetValue(q);
 
         if (v2 > v1) {
             return true;
@@ -209,9 +227,16 @@ public class VectorSpace {
 
     boolean canBeFit(Node node, Cluster cluster) {
         Cluster originalCluster = node.getCluster();
+        Double pv1 = originalCluster.getCurrentValue();
+        Double pv2 = cluster.getCurrentValue();
+
         cluster.add(node);
         boolean res = isValidCluster(cluster);
         originalCluster.add(node);
+
+        originalCluster.setCurrentValue(pv1);
+        cluster.setCurrentValue(pv2);
+
         return res;
     }
 
@@ -232,6 +257,8 @@ public class VectorSpace {
     public boolean isNoConstraint() {
         return dimensions.isEmpty();
     }
+
+
 
 
     static class Property {
