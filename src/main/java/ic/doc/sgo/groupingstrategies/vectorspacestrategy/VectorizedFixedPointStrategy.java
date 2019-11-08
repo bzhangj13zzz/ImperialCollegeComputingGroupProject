@@ -109,6 +109,7 @@ public class VectorizedFixedPointStrategy {
                 for (Cluster cluster : clusters.subList(1, clusters.size())) {
                     if (vectorSpace.canBeFit(node, cluster)) {
                         cluster.add(node);
+                        cluster.setValid(cluster.getTargetValid());
                         isChange = true;
                     }
                 }
@@ -175,6 +176,8 @@ public class VectorizedFixedPointStrategy {
                         Cluster c2 = n2.getCluster();
                         c1.setCurrentValue(c1.getTargetValue());
                         c2.setCurrentValue(c2.getTargetValue());
+                        c1.setValid(c1.getTargetValid());
+                        c2.setValid(c2.getTargetValid());
                         isChanged = true;
                     }
                 }
@@ -182,10 +185,15 @@ public class VectorizedFixedPointStrategy {
 
             if (!isChanged) {
                 for (Node n : nodes) {
-                    for (Cluster cluster : clusters) {
+                    for (Cluster c1 : clusters) {
                         if (clusters.contains(n)) continue;
-                        if (vectorSpace.canBeBetterFit(n, cluster)) {
-                            cluster.add(n);
+                        if (vectorSpace.canBeBetterFit(n, c1)) {
+                            Cluster c2 = n.getCluster();
+                            c1.add(n);
+                            c1.setCurrentValue(c1.getTargetValue());
+                            c2.setCurrentValue(c2.getTargetValue());
+                            c1.setValid(c1.getTargetValid());
+                            c2.setValid(c2.getTargetValid());
                             isChanged = true;
                         }
                     }

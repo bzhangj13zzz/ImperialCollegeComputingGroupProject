@@ -10,6 +10,8 @@ public class Cluster {
     private int id;
     private  Double currentValue;
     private Double targetValue;
+    private Boolean isValid;
+    private Boolean targetValid;
 
     Cluster(List<Node> nodes) {
         this.nodes = nodes;
@@ -53,6 +55,7 @@ public class Cluster {
             nodes.add(member);
             member.setCluster(this);
             this.currentValue = null;
+            this.isValid = null;
             return true;
         }
         return true;
@@ -63,6 +66,7 @@ public class Cluster {
             nodes.remove(member);
             member.setCluster(null);
             this.currentValue = null;
+            this.isValid = null;
             return true;
         }
         return false;
@@ -86,6 +90,7 @@ public class Cluster {
     void clear() {
         nodes.clear();
         this.currentValue = null;
+        this.isValid = null;
     }
 
     boolean contains(Node n1) {
@@ -107,5 +112,21 @@ public class Cluster {
 
     public Double getTargetValue() {
         return targetValue;
+    }
+
+    public Boolean getValid() {
+        return isValid;
+    }
+
+    public void setValid(Boolean valid) {
+        isValid = valid;
+    }
+
+    public void setTargetValid(Boolean valid) {
+        this.targetValid = valid;
+    }
+
+    public Boolean getTargetValid() {
+        return this.targetValid;
     }
 }

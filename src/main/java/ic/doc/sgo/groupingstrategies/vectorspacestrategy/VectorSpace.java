@@ -38,26 +38,36 @@ public class VectorSpace {
     boolean isBetterFitIfSwap(Node n1, Node n2) {
         Cluster c1 = n1.getCluster();
         Cluster c2 = n2.getCluster();
-        int v1 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
+
+
+        Boolean previousValidC1 = isValidCluster(c1);
+        Boolean previousValidC2 = isValidCluster(c2);
+        int previousValidNumber = booleanToInt(previousValidC1) + booleanToInt(previousValidC2);
         double pv1 = evaluateCluster(c1);
         double pv2 = evaluateCluster(c2);
 
         Node.swapCluster(n1, n2);
-        int v2 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
+        Boolean currentValidC1 = isValidCluster(c1);
+        Boolean currentValidC2 = isValidCluster(c2);
+        int currentValidNumber = booleanToInt(currentValidC1) + booleanToInt(currentValidC2);
         double cv1 = evaluateCluster(c1);
         double cv2 = evaluateCluster(c2);
 
         Node.swapCluster(n1, n2);
-
         c1.setCurrentValue(pv1);
         c2.setCurrentValue(pv2);
         c1.setTargetValue(cv1);
         c2.setTargetValue(cv2);
+        c1.setValid(previousValidC1);
+        c2.setValid(previousValidC2);
+        c1.setTargetValid(currentValidC1);
+        c2.setTargetValid(currentValidC2);
 
-        if (v2 > v1) {
+
+        if (currentValidNumber > previousValidNumber) {
             return true;
         }
-        if (v2 < v1) {
+        if (currentValidNumber < previousValidNumber) {
             return false;
         }
         return cv1 + cv2 + eps < pv1 + pv2;
@@ -123,7 +133,11 @@ public class VectorSpace {
         return res;
     }
 
-    public boolean isValidCluster(Cluster cluster) {
+    public Boolean isValidCluster(Cluster cluster) {
+        if (cluster.getValid() != null) {
+            return cluster.getValid();
+        }
+
         if (cluster.size() < clusterSizeLowerBound || cluster.size() > clusterSizeUpperBound) {
             return false;
         }
@@ -164,14 +178,25 @@ public class VectorSpace {
         Double pv1 = c1.getCurrentValue();
         Double pv2 = c2.getCurrentValue();
 
-        int v1 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
-        c2.add(n);
-        int v2 = booleanToInt(isValidCluster(c1)) + booleanToInt(isValidCluster(c2));
-        c1.add(n);
+        Boolean previousValidC1 = isValidCluster(c1);
+        Boolean previousValidC2 = isValidCluster(c2);
 
+        int previousValidNumber = booleanToInt(previousValidC1) + booleanToInt(previousValidC2);
+        c2.add(n);
+
+        Boolean currentValidC1 = isValidCluster(c1);
+        Boolean currentValidC2 = isValidCluster(c2);
+        int currentValidNumber = booleanToInt(currentValidC1) + booleanToInt(currentValidC2);
+
+        c1.add(n);
         c1.setCurrentValue(pv1);
         c2.setCurrentValue(pv2);
-        return v2 > v1;
+        c1.setValid(previousValidC1);
+        c2.setValid(previousValidC2);
+        c1.setTargetValid(currentValidC1);
+        c2.setTargetValid(currentValidC2);
+
+        return currentValidNumber > previousValidNumber;
     }
 
     List<Node> getInvalidNodesFromCluster(Cluster cluster) {
@@ -185,6 +210,7 @@ public class VectorSpace {
                     removeStudents.add(node);
                     cluster.remove(node);
                     cluster.setCurrentValue(cluster.getTargetValue());
+                    cluster.setValid(cluster.getTargetValid());
                     isChange = true;
                     if (isValidCluster(cluster)) {
                         return removeStudents;
@@ -204,15 +230,19 @@ public class VectorSpace {
     private boolean isBetterFitIfRemove(Node node, Cluster cluster) {
         assert cluster.contains(node);
         Double p = evaluateCluster(cluster);
-        int v1 = booleanToInt(isValidCluster(cluster));
+        Boolean previousValid = isValidCluster(cluster);
+        int v1 = booleanToInt(previousValid);
 
         cluster.remove(node);
         double q = evaluateCluster(cluster);
-        int v2 = booleanToInt(isValidCluster(cluster));
+        Boolean currentValid = isValidCluster(cluster);
+        int v2 = booleanToInt(currentValid);
 
         cluster.add(node);
         cluster.setCurrentValue(p);
         cluster.setTargetValue(q);
+        cluster.setValid(previousValid);
+        cluster.setTargetValid(currentValid);
 
         if (v2 > v1) {
             return true;
@@ -221,23 +251,25 @@ public class VectorSpace {
         return q < p;
     }
 
-    private int booleanToInt(boolean value) {
+    private int booleanToInt(Boolean value) {
         return value ? 1 : 0;
     }
 
-    boolean canBeFit(Node node, Cluster cluster) {
-        Cluster originalCluster = node.getCluster();
-        Double pv1 = originalCluster.getCurrentValue();
-        Double pv2 = cluster.getCurrentValue();
+    // Using for add nodes to other cluster from unallocated cluster
+    boolean canBeFit(Node node, Cluster c1) {
+        Cluster c2 = node.getCluster();
+        Double pv1 = c1.getCurrentValue();
+        Boolean previousValidC1 = isValidCluster(c1);
 
-        cluster.add(node);
-        boolean res = isValidCluster(cluster);
-        originalCluster.add(node);
+        c1.add(node);
+        Boolean currentValidC1 = isValidCluster(c1);
 
-        originalCluster.setCurrentValue(pv1);
-        cluster.setCurrentValue(pv2);
+        c2.add(node);
+        c1.setCurrentValue(pv1);
+        c1.setValid(previousValidC1);
+        c1.setTargetValid(currentValidC1);
 
-        return res;
+        return currentValidC1;
     }
 
     Double getDimensionValue(Attributes key) {
