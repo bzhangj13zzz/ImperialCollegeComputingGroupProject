@@ -15,6 +15,9 @@ public class Cluster {
 
     Cluster(List<Node> nodes) {
         this.nodes = nodes;
+        for (Node node: nodes) {
+            node.setCluster(this);
+        }
     }
 
     Cluster(int id, ArrayList<Node> nodes) {
@@ -22,7 +25,7 @@ public class Cluster {
         this.id = id;
     }
 
-    static Cluster of(int id, Node... members) {
+    public static Cluster of(int id, Node... members) {
         return new Cluster(id, new ArrayList<Node>(Arrays.asList(members)));
     }
 
@@ -30,11 +33,11 @@ public class Cluster {
         return new Cluster(nodes);
     }
 
-    void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    int size() {
+    public int size() {
         return nodes.size();
     }
 
@@ -72,7 +75,7 @@ public class Cluster {
         return false;
     }
 
-    void addAll(List<Node> nodes) {
+    public void addAll(List<Node> nodes) {
         List<Node> nodeList = new ArrayList<>(nodes);
         nodeList.forEach(this::add);
     }

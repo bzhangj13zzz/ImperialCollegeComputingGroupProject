@@ -23,7 +23,29 @@ public class FixedPointStrategy implements GroupingStrategy {
         List<Node> nodes = students.stream()
                 .map(student -> Converters.NodeFromStudentAndConstraint(student, constraint))
                 .collect(Collectors.toList());
-        List<Cluster>  bestClusters = VectorizedFixedPointStrategy.apply(nodes, vectorSpace);
+
+
+        List<Node> unallocatedCluster = new ArrayList<>();
+        List<Cluster> validClusters = new ArrayList<>();
+        //TODO: need to imporove the following.
+        for (int i = 0; i < nodes.size(); i += 150) {
+            int t = Math.min(i+150, nodes.size());
+            List<Cluster> cluster = VectorizedFixedPointStrategy.apply(new ArrayList<>(nodes.subList(i, t)),
+                            vectorSpace);
+            if (cluster.size() > 0) {
+                validClusters.addAll(cluster.subList(1, cluster.size()));
+            }
+            unallocatedCluster.addAll(cluster.get(0).getNodes());
+        }
+
+        System.out.println(unallocatedCluster.size());
+        List<Cluster> bestClusters = VectorizedFixedPointStrategy.apply(unallocatedCluster, vectorSpace);
+        bestClusters.addAll(validClusters);
+        for (int i = 0; i < bestClusters.size(); i++) {
+            bestClusters.get(i).setId(i);
+        }
+
+       // List<Cluster>  bestClusters = VectorizedFixedPointStrategy.apply(nodes, vectorSpace);
         for (Cluster cluster : bestClusters.subList(1, bestClusters.size())) {
             assert vectorSpace.isValidCluster(cluster);
         }
