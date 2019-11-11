@@ -37,7 +37,6 @@ public class FixedPointStrategy implements GroupingStrategy {
             unallocatedCluster.addAll(cluster.get(0).getNodes());
         }
 
-        System.out.println(unallocatedCluster.size());
         List<Cluster> bestClusters = VectorizedFixedPointStrategy.apply(unallocatedCluster, vectorSpace);
         bestClusters.addAll(validClusters);
         for (int i = 0; i < bestClusters.size(); i++) {
