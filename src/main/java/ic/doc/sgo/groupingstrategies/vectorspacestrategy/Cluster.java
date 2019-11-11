@@ -3,7 +3,6 @@ package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.OptionalDouble;
 
 public class Cluster {
     private final List<Node> nodes;
@@ -29,7 +28,7 @@ public class Cluster {
         return new Cluster(id, new ArrayList<Node>(Arrays.asList(members)));
     }
 
-    static Cluster from(List<Node> nodes) {
+    public static Cluster from(List<Node> nodes) {
         return new Cluster(nodes);
     }
 
@@ -80,7 +79,7 @@ public class Cluster {
         nodeList.forEach(this::add);
     }
 
-    Integer getNumberOf(Attributes attribute, String type) {
+    Integer getNumberOf(String attribute, String type) {
         int res = 0;
         for (Node node : nodes) {
             if (node.isTypeOfAttribute(attribute, type)) {

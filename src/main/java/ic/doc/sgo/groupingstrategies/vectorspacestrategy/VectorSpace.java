@@ -7,30 +7,30 @@ import java.util.Map;
 
 public class VectorSpace {
 
-    private final Map<Attributes, Property> dimensions;
+    private final Map<String, Property> dimensions;
     private final int clusterSizeLowerBound;
     private final int clusterSizeUpperBound;
-    private final Map<Attributes, HashMap<String, Integer>> discreteAttribute;
+    private final Map<String, HashMap<String, Integer>> discreteAttribute;
 
     private final double eps = 0.00001;
 
-    VectorSpace(Map<Attributes, Property> dimensions, int clusterSizeLowerBound, int clusterSizeUpperBound,
-                Map<Attributes, HashMap<String, Integer>> discreteAttribute) {
+    public VectorSpace(Map<String, Property> dimensions, int clusterSizeLowerBound, int clusterSizeUpperBound,
+                       Map<String, HashMap<String, Integer>> discreteAttribute) {
         this.dimensions = dimensions;
         this.clusterSizeLowerBound = clusterSizeLowerBound;
         this.clusterSizeUpperBound = clusterSizeUpperBound;
         this.discreteAttribute = discreteAttribute;
     }
 
-    int getClusterSizeLowerBound() {
+    public int getClusterSizeLowerBound() {
         return clusterSizeLowerBound;
     }
 
-    int getClusterSizeUpperBound() {
+    public int getClusterSizeUpperBound() {
         return clusterSizeUpperBound;
     }
 
-    int getDiscreteAttributeValue(Attributes attribute, String type) {
+    public int getDiscreteAttributeValue(String attribute, String type) {
         assert discreteAttribute.containsKey(attribute);
         return discreteAttribute.get(attribute).get(type);
     }
@@ -86,10 +86,10 @@ public class VectorSpace {
         }
 
         int cnt = 0;
-        for (Attributes attributes: discreteAttribute.keySet()) {
-            for (String type: discreteAttribute.get(attributes).keySet()) {
-                int target = getDiscreteAttributeValue(attributes, type);
-                int number = getDiscreteAttributeNumberInCluster(cluster, attributes, type);
+        for (String String: discreteAttribute.keySet()) {
+            for (String type: discreteAttribute.get(String).keySet()) {
+                int target = getDiscreteAttributeValue(String, type);
+                int number = getDiscreteAttributeNumberInCluster(cluster, String, type);
                 sum += Math.min(target - number, 0);
                 cnt++;
             }
@@ -98,10 +98,10 @@ public class VectorSpace {
         return  sum/ (cluster.size() + cnt);
     }
 
-    private int getDiscreteAttributeNumberInCluster(Cluster cluster, Attributes attributes, String type) {
+    private int getDiscreteAttributeNumberInCluster(Cluster cluster, String String, String type) {
         int res=0;
         for (Node node: cluster.getNodes()) {
-            if (node.getTypeOfDiscreteAttributeOf(attributes).equals(type)) {
+            if (node.getTypeOfDiscreteAttributeOf(String).equals(type)) {
                 res++;
             }
         }
@@ -110,7 +110,7 @@ public class VectorSpace {
 
     double getDistanceBetween(Node node, Node centerNode) {
         double sum = 0.0;
-        for (Attributes dimension : node.getDimensions()) {
+        for (String dimension : node.getDimensions()) {
             double value = Math.abs(node.getValueOfDimensionOf(dimension) - centerNode.getValueOfDimensionOf(dimension));
             sum += Math.pow(value, 2);
         }
@@ -120,13 +120,13 @@ public class VectorSpace {
     Node getCenterNode(Cluster cluster) {
         Node res = new Node();
         for (Node node : cluster.getNodes()) {
-            for (Attributes dimension : node.getDimensions()) {
+            for (String dimension : node.getDimensions()) {
                 double lastValue = res.getValueOfDimensionOf(dimension);
                 res.putValueOfDimension(dimension, lastValue + node.getValueOfDimensionOf(dimension));
             }
         }
 
-        for (Attributes dimension : res.getDimensions()) {
+        for (String dimension : res.getDimensions()) {
             double lastValue = res.getValueOfDimensionOf(dimension);
             res.putValueOfDimension(dimension, lastValue / cluster.size());
         }
@@ -142,14 +142,14 @@ public class VectorSpace {
             return false;
         }
 
-        for (Attributes attributeName : dimensions.keySet()) {
+        for (String attributeName : dimensions.keySet()) {
             Property property = dimensions.get(attributeName);
             if (property.getValidDifference() < getBiggestDifferenceInClusterOf(attributeName, cluster)) {
                 return false;
             }
         }
 
-        for (Attributes attributeName : discreteAttribute.keySet()) {
+        for (String attributeName : discreteAttribute.keySet()) {
             HashMap<String, Integer> valueMap = discreteAttribute.get(attributeName);
             for (String type : valueMap.keySet()) {
                 if (valueMap.get(type) > cluster.getNumberOf(attributeName, type)) {
@@ -160,7 +160,7 @@ public class VectorSpace {
         return true;
     }
 
-    Double getBiggestDifferenceInClusterOf(Attributes attributeName, Cluster cluster) {
+    Double getBiggestDifferenceInClusterOf(String attributeName, Cluster cluster) {
         assert dimensions.containsKey(attributeName);
         Property property = dimensions.get(attributeName);
         double res = 0.0;
@@ -272,17 +272,17 @@ public class VectorSpace {
         return currentValidC1;
     }
 
-    Double getDimensionValue(Attributes key) {
+    public Double getDimensionValue(String key) {
         assert dimensions.containsKey(key);
         return dimensions.get(key).getValidDifference();
     }
 
-    Property getPropertyOfDimension(Attributes attribute) {
+    Property getPropertyOfDimension(String attribute) {
         assert dimensions.containsKey(attribute);
         return dimensions.get(attribute);
     }
 
-    public boolean containDimension(Attributes attribute) {
+    public boolean containDimension(String attribute) {
         return dimensions.containsKey(attribute);
     }
 
@@ -293,12 +293,12 @@ public class VectorSpace {
 
 
 
-    static class Property {
+    public static class Property {
         private final Double limit;
         private final Type type;
         private final Double validDifference;
 
-        Property(Double limit, Type type, Double validDifference) {
+        public Property(Double limit, Type type, Double validDifference) {
             this.limit = limit;
             this.type = type;
             this.validDifference = validDifference;
@@ -325,7 +325,7 @@ public class VectorSpace {
         }
     }
 
-    enum Type {
+    public enum Type {
         LINE,
         CIRCLE;
     }

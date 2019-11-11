@@ -1,10 +1,9 @@
 package ic.doc.sgo.groupingstrategies;
 
-import ic.doc.sgo.Constraint;
-import ic.doc.sgo.Group;
-import ic.doc.sgo.Student;
+import ic.doc.sgo.*;
 import ic.doc.sgo.groupingstrategies.vectorspacestrategy.*;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,5 +65,77 @@ public class FixedPointStrategy implements GroupingStrategy {
             res.add(newGroup);
         }
         return res;
+    }
+
+    public static final class Converters {
+
+        private Converters() {
+        }
+
+        public static VectorSpace VectorSpaceFromConstraint(Constraint constraint) {
+            Map<String, VectorSpace.Property> dimensions = new HashMap<>();
+            int clusterSizeLowerBound;
+            int clusterSizeUpperBound;
+            Map<String, HashMap<String, Integer>> discreteAttribute = new HashMap<>();
+
+            if (constraint.isTimeMatter()) {
+                dimensions.put(Attributes.TIMEZONE.getName(), new VectorSpace.Property(12.0, VectorSpace.Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
+            }
+
+            if (constraint.isAgeMatter()) {
+                dimensions.put(Attributes.AGE.getName(), new VectorSpace.Property(120.0, VectorSpace.Type.LINE, (double) constraint.getAgeDiff().getAsInt()));
+            }
+
+            if (constraint.isSameGender()) {
+                dimensions.put(Attributes.GENDER.getName(), new VectorSpace.Property(2.0, VectorSpace.Type.LINE, 0.0));
+            }
+
+            discreteAttribute.put(Attributes.GENDER.getName(), new HashMap<>());
+            discreteAttribute.get(Attributes.GENDER.getName()).put("male", 0);
+            discreteAttribute.get(Attributes.GENDER.getName()).put("female", 0);
+            if (constraint.isGenderMatter()) {
+                assert constraint.getMinMale() + constraint.getMinFemale() <= constraint.getGroupSizeLowerBound();
+                discreteAttribute.get(Attributes.GENDER.getName()).put("male", constraint.getMinMale());
+                discreteAttribute.get(Attributes.GENDER.getName()).put("female", constraint.getMinFemale());
+            }
+
+            clusterSizeLowerBound = constraint.getGroupSizeLowerBound();
+            clusterSizeUpperBound = constraint.getGroupSizeUpperBound();
+            return new VectorSpace(dimensions, clusterSizeLowerBound, clusterSizeUpperBound, discreteAttribute);
+        }
+
+        public static Node NodeFromStudentAndConstraint(Student student, Constraint constraint) {
+
+            String id;
+            Map<String, Double> coordinateMap = new HashMap<>();
+            Map<String, String> discreteAttributeType = new HashMap<>();
+
+            id = student.getId();
+
+            if (constraint.isTimeMatter()) {
+                coordinateMap.put(Attributes.TIMEZONE.getName(),
+                        (double) TimeZoneCalculator.timeZoneInInteger(student.getTimeZone().orElse(ZoneId.of("UTC+0"))));
+            }
+
+            if (constraint.isAgeMatter()) {
+                coordinateMap.put(Attributes.AGE.getName(), (double) student.getAge().orElse(0));
+            }
+
+            if (constraint.isSameGender()) {
+                coordinateMap.put(Attributes.GENDER.getName(), (double) genderToInteger(student.getGender().orElse("male")));
+            }
+
+            discreteAttributeType.put(Attributes.GENDER.getName(), "male");
+            if (constraint.isGenderMatter()) {
+                discreteAttributeType.put(Attributes.GENDER.getName(), student.getGender().orElse("male"));
+            }
+
+            return new Node(id, coordinateMap, discreteAttributeType);
+        }
+
+        private static int genderToInteger(String gender) {
+            return gender.equals("male")? 0: 1;
+        }
+
     }
 }

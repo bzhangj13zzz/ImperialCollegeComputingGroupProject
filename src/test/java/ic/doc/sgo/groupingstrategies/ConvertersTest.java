@@ -1,8 +1,13 @@
-package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
+package ic.doc.sgo.groupingstrategies;
 
+import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.TimeZoneCalculator;
+import ic.doc.sgo.groupingstrategies.FixedPointStrategy;
+import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Cluster;
+import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Node;
+import ic.doc.sgo.groupingstrategies.vectorspacestrategy.VectorSpace;
 import org.junit.Test;
 
 import java.time.ZoneId;
@@ -25,9 +30,9 @@ public class ConvertersTest {
             .setAgeDiff(3)
             .createConstrain();
 
-    private VectorSpace vectorSpaceForSameGender = Converters.VectorSpaceFromConstraint(constraintForSameGender);
+    private VectorSpace vectorSpaceForSameGender = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraintForSameGender);
 
-    private VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint);
+    private VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraint);
 
     private Student s1 = new Student.Builder("1")
             .setTimeZone(ZoneId.of("UTC+1"))
@@ -70,15 +75,15 @@ public class ConvertersTest {
             .setTimeZone(ZoneId.of("UTC+1"))
             .createStudent();
 
-    private Node n1 = Converters.NodeFromStudentAndConstraint(s1, constraint);
-    private Node n2 = Converters.NodeFromStudentAndConstraint(s2, constraint);
-    private Node n3 = Converters.NodeFromStudentAndConstraint(s3, constraint);
-    private Node n4 = Converters.NodeFromStudentAndConstraint(s4, constraint);
-    private Node n5 = Converters.NodeFromStudentAndConstraint(s5, constraint);
-    private Node n6 = Converters.NodeFromStudentAndConstraint(s6, constraint);
-    private Node n7 = Converters.NodeFromStudentAndConstraint(s7, constraint);
+    private Node n1 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s1, constraint);
+    private Node n2 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s2, constraint);
+    private Node n3 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s3, constraint);
+    private Node n4 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s4, constraint);
+    private Node n5 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s5, constraint);
+    private Node n6 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s6, constraint);
+    private Node n7 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s7, constraint);
 
-    private Node nodeForSameGender = Converters.NodeFromStudentAndConstraint(s1, constraintForSameGender);
+    private Node nodeForSameGender = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s1, constraintForSameGender);
 
     private final Cluster c1 = Cluster.from(new ArrayList<>());
     private final Cluster c2 = Cluster.from(new ArrayList<>());
@@ -90,33 +95,33 @@ public class ConvertersTest {
         Constraint testConstraint = new Constraint.Builder(4, 5)
                 .setTimezoneDiff(2).createConstrain();
         assertTrue(testConstraint.getTimezoneDiff().isPresent());
-        VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
+        VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
         assertEquals(4, vectorSpace.getClusterSizeLowerBound());
         assertEquals(5, vectorSpace.getClusterSizeUpperBound());
-        Double timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE);
+        Double timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE.getName());
         assertTrue(2 - eps <= timeZoneDiff && timeZoneDiff <= 2 + eps);
 
         //Age
         testConstraint = new Constraint.Builder(4, 4)
                 .setAgeDiff(3).createConstrain();
-        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
-        Double ageDiff = vectorSpace.getDimensionValue(Attributes.AGE);
+        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
+        Double ageDiff = vectorSpace.getDimensionValue(Attributes.AGE.getName());
         assertTrue(3 - eps <= ageDiff && ageDiff <= 3 + eps);
 
         //Gender
         testConstraint = new Constraint.Builder(4, 4)
                 .setMinFemale(3).createConstrain();
-        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
-        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"));
-        assertEquals(0, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"));
+        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
+        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "female"));
+        assertEquals(0, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "male"));
 
         testConstraint = new Constraint.Builder(5, 6)
                 .setGenderRatio(0.6)
                 .setGenderErrorMargin(0.1)
                 .createConstrain();
-        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
-        assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"));
-        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"));
+        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
+        assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "female"));
+        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "male"));
 
         //ALERT: every time add an new Attribute, add corresponding test here.
 
@@ -127,15 +132,15 @@ public class ConvertersTest {
                 .setTimezoneDiff(2)
                 .setAgeDiff(3)
                 .createConstrain();
-        vectorSpace = Converters.VectorSpaceFromConstraint(testConstraint);
+        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
         assertEquals(5, vectorSpace.getClusterSizeLowerBound());
         assertEquals(6, vectorSpace.getClusterSizeUpperBound());
-        assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"));
-        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"));
-        assertFalse(vectorSpace.containDimension(Attributes.GENDER));
-        timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE);
+        assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "female"));
+        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "male"));
+        assertFalse(vectorSpace.containDimension(Attributes.GENDER.getName()));
+        timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE.getName());
         assertTrue(2 - eps <= timeZoneDiff && timeZoneDiff <= 2 + eps);
-        ageDiff = vectorSpace.getDimensionValue(Attributes.AGE);
+        ageDiff = vectorSpace.getDimensionValue(Attributes.AGE.getName());
         assertTrue(3 - eps <= ageDiff && ageDiff <= 3 + eps);
 
 
@@ -145,24 +150,24 @@ public class ConvertersTest {
     @Test
     public void testNodeFromStudentAndConstraint() {
         //time zone
-        Double nodeTime = n1.getValueOfDimensionOf(Attributes.TIMEZONE);
+        Double nodeTime = n1.getValueOfDimensionOf(Attributes.TIMEZONE.getName());
         Double studentTime = (double) TimeZoneCalculator.timeZoneInInteger(s1.getTimeZone().orElse(null));
         assertTrue(Math.abs(nodeTime - studentTime) <= eps);
 
         //age
-        Double nodeAge = n1.getValueOfDimensionOf(Attributes.AGE);
+        Double nodeAge = n1.getValueOfDimensionOf(Attributes.AGE.getName());
         Double studentAge = (double) s1.getAge().orElse(-1);
         assertTrue(Math.abs(nodeAge - studentAge) <= eps);
 
         //same gender
-        Double nodeGenderValue = nodeForSameGender.getValueOfDimensionOf(Attributes.GENDER);
+        Double nodeGenderValue = nodeForSameGender.getValueOfDimensionOf(Attributes.GENDER.getName());
         Double studentGenderValue = s1.getGender().orElse("male").equals("male")? 0.0: 1.0;
-        assertFalse(nodeForSameGender.containDimension(Attributes.TIMEZONE));
-        assertFalse(nodeForSameGender.containDimension(Attributes.AGE));
+        assertFalse(nodeForSameGender.containDimension(Attributes.TIMEZONE.getName()));
+        assertFalse(nodeForSameGender.containDimension(Attributes.AGE.getName()));
         assertTrue(Math.abs(nodeGenderValue - studentGenderValue) <= eps);
 
         //gender
-        assertEquals(n1.getTypeOfDiscreteAttributeOf(Attributes.GENDER), s1.getGender().orElse("male"));
-        assertEquals(n3.getTypeOfDiscreteAttributeOf(Attributes.GENDER), s3.getGender().orElse("male"));
+        assertEquals(n1.getTypeOfDiscreteAttributeOf(Attributes.GENDER.getName()), s1.getGender().orElse("male"));
+        assertEquals(n3.getTypeOfDiscreteAttributeOf(Attributes.GENDER.getName()), s3.getGender().orElse("male"));
     }
 }

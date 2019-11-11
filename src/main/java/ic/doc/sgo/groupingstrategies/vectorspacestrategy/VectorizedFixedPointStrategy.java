@@ -3,7 +3,6 @@ package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 import ic.doc.sgo.groupingstrategies.StrategyUtil;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ic.doc.sgo.groupingstrategies.StrategyUtil.getRandomIntegerBetween;
 
@@ -197,77 +196,6 @@ public class VectorizedFixedPointStrategy {
             }
 
         }
-    }
-
-    private static List<Cluster> randomClusterWithDiscreteAttribute(List<Node> nodes, VectorSpace vectorSpace) {
-        List<Node> maleNodes = nodes.stream().
-                filter(node -> node.getTypeOfDiscreteAttributeOf(Attributes.GENDER).equals("male"))
-                .collect(Collectors.toList());
-        List<Node> femaleNode = nodes.stream()
-                .filter(node -> node.getTypeOfDiscreteAttributeOf(Attributes.GENDER).equals("female"))
-                .collect(Collectors.toList());
-
-
-        StrategyUtil.Pair<Integer, Integer> numberIntervalOfGroups = StrategyUtil.getNumberInterval(nodes.size(),
-                vectorSpace.getClusterSizeLowerBound(), vectorSpace.getClusterSizeUpperBound());
-        int number = getRandomIntegerBetween(numberIntervalOfGroups.first(), numberIntervalOfGroups.second());
-
-        List<Cluster> maleCluster = randomCluster(maleNodes,
-                vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "male"),
-                number);
-        List<Cluster> femaleCluster = randomCluster(femaleNode,
-                vectorSpace.getDiscreteAttributeValue(Attributes.GENDER, "female"),
-                number);
-
-        // combine cluster id smaller than numbers
-        List<Cluster> res = new ArrayList<>();
-        for (int i = 0; i <= number; i++) {
-            res.add(Cluster.of(i));
-        }
-        for (int i = 0; i <= number; i++) {
-            Cluster cluster = res.get(i);
-            cluster.setId(i);
-            cluster.addAll(maleCluster.get(i).getNodes());
-            cluster.addAll(femaleCluster.get(i).getNodes());
-        }
-
-        // put rest of the nodes to cluster 0
-        for (int i = number + 1; i < maleCluster.size(); i++) {
-            res.get(0).addAll(maleCluster.get(i).getNodes());
-        }
-        for (int i = number + 1; i < femaleCluster.size(); i++) {
-            res.get(0).addAll(femaleCluster.get(i).getNodes());
-        }
-
-        // put cluster 0 nodes to cluster 1~number to suffice the size lower bound
-        Collections.shuffle(res.get(0).getNodes());
-        for (int i = 1; i <= number; i++) {
-            while (res.get(i).size() < vectorSpace.getClusterSizeLowerBound()) {
-                Node node = res.get(0).getNodes().remove(0);
-                res.get(i).add(node);
-            }
-        }
-
-        return res;
-    }
-
-    private static List<Cluster> randomCluster(List<Node> nodes, int clusterSize, int number) {
-        //assert clusterSize*number <= nodes.size();
-        List<Cluster> res = new ArrayList<>();
-        for (int i = 0; i <= number; i++) {
-            res.add(Cluster.of(i));
-        }
-
-
-        for (int i = 0; i < Math.min(number * clusterSize, nodes.size()); i++) {
-            res.get((i / clusterSize) + 1).add(nodes.get(i));
-        }
-
-        for (int i = number * clusterSize; i < nodes.size(); i++) {
-            res.get(0).add(nodes.get(i));
-        }
-
-        return res;
     }
 
 }

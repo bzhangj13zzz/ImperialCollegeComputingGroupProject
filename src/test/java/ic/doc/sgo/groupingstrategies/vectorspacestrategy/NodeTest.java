@@ -1,8 +1,9 @@
 package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
+import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Student;
-import ic.doc.sgo.TimeZoneCalculator;
+import ic.doc.sgo.groupingstrategies.FixedPointStrategy;
 import org.junit.Test;
 
 import java.time.ZoneId;
@@ -25,9 +26,9 @@ public class NodeTest {
             .setAgeDiff(3)
             .createConstrain();
 
-    private VectorSpace vectorSpaceForSameGender = Converters.VectorSpaceFromConstraint(constraintForSameGender);
+    private VectorSpace vectorSpaceForSameGender = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraintForSameGender);
 
-    private VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint);
+    private VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraint);
 
     private Student s1 = new Student.Builder("1")
             .setTimeZone(ZoneId.of("UTC+1"))
@@ -70,27 +71,27 @@ public class NodeTest {
             .setTimeZone(ZoneId.of("UTC+1"))
             .createStudent();
 
-    private Node n1 = Converters.NodeFromStudentAndConstraint(s1, constraint);
-    private Node n2 = Converters.NodeFromStudentAndConstraint(s2, constraint);
-    private Node n3 = Converters.NodeFromStudentAndConstraint(s3, constraint);
-    private Node n4 = Converters.NodeFromStudentAndConstraint(s4, constraint);
-    private Node n5 = Converters.NodeFromStudentAndConstraint(s5, constraint);
-    private Node n6 = Converters.NodeFromStudentAndConstraint(s6, constraint);
-    private Node n7 = Converters.NodeFromStudentAndConstraint(s7, constraint);
+    private Node n1 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s1, constraint);
+    private Node n2 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s2, constraint);
+    private Node n3 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s3, constraint);
+    private Node n4 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s4, constraint);
+    private Node n5 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s5, constraint);
+    private Node n6 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s6, constraint);
+    private Node n7 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s7, constraint);
 
-    private Node nodeForSameGender = Converters.NodeFromStudentAndConstraint(s1, constraintForSameGender);
+    private Node nodeForSameGender = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s1, constraintForSameGender);
 
     private final Cluster c1 = Cluster.from(new ArrayList<>());
     private final Cluster c2 = Cluster.from(new ArrayList<>());
 
     @Test
     public void returnCorrectDimensions() {
-        List<Attributes> attributes = new ArrayList<>();
+        List<String> attributes = new ArrayList<>();
         n1.getDimensions().forEach(attributes::add);
 
-        assertTrue(attributes.contains(Attributes.AGE));
-        assertTrue(attributes.contains(Attributes.TIMEZONE));
-        assertFalse(attributes.contains(Attributes.GENDER));
+        assertTrue(attributes.contains(Attributes.AGE.getName()));
+        assertTrue(attributes.contains(Attributes.TIMEZONE.getName()));
+        assertFalse(attributes.contains(Attributes.GENDER.getName()));
 
     }
 

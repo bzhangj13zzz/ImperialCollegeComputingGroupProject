@@ -1,7 +1,9 @@
 package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
+import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Student;
+import ic.doc.sgo.groupingstrategies.FixedPointStrategy;
 import org.junit.Test;
 
 import java.time.ZoneId;
@@ -21,7 +23,7 @@ public class VectorSpaceTest {
             .setAgeDiff(3)
             .createConstrain();
 
-    private VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint);
+    private VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraint);
 
     private Student s1 = new Student.Builder("1")
             .setTimeZone(ZoneId.of("UTC+1"))
@@ -64,13 +66,13 @@ public class VectorSpaceTest {
             .setTimeZone(ZoneId.of("UTC+1"))
             .createStudent();
 
-    private Node n1 = Converters.NodeFromStudentAndConstraint(s1, constraint);
-    private Node n2 = Converters.NodeFromStudentAndConstraint(s2, constraint);
-    private Node n3 = Converters.NodeFromStudentAndConstraint(s3, constraint);
-    private Node n4 = Converters.NodeFromStudentAndConstraint(s4, constraint);
-    private Node n5 = Converters.NodeFromStudentAndConstraint(s5, constraint);
-    private Node n6 = Converters.NodeFromStudentAndConstraint(s6, constraint);
-    private Node n7 = Converters.NodeFromStudentAndConstraint(s7, constraint);
+    private Node n1 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s1, constraint);
+    private Node n2 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s2, constraint);
+    private Node n3 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s3, constraint);
+    private Node n4 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s4, constraint);
+    private Node n5 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s5, constraint);
+    private Node n6 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s6, constraint);
+    private Node n7 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s7, constraint);
 
     private Cluster c1 = Cluster.from(new ArrayList<>());
     private Cluster c2 = Cluster.from(new ArrayList<>());
@@ -91,14 +93,14 @@ public class VectorSpaceTest {
         // test invalid timezone
         c1.clear();
         c1.addAll(new ArrayList<>(Arrays.asList(n1, n2, n3, n6)));
-        Double difference = vectorSpace.getBiggestDifferenceInClusterOf(Attributes.TIMEZONE, c1);
+        Double difference = vectorSpace.getBiggestDifferenceInClusterOf(Attributes.TIMEZONE.getName(), c1);
         assertTrue(6 - eps <= difference && difference <= 6 + eps);
         assertFalse(vectorSpace.isValidCluster(c1));
 
         // test invalid age
         c1.clear();
         c1.addAll(new ArrayList<>(Arrays.asList(n1, n2, n3, n7)));
-        difference = vectorSpace.getBiggestDifferenceInClusterOf(Attributes.AGE, c1);
+        difference = vectorSpace.getBiggestDifferenceInClusterOf(Attributes.AGE.getName(), c1);
         assertTrue(7 - eps <= difference && difference <= 7 + eps);
         assertFalse(vectorSpace.isValidCluster(c1));
 
