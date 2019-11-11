@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 //N^3
@@ -27,15 +28,42 @@ public class FixedPointStrategy implements GroupingStrategy {
         List<Node> unallocatedCluster = new ArrayList<>();
         List<Cluster> validClusters = new ArrayList<>();
         //TODO: need to imporove the following.
+
+        int cores = Runtime.getRuntime().availableProcessors();
+        cores = Math.max(1, cores * 2 / 3);
+        ExecutorService executorService = Executors.newFixedThreadPool(cores);
+        List<Future<List<Cluster>>> futures = new ArrayList<>();
+
         for (int i = 0; i < nodes.size(); i += 150) {
-            int t = Math.min(i+150, nodes.size());
-            List<Cluster> cluster = VectorizedFixedPointStrategy.apply(new ArrayList<>(nodes.subList(i, t)),
-                            vectorSpace);
-            if (cluster.size() > 0) {
-                validClusters.addAll(cluster.subList(1, cluster.size()));
-            }
-            unallocatedCluster.addAll(cluster.get(0).getNodes());
+            int t = Math.min(i + 150, nodes.size());
+            int finalI = i;
+            futures.add(executorService.submit(
+                    () -> VectorizedFixedPointStrategy.apply(new ArrayList<>(nodes.subList(finalI, t)), vectorSpace)));
         }
+
+        for (Future<List<Cluster>> future : futures) {
+            try {
+                List<Cluster> cluster = future.get();
+
+                if (cluster.size() > 0) {
+                    validClusters.addAll(cluster.subList(1, cluster.size()));
+                }
+                unallocatedCluster.addAll(cluster.get(0).getNodes());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        executorService.shutdown();
+//
+//        for (int i = 0; i < nodes.size(); i += 150) {
+//            int t = Math.min(i+150, nodes.size());
+//            List<Cluster> cluster = VectorizedFixedPointStrategy.apply(new ArrayList<>(nodes.subList(i, t)),
+//                            vectorSpace);
+//            if (cluster.size() > 0) {
+//                validClusters.addAll(cluster.subList(1, cluster.size()));
+//            }
+//            unallocatedCluster.addAll(cluster.get(0).getNodes());
+//        }
 
         List<Cluster> bestClusters = VectorizedFixedPointStrategy.apply(unallocatedCluster, vectorSpace);
         bestClusters.addAll(validClusters);
