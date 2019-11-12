@@ -5,19 +5,15 @@ before_install:
 stages:
   - compile
   - test
-  - name: deploy
-    # require the branch name to be master
-    # if: branch = master
 jobs:
   include:
     - stage: compile
       script: mvn compile
     - stage: test
       script: mvn test
-    - stage: deploy
-      script: skip # to be added
 deploy:
   provider: heroku
-  app: organiser-app
-  api_key:
-    secure: 750485f6-8805-4575-a7d2-1be7b8c601b7
+  api_key: 4788febb-d90c-45f5-84c3-d31d91a7f423
+  app:
+    master: organiser-app
+    sprint: organiser-app-dev
