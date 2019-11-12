@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
+import ic.doc.sgo.TimeZoneCalculator;
 import ic.doc.sgo.springframework.Service.GroupingService;
 import ic.doc.sgo.studentadapters.JsonStudentAdapter;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +63,11 @@ public class GroupingController {
             for (Student student : group.getStudents()) {
                 JsonObject studentJsonObject = new JsonObject();
                 studentJsonObject.addProperty("id", student.getId());
+                if (student.getTimeZone().isPresent()) {
+                    studentJsonObject.addProperty("timezone", TimeZoneCalculator.timeZoneInInteger(student.getTimeZone().get()));
+                } else {
+                    studentJsonObject.addProperty("timezone", 0);
+                }
                 // Add group id for each student json object
                 studentJsonObject.addProperty("groupId", group.getId());
                 studentsJsonArray.add(studentJsonObject);
