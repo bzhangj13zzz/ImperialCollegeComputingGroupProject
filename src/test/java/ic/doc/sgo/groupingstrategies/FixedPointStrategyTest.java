@@ -46,7 +46,7 @@ public class FixedPointStrategyTest {
         for (File directory : cases) {
             assertTrue(directory.isDirectory());
             System.out.println("Testing for " + directory.getName());
-            if (directory.getName().equals("misc")) continue;
+            //if (directory.getName().equals("misc")) continue;
             for (File file : Objects.requireNonNull(directory.listFiles())) {
                 System.out.print(file.getName() + " ");
                 Instant testStart = Instant.now();
@@ -83,8 +83,10 @@ public class FixedPointStrategyTest {
 
         System.out.println("Unallocated Students: " + groups.get(0).size());
         JsonObject parsedJson = gson.fromJson(jsonString, JsonObject.class);
-        int remaining = parsedJson.get("remaining").getAsInt();
-        assertEquals(groups.get(0).size(), remaining);
+        if (parsedJson.has("remaining")) {
+            int remaining = parsedJson.get("remaining").getAsInt();
+            assertEquals(groups.get(0).size(), remaining);
+        }
     }
 
 }
