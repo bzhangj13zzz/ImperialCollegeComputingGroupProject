@@ -53,7 +53,7 @@ public class Constraint {
         assert isGenderMatter();
         if (genderRatio != null) {
             assert genderErrorMargin != null;
-            return (int) ((genderRatio - genderErrorMargin) * groupSizeUpperBound);
+            return (int) Math.ceil((genderRatio - genderErrorMargin) * groupSizeUpperBound);
         }
         if (minMale == null) {
             return 0;
@@ -65,7 +65,7 @@ public class Constraint {
         assert isGenderMatter();
         if (genderRatio != null) {
             assert genderErrorMargin != null;
-            return (int) ((1 - genderRatio - genderErrorMargin) * groupSizeUpperBound);
+            return (int) Math.ceil((1 - genderRatio - genderErrorMargin) * groupSizeUpperBound);
         }
         if (minFemale == null) {
             return 0;
