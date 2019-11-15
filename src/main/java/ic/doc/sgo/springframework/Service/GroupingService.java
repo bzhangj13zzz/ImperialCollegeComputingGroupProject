@@ -3,6 +3,7 @@ package ic.doc.sgo.springframework.Service;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
+import ic.doc.sgo.groupingstrategies.FixedPointStrategy;
 import ic.doc.sgo.groupingstrategies.vectorspacestrategy.VectorizedFixedPointStrategy;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,6 @@ import java.util.List;
 public class GroupingService {
 
     public List<Group> groupStudent(List<Student> studentList, Constraint constraint) {
-        return new VectorizedFixedPointStrategy().apply(studentList, constraint);
+        return new FixedPointStrategy().apply(studentList, constraint);
     }
 }

@@ -19,9 +19,10 @@ public class Constraint {
     // Or both `genderRatio` and `genderErrorMargin` are passed in
     private final Double genderRatio;
     private final Double genderErrorMargin;
+    private final Boolean isSameGender;
 
     private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, Integer timezoneDiff, Integer ageDiff,
-                       Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin) {
+                       Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin, Boolean isSameGender) {
         this.groupSizeLowerBound = groupSizeLowerBound;
         this.groupSizeUpperBound = groupSizeUpperBound;
         this.timezoneDiff = timezoneDiff;
@@ -30,6 +31,7 @@ public class Constraint {
         this.minFemale = minFemale;
         this.genderRatio = genderRatio;
         this.genderErrorMargin = genderErrorMargin;
+        this.isSameGender = isSameGender;
     }
 
     @Override
@@ -43,6 +45,7 @@ public class Constraint {
                 ", minFemale=" + minFemale +
                 ", genderRatio=" + genderRatio +
                 ", genderErrorMargin=" + genderErrorMargin +
+                ", isSameGender=" + isSameGender +
                 '}';
     }
 
@@ -93,7 +96,7 @@ public class Constraint {
     }
 
 
-    private int getTimezoneDiffOfGroup(Group group) {
+    public int getTimezoneDiffOfGroup(Group group) {
         int res = 0;
         for (Student s1 : group.getStudents()) {
             Optional<ZoneId> s1TimeZone = s1.getTimeZone();
@@ -132,9 +135,23 @@ public class Constraint {
             return false;
         }
 
+        if (isSameGender() && !isGroupSameGender(group)) {
+            return false;
+        }
 
         return true;
     }
+
+    public boolean isGroupSameGender(Group group) {
+        List<Student> students = group.getStudents();
+        for (Student student: students) {
+            if (!student.getGender().orElse("male").equals(students.get(0).getGender().orElse("male"))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     private int getMaleNumberOfGroup(Group group) {
         return group.getStudents().stream()
@@ -256,6 +273,10 @@ public class Constraint {
         return v2 > v1;
     }
 
+    public boolean isSameGender() {
+        return isSameGender != null && isSameGender;
+    }
+
     public boolean isGenderMatter() {
         return minFemale != null || minMale != null || genderRatio != null;
     }
@@ -280,29 +301,46 @@ public class Constraint {
     public static class Builder {
         private final int groupSizeLowerBound;
         private final int groupSizeUpperBound;
-        private Integer timezoneDiff = 12;
-        private Integer ageDiff = 100;
+        private Integer timezoneDiff;
+        private Integer ageDiff;
         private Integer minMale;
         private Integer minFemale;
         private Double genderRatio;
         private Double genderErrorMargin;
+        private Boolean isSameGender;
 
         public Builder(int groupSizeLowerBound, int groupSizeUpperBound) {
             this.groupSizeLowerBound = groupSizeLowerBound;
             this.groupSizeUpperBound = groupSizeUpperBound;
         }
 
+        public void setSameGender(Boolean sameGender) {
+            isSameGender = sameGender;
+        }
+
         public Builder setMinMale(Integer minMale) {
+            assert this.genderErrorMargin == null;
+            assert this.genderRatio == null;
+            assert this.isSameGender == null;
+
             this.minMale = minMale;
             return this;
         }
 
         public Builder setMinFemale(Integer minFemale) {
+            assert this.genderErrorMargin == null;
+            assert this.genderRatio == null;
+            assert this.isSameGender == null;
+
             this.minFemale = minFemale;
             return this;
         }
 
         public Builder setGenderRatio(Double genderRatio) {
+            assert this.isSameGender == null;
+            assert this.minFemale == null;
+            assert this.minMale == null;
+
             this.genderRatio = genderRatio;
             return this;
         }
@@ -324,8 +362,17 @@ public class Constraint {
 
         public Constraint createConstrain() {
             return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff,
-                    this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin);
+                    this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin, this.isSameGender);
         }
 
+        public Builder setIsSameGender() {
+            assert this.genderErrorMargin == null;
+            assert this.genderRatio == null;
+            assert this.minMale == null;
+            assert this.minFemale == null;
+
+            this.isSameGender = true;
+            return this;
+        }
     }
 }

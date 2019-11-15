@@ -1,6 +1,6 @@
-package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
+package ic.doc.sgo;
 
-enum Attributes {
+public enum Attributes {
     TIMEZONE("timezone"),
     AGE("age"),
     GENDER("gender");
@@ -9,5 +9,9 @@ enum Attributes {
 
     Attributes(String name) {
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 }

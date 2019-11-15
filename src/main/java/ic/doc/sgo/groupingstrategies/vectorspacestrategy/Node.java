@@ -3,17 +3,17 @@ package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 import java.util.HashMap;
 import java.util.Map;
 
-class Node {
+public class Node {
 
     private String id;
-    private Map<Attributes, Double> coordinateMap = new HashMap<>();
+    private Map<String, Double> coordinateMap = new HashMap<>();
     private Cluster cluster;
-    private Map<Attributes, String> discreteAttributeType = new HashMap<>();
+    private Map<String, String> discreteAttributeType = new HashMap<>();
 
     Node() {
     }
 
-    Node(String id, Map<Attributes, Double> coordinateMap, Map<Attributes, String> discreteAttributeType) {
+    public Node(String id, Map<String, Double> coordinateMap, Map<String, String> discreteAttributeType) {
         this.id = id;
         this.coordinateMap = coordinateMap;
         this.discreteAttributeType = discreteAttributeType;
@@ -23,11 +23,11 @@ class Node {
         return new Node(node.getId(), node.getCoordinateMap(), node.getDiscreteAttributeType());
     }
 
-    Map<Attributes, Double> getCoordinateMap() {
+    Map<String, Double> getCoordinateMap() {
         return coordinateMap;
     }
 
-    Map<Attributes, String> getDiscreteAttributeType() {
+    Map<String, String> getDiscreteAttributeType() {
         return discreteAttributeType;
     }
 
@@ -35,7 +35,7 @@ class Node {
         return this.cluster;
     }
 
-    void setCluster(Cluster cluster) {
+    public void setCluster(Cluster cluster) {
         this.cluster = cluster;
     }
 
@@ -46,36 +46,36 @@ class Node {
         c2.add(n1);
     }
 
-    String getId() {
+    public String getId() {
         return this.id;
     }
 
-    String getTypeOfDiscreteAttributeOf(Attributes attributes) {
-        assert discreteAttributeType.containsKey(attributes);
-        return discreteAttributeType.get(attributes);
+    public String getTypeOfDiscreteAttributeOf(String String) {
+        assert discreteAttributeType.containsKey(String);
+        return discreteAttributeType.get(String);
 
     }
 
-    String getGender() {
-        return getTypeOfDiscreteAttributeOf(Attributes.GENDER);
-    }
-
-    Double getValueOfDimensionOf(Attributes dimensionName) {
+    public Double getValueOfDimensionOf(String dimensionName) {
         if (!coordinateMap.containsKey(dimensionName)) {
             putValueOfDimension(dimensionName, 0.0);
         }
         return coordinateMap.get(dimensionName);
     }
 
-    boolean isTypeOfAttribute(Attributes attribute, String type) {
+    boolean isTypeOfAttribute(String attribute, String type) {
         return discreteAttributeType.get(attribute).equals(type);
     }
 
-    Iterable<Attributes> getDimensions() {
+    Iterable<String> getDimensions() {
         return this.coordinateMap.keySet();
     }
 
-    void putValueOfDimension(Attributes dimension, Double value) {
+    void putValueOfDimension(String dimension, Double value) {
         this.coordinateMap.put(dimension, value);
+    }
+
+    public boolean containDimension(String attribute) {
+        return coordinateMap.containsKey(attribute);
     }
 }

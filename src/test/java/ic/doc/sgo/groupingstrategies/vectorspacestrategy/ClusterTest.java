@@ -1,7 +1,9 @@
 package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
+import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Student;
+import ic.doc.sgo.groupingstrategies.FixedPointStrategy;
 import org.junit.Test;
 
 import java.time.ZoneId;
@@ -22,7 +24,7 @@ public class ClusterTest {
             .setAgeDiff(3)
             .createConstrain();
 
-    private VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint);
+    private VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraint);
 
     private Student s1 = new Student.Builder("1")
             .setTimeZone(ZoneId.of("UTC+1"))
@@ -65,13 +67,13 @@ public class ClusterTest {
             .setTimeZone(ZoneId.of("UTC+1"))
             .createStudent();
 
-    private Node n1 = Converters.NodeFromStudentAndConstraint(s1, constraint);
-    private Node n2 = Converters.NodeFromStudentAndConstraint(s2, constraint);
-    private Node n3 = Converters.NodeFromStudentAndConstraint(s3, constraint);
-    private Node n4 = Converters.NodeFromStudentAndConstraint(s4, constraint);
-    private Node n5 = Converters.NodeFromStudentAndConstraint(s5, constraint);
-    private Node n6 = Converters.NodeFromStudentAndConstraint(s6, constraint);
-    private Node n7 = Converters.NodeFromStudentAndConstraint(s7, constraint);
+    private Node n1 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s1, constraint);
+    private Node n2 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s2, constraint);
+    private Node n3 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s3, constraint);
+    private Node n4 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s4, constraint);
+    private Node n5 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s5, constraint);
+    private Node n6 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s6, constraint);
+    private Node n7 = FixedPointStrategy.Converters.NodeFromStudentAndConstraint(s7, constraint);
 
 
     @Test
@@ -124,7 +126,7 @@ public class ClusterTest {
     @Test
     public void testDiscreteAttributeNumber() {
         c1.addAll(new ArrayList<>(Arrays.asList(n1, n2, n3, n4, n5, n6, n7)));
-        assertEquals(3, (int) c1.getNumberOf(Attributes.GENDER, "male"));
-        assertEquals(4, (int) c1.getNumberOf(Attributes.GENDER, "female"));
+        assertEquals(3, (int) c1.getNumberOf(Attributes.GENDER.getName(), "male"));
+        assertEquals(4, (int) c1.getNumberOf(Attributes.GENDER.getName(), "female"));
     }
 }
