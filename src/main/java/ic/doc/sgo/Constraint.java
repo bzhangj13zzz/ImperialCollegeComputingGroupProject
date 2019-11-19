@@ -50,11 +50,7 @@ public class Constraint {
     }
 
     public int getMinMale() {
-        assert isGenderMatter();
-        if (genderRatio != null) {
-            assert genderErrorMargin != null;
-            return (int) ((genderRatio - genderErrorMargin) * groupSizeUpperBound);
-        }
+        assert isGenderNumberMatter();
         if (minMale == null) {
             return 0;
         }
@@ -62,11 +58,7 @@ public class Constraint {
     }
 
     public int getMinFemale() {
-        assert isGenderMatter();
-        if (genderRatio != null) {
-            assert genderErrorMargin != null;
-            return (int) ((1 - genderRatio - genderErrorMargin) * groupSizeUpperBound);
-        }
+        assert isGenderNumberMatter();
         if (minFemale == null) {
             return 0;
         }
@@ -74,10 +66,19 @@ public class Constraint {
     }
 
     public double getGenderRatio() {
+        assert isGenderRatioMatter();
+        if (genderRatio == null) {
+            return 0.5;
+        }
+
         return genderRatio;
     }
 
     public double getGenderErrorMargin() {
+        assert isGenderRatioMatter();
+        if (genderErrorMargin == null) {
+            return 0;
+        }
         return genderErrorMargin;
     }
 
@@ -131,8 +132,17 @@ public class Constraint {
             return false;
         }
 
-        if (isGenderMatter() && (getMinFemale() > getFemaleNumberOfGroup(group) || getMinMale() > getMaleNumberOfGroup(group))) {
+        if (isGenderNumberMatter() && (getMinFemale() > getFemaleNumberOfGroup(group) || getMinMale() > getMaleNumberOfGroup(group))) {
             return false;
+        }
+
+        if (isGenderRatioMatter()) {
+            double currentRatio = 1.0*getMaleNumberOfGroup(group) / group.size();
+            if (currentRatio < getGenderRatio() - getGenderErrorMargin() ||
+                    currentRatio > getGenderRatio() + getGenderErrorMargin()) {
+                System.out.println("The current gender ratio is " + currentRatio);
+                return false;
+            }
         }
 
         if (isSameGender() && !isGroupSameGender(group)) {
@@ -142,9 +152,10 @@ public class Constraint {
         return true;
     }
 
+
     public boolean isGroupSameGender(Group group) {
         List<Student> students = group.getStudents();
-        for (Student student: students) {
+        for (Student student : students) {
             if (!student.getGender().orElse("male").equals(students.get(0).getGender().orElse("male"))) {
                 return false;
             }
@@ -277,8 +288,12 @@ public class Constraint {
         return isSameGender != null && isSameGender;
     }
 
-    public boolean isGenderMatter() {
-        return minFemale != null || minMale != null || genderRatio != null;
+    public boolean isGenderNumberMatter() {
+        return minFemale != null || minMale != null;
+    }
+
+    public boolean isGenderRatioMatter() {
+        return genderRatio != null || genderErrorMargin != null;
     }
 
     public boolean isAgeMatter() {

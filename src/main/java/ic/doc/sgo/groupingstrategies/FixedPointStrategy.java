@@ -4,11 +4,11 @@ import ic.doc.sgo.*;
 import ic.doc.sgo.groupingstrategies.vectorspacestrategy.*;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.*;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 //N^3
@@ -71,7 +71,7 @@ public class FixedPointStrategy implements GroupingStrategy {
             bestClusters.get(i).setId(i);
         }
 
-       // List<Cluster>  bestClusters = VectorizedFixedPointStrategy.apply(nodes, vectorSpace);
+        //List<Cluster>  bestClusters = VectorizedFixedPointStrategy.apply(nodes, vectorSpace);
         for (Cluster cluster : bestClusters.subList(1, bestClusters.size())) {
             assert vectorSpace.isValidCluster(cluster);
         }
@@ -104,6 +104,7 @@ public class FixedPointStrategy implements GroupingStrategy {
             int clusterSizeLowerBound;
             int clusterSizeUpperBound;
             Map<String, HashMap<String, Integer>> discreteAttribute = new HashMap<>();
+            Map<String, HashMap<String, Pair<Double, Double>>> ratioAttribute = new HashMap<>();
 
             if (constraint.isTimeMatter()) {
                 dimensions.put(Attributes.TIMEZONE.getName(), new VectorSpace.Property(12.0, VectorSpace.Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
@@ -117,18 +118,35 @@ public class FixedPointStrategy implements GroupingStrategy {
                 dimensions.put(Attributes.GENDER.getName(), new VectorSpace.Property(2.0, VectorSpace.Type.LINE, 0.0));
             }
 
-            discreteAttribute.put(Attributes.GENDER.getName(), new HashMap<>());
-            discreteAttribute.get(Attributes.GENDER.getName()).put("male", 0);
-            discreteAttribute.get(Attributes.GENDER.getName()).put("female", 0);
-            if (constraint.isGenderMatter()) {
+            if (constraint.isGenderRatioMatter()) {
+
+            }
+
+//            discreteAttribute.put(Attributes.GENDER.getName(), new HashMap<>());
+//            discreteAttribute.get(Attributes.GENDER.getName()).put("male", 0);
+//            discreteAttribute.get(Attributes.GENDER.getName()).put("female", 0);
+
+
+            if (constraint.isGenderNumberMatter()) {
                 assert constraint.getMinMale() + constraint.getMinFemale() <= constraint.getGroupSizeLowerBound();
+                discreteAttribute.put(Attributes.GENDER.getName(), new HashMap<>());
                 discreteAttribute.get(Attributes.GENDER.getName()).put("male", constraint.getMinMale());
                 discreteAttribute.get(Attributes.GENDER.getName()).put("female", constraint.getMinFemale());
             }
 
+            if (constraint.isGenderRatioMatter()) {
+                assert constraint.getGenderRatio() + constraint.getGenderErrorMargin() <= 1;
+                assert constraint.getGenderRatio() - constraint.getGenderErrorMargin() >= 0;
+                ratioAttribute.put(Attributes.GENDER.getName(), new HashMap<>());
+                ratioAttribute.get(Attributes.GENDER.getName()).put("male",
+                        new Pair<>(constraint.getGenderRatio(), constraint.getGenderErrorMargin()));
+                ratioAttribute.get(Attributes.GENDER.getName()).put("female",
+                        new Pair<>((1-constraint.getGenderRatio()), constraint.getGenderErrorMargin()));
+            }
+
             clusterSizeLowerBound = constraint.getGroupSizeLowerBound();
             clusterSizeUpperBound = constraint.getGroupSizeUpperBound();
-            return new VectorSpace(dimensions, clusterSizeLowerBound, clusterSizeUpperBound, discreteAttribute);
+            return new VectorSpace(dimensions, clusterSizeLowerBound, clusterSizeUpperBound, discreteAttribute, ratioAttribute);
         }
 
         public static Node NodeFromStudentAndConstraint(Student student, Constraint constraint) {
@@ -152,8 +170,8 @@ public class FixedPointStrategy implements GroupingStrategy {
                 coordinateMap.put(Attributes.GENDER.getName(), (double) genderToInteger(student.getGender().orElse("male")));
             }
 
-            discreteAttributeType.put(Attributes.GENDER.getName(), "male");
-            if (constraint.isGenderMatter()) {
+            //discreteAttributeType.put(Attributes.GENDER.getName(), "male");
+            if (constraint.isGenderNumberMatter() || constraint.isGenderRatioMatter()) {
                 discreteAttributeType.put(Attributes.GENDER.getName(), student.getGender().orElse("male"));
             }
 
