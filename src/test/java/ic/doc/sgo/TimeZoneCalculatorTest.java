@@ -7,7 +7,6 @@ import java.time.ZoneId;
 import static org.junit.Assert.assertEquals;
 
 public class TimeZoneCalculatorTest {
-    ;
 
     @Test
     public void timeBetween() {

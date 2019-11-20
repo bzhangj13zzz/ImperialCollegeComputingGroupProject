@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -87,14 +88,14 @@ public class ConstraintTest {
         // test invalid timezone
         g1.clear();
         g1.addAll(new ArrayList<>(Arrays.asList(s1, s2, s3, s6)));
-        Integer difference = constraint.getTimezoneDiffOfGroup(g1);
+        Integer difference = g1.getTimezoneDiffOfGroup();
         assertTrue(6 == difference);
         assertFalse(constraint.isValidGroup(g1));
 
         // test invalid age
         g1.clear();
         g1.addAll(new ArrayList<>(Arrays.asList(s1, s2, s3, s7)));
-        difference = constraint.getAgeDiffOfGroup(g1);
+        difference = g1.getAgeDiffOfGroup();
         assertTrue(7 == difference);
         assertFalse(constraint.isValidGroup(g1));
 
@@ -106,7 +107,7 @@ public class ConstraintTest {
         // test is same gender true
         g1.clear();
         g1.addAll(new ArrayList<>(Arrays.asList(s1, s2, s5)));
-        assertTrue(constraint.isGroupSameGender(g1));
+        assertTrue(g1.isGroupSameGender());
         assertTrue(constraintForSameGender.isValidGroup(g1));
 
         // test is same gender false

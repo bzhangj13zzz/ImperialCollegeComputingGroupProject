@@ -1,5 +1,7 @@
 package ic.doc.sgo;
 
+import java.util.Optional;
+import java.util.OptionalInt;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -33,6 +35,19 @@ public class StudentTest {
         assertTrue(Student.isSameGroup(s1, s2));
         g2.add(s1);
         assertFalse(Student.isSameGroup(s1, s2));
-
     }
+
+    @Test
+    public void returnsEmptyOptionalWhenGettingNullFields() {
+        assertEquals(Optional.empty(), s1.getGender());
+        assertEquals(Optional.empty(), s1.getCareer());
+        assertEquals(Optional.empty(), s1.getCohort());
+    }
+
+    @Test
+    public void defaultValuesSetCorrectly() {
+        assertEquals(30, s1.getAge().orElse(-1));
+        assertEquals(12, s1.getWorkYearNum().orElse(-1), 0.01);
+    }
+
 }
