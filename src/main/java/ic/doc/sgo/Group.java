@@ -1,9 +1,14 @@
 package ic.doc.sgo;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Group {
     public static final int UNKNOWN_ID = -1;
@@ -69,7 +74,7 @@ public class Group {
             member.setGroup(this);
             return true;
         }
-        return true;
+        return false;
     }
 
     public boolean remove(Student member) {
@@ -106,8 +111,66 @@ public class Group {
         students.clear();
     }
 
-    public void addAll(ArrayList<Student> students) {
-        List<Student> studentList = new ArrayList<>(students);
+    public void addAll(List<Student> studentList) {
         studentList.forEach(this::add);
+    }
+
+    public int getAgeDiffOfGroup() {
+        int min = Integer.MAX_VALUE;
+        int max = -1;
+        for (Student s : this.students) {
+            OptionalInt optionalAge = s.getAge();
+            if (!optionalAge.isPresent()) {
+                continue;
+            }
+            int age = optionalAge.getAsInt();
+            min = Math.min(min, age);
+            max = Math.max(max, age);
+        }
+
+        if (max == -1 && min == Integer.MAX_VALUE) {
+            return 0;
+        }
+        return max - min;
+    }
+
+    public int getFemaleNumberOfGroup() {
+        return students.stream()
+                .filter(student -> student.getGender().orElse("male").equals("female"))
+                .collect(Collectors.toList()).size();
+    }
+
+    public int getMaleNumberOfGroup() {
+        return students.stream()
+                .filter(student -> student.getGender().orElse("male").equals("male"))
+                .collect(Collectors.toList()).size();
+    }
+
+    public boolean isGroupSameGender() {
+        List<Student> students = getStudents();
+        for (Student student : students) {
+            if (!student.getGender().orElse("male").equals(students.get(0).getGender().orElse("male"))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int getTimezoneDiffOfGroup() {
+        int res = 0;
+        for (Student s1 : getStudents()) {
+            Optional<ZoneId> s1TimeZone = s1.getTimeZone();
+            if (!s1TimeZone.isPresent()) {
+                continue;
+            }
+            for (Student s2 : getStudents()) {
+                Optional<ZoneId> s2TimeZone = s2.getTimeZone();
+                if (!s2TimeZone.isPresent()) {
+                    continue;
+                }
+                res = Math.max(res, TimeZoneCalculator.timeBetween(s1TimeZone.get(), s2TimeZone.get()));
+            }
+        }
+        return res;
     }
 }

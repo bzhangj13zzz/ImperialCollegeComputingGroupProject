@@ -1,12 +1,9 @@
 package ic.doc.sgo;
 
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.stream.Collectors;
 
 public class Constraint {
     private final int groupSizeLowerBound;
@@ -92,28 +89,10 @@ public class Constraint {
 
     //evaluation value is between 0~1, higher the value, higher the matchness.
     public double evaluateGroup(Group group) {
-        int timeZoneDifference = getTimezoneDiffOfGroup(group);
+        int timeZoneDifference = group.getTimezoneDiffOfGroup();
         return 1.0 * (12 - timeZoneDifference) / 12;
     }
 
-
-    public int getTimezoneDiffOfGroup(Group group) {
-        int res = 0;
-        for (Student s1 : group.getStudents()) {
-            Optional<ZoneId> s1TimeZone = s1.getTimeZone();
-            if (!s1TimeZone.isPresent()) {
-                continue;
-            }
-            for (Student s2 : group.getStudents()) {
-                Optional<ZoneId> s2TimeZone = s2.getTimeZone();
-                if (!s2TimeZone.isPresent()) {
-                    continue;
-                }
-                res = Math.max(res, TimeZoneCalculator.timeBetween(s1TimeZone.get(), s2TimeZone.get()));
-            }
-        }
-        return res;
-    }
 
     public boolean isValidGroup(Group group) {
         if (group.size() < groupSizeLowerBound) {
@@ -124,20 +103,21 @@ public class Constraint {
             return false;
         }
 
-        if (isTimeMatter() && getTimezoneDiffOfGroup(group) > timezoneDiff) {
+        if (isTimeMatter() && group.getTimezoneDiffOfGroup() > timezoneDiff) {
             return false;
         }
 
-        if (isAgeMatter() && getAgeDiffOfGroup(group) > ageDiff) {
+        if (isAgeMatter() && group.getAgeDiffOfGroup() > ageDiff) {
             return false;
         }
 
-        if (isGenderNumberMatter() && (getMinFemale() > getFemaleNumberOfGroup(group) || getMinMale() > getMaleNumberOfGroup(group))) {
+        if (isGenderNumberMatter() && (getMinFemale() > group.getFemaleNumberOfGroup() || getMinMale() > group
+            .getMaleNumberOfGroup())) {
             return false;
         }
 
         if (isGenderRatioMatter()) {
-            double currentRatio = 1.0*getMaleNumberOfGroup(group) / group.size();
+            double currentRatio = 1.0* group.getMaleNumberOfGroup() / group.size();
             if (currentRatio < getGenderRatio() - getGenderErrorMargin() ||
                     currentRatio > getGenderRatio() + getGenderErrorMargin()) {
                 System.out.println("The current gender ratio is " + currentRatio);
@@ -145,54 +125,11 @@ public class Constraint {
             }
         }
 
-        if (isSameGender() && !isGroupSameGender(group)) {
+        if (isSameGender() && !group.isGroupSameGender()) {
             return false;
         }
 
         return true;
-    }
-
-
-    public boolean isGroupSameGender(Group group) {
-        List<Student> students = group.getStudents();
-        for (Student student : students) {
-            if (!student.getGender().orElse("male").equals(students.get(0).getGender().orElse("male"))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    private int getMaleNumberOfGroup(Group group) {
-        return group.getStudents().stream()
-                .filter(student -> student.getGender().orElse("male").equals("male"))
-                .collect(Collectors.toList()).size();
-    }
-
-    private int getFemaleNumberOfGroup(Group group) {
-        return group.getStudents().stream()
-                .filter(student -> student.getGender().orElse("male").equals("female"))
-                .collect(Collectors.toList()).size();
-    }
-
-    public Integer getAgeDiffOfGroup(Group group) {
-        Integer res = 0;
-        for (Student s1 : group.getStudents()) {
-            OptionalInt a1 = s1.getAge();
-            if (!a1.isPresent()) {
-                continue;
-            }
-            for (Student s2 : group.getStudents()) {
-                OptionalInt a2 = s2.getAge();
-                if (!a2.isPresent()) {
-                    continue;
-                }
-                res = Math.max(res, Math.abs(a2.getAsInt() - a1.getAsInt()));
-            }
-        }
-        return res;
-
     }
 
     public boolean canBeFit(Student student, Group group) {
