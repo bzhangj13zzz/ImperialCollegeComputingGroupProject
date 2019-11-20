@@ -1,0 +1,24 @@
+{
+    "filters": {
+        "ageDiff": 2,
+        "groupSizeLowerBound": 3,
+        "groupSizeUpperBound": 3
+    },
+
+    "students": [
+        {id: "0",  "age": 20},
+        {id: "1",  "age": 20},
+        {id: "2",  "age": 20},
+        {id: "3",  "age": 20},
+        {id: "4",  "age": 20},
+        {id: "5",  "age": 20},
+        {id: "6",  "age": 20},
+        {id: "7",  "age": 20},
+        {id: "8",  "age": 20},
+        {id: "9",  "age": 20},
+        {id: "10", "age": 20},
+        {id: "11", "age": 30}
+    ],
+
+    "remaining": 3
+}

@@ -122,14 +122,26 @@ public class Student {
         this.group = group;
     }
 
+    public static boolean isSameGroup(Student s1, Student s2) {
+        return s1.getGroup() == s2.getGroup();
+    }
+
+    public static void swapGroup(Student s1, Student s2) {
+        Group g1 = s1.getGroup();
+        Group g2 = s2.getGroup();
+        g2.add(s1);
+        g1.add(s2);
+    }
+
+
     public static class Builder {
         private final String id;
         private ZoneId timeZone = null;
         private String gender = null;
-        private int age = -1;
+        private int age = 30;
         private String career = null;
         private String degree = null;
-        private double workYearNum = -1.0;
+        private double workYearNum = 12;
         private String cohort = null;
         private final Map<String, JsonElement> additionalAttributes = new HashMap<>();
 

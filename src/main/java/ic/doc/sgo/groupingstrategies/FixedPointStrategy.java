@@ -1,124 +1,168 @@
 package ic.doc.sgo.groupingstrategies;
 
-import ic.doc.sgo.Constraint;
-import ic.doc.sgo.Group;
-import ic.doc.sgo.Student;
+import ic.doc.sgo.*;
+import ic.doc.sgo.groupingstrategies.vectorspacestrategy.*;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 //N^3
 public class FixedPointStrategy implements GroupingStrategy {
 
+    private Map<String, Student> idToStudents = new HashMap<>();
+
     @Override
     public List<Group> apply(List<Student> students, Constraint constraint) {
-        List<Group> bestGroups = new ArrayList<>();
-        bestGroups.add(Group.from(students));
-        for (int i = 1; i <= 100; i++) {
-            List<Student> newStudents = cloneStudents(students);
-            List<Group> groups = new RandomGroupingStrategy().apply(newStudents, constraint);
-            if (groups.size() == 1) {
-                return groups;
-            }
+        VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint);
+        students.forEach(student -> idToStudents.put(student.getId(), student));
+        List<Node> nodes = students.stream()
+                .map(student -> Converters.NodeFromStudentAndConstraint(student, constraint))
+                .collect(Collectors.toList());
 
-            FixedPointToBest(newStudents, groups, constraint);
 
-            validifyGroups(groups, constraint);
+        List<Node> unallocatedCluster = new ArrayList<>();
+        List<Cluster> validClusters = new ArrayList<>();
+        //TODO: need to imporove the following.
 
-            AdjustGroupsAfterValidation(groups, constraint);
+        int cores = Runtime.getRuntime().availableProcessors();
+        cores = Math.max(1, cores * 2 / 3);
+        ExecutorService executorService = Executors.newFixedThreadPool(cores);
+        List<Future<List<Cluster>>> futures = new ArrayList<>();
 
-            if (groups.get(0).size() == 0) {
-                return groups;
-            }
-
-            if (groups.get(0).size() < bestGroups.get(0).size()) {
-                bestGroups = groups;
-            }
+        for (int i = 0; i < nodes.size(); i += 150) {
+            int t = Math.min(i + 150, nodes.size());
+            int finalI = i;
+            futures.add(executorService.submit(
+                    () -> VectorizedFixedPointStrategy.apply(new ArrayList<>(nodes.subList(finalI, t)), vectorSpace)));
         }
 
-        return bestGroups;
+        for (Future<List<Cluster>> future : futures) {
+            try {
+                List<Cluster> cluster = future.get();
+
+                if (cluster.size() > 0) {
+                    validClusters.addAll(cluster.subList(1, cluster.size()));
+                }
+                unallocatedCluster.addAll(cluster.get(0).getNodes());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        executorService.shutdown();
+//
+//        for (int i = 0; i < nodes.size(); i += 150) {
+//            int t = Math.min(i+150, nodes.size());
+//            List<Cluster> cluster = VectorizedFixedPointStrategy.apply(new ArrayList<>(nodes.subList(i, t)),
+//                            vectorSpace);
+//            if (cluster.size() > 0) {
+//                validClusters.addAll(cluster.subList(1, cluster.size()));
+//            }
+//            unallocatedCluster.addAll(cluster.get(0).getNodes());
+//        }
+
+        List<Cluster> bestClusters = VectorizedFixedPointStrategy.apply(unallocatedCluster, vectorSpace);
+        bestClusters.addAll(validClusters);
+        for (int i = 0; i < bestClusters.size(); i++) {
+            bestClusters.get(i).setId(i);
+        }
+
+       // List<Cluster>  bestClusters = VectorizedFixedPointStrategy.apply(nodes, vectorSpace);
+        for (Cluster cluster : bestClusters.subList(1, bestClusters.size())) {
+            assert vectorSpace.isValidCluster(cluster);
+        }
+
+        return convertBackStudentsInGroups(bestClusters);
     }
 
-    private List<Student> cloneStudents(List<Student> students) {
-        List<Student> newStudents =  new ArrayList<>();
-        for (Student student: students) {
-            newStudents.add(Student.fromStudent(student));
+
+    private List<Group> convertBackStudentsInGroups(List<Cluster> clusters) {
+        List<Group> res = new ArrayList<>();
+        for (Cluster cluster : clusters) {
+            List<Student> students = cluster.getNodes()
+                    .stream()
+                    .map(node -> idToStudents.get(node.getId()))
+                    .collect(Collectors.toList());
+            Group newGroup = Group.from(students);
+            newGroup.setId(cluster.getId());
+            res.add(newGroup);
         }
-        return newStudents;
+        return res;
     }
 
-    private void FixedPointToBest(List<Student> students, List<Group> groups, Constraint constraint) {
-        boolean isChanged = true;
-        while (isChanged) {
-            isChanged = false;
-            for (Student s1 : students) {
-                for (Student s2 : students) {
-                    if (Util.isSameGroup(s1, s2)) {
-                        continue;
-                    }
-                    if (constraint.isBetterFitIfSwap(s1, s2)) {
-                        Util.swapGroup(s1, s2);
-                        isChanged = true;
-                    }
-                }
-            }
+    public static final class Converters {
 
-            if (!isChanged) {
-                for (Student s1: students) {
-                    for (Group group: groups) {
-                        if (groups.contains(s1)) continue;
-                        if (constraint.canbeBetterFit(s1, group)) {
-                            group.add(s1);
-                            isChanged = true;
-                        }
-                    }
-                }
-            }
-
-        }
-    }
-
-    private void AdjustGroupsAfterValidation(List<Group> groups, Constraint constraint) {
-        List<Student> invalidStudents = new ArrayList<>(groups.get(0).getStudents());
-
-        for (Student student: invalidStudents) {
-            for (Group group: groups.subList(1, groups.size())) {
-                if (constraint.canBeFit(student, group)) {
-                    group.add(student);
-                }
-            }
+        private Converters() {
         }
 
-        if (constraint.isValidGroup(groups.get(0))) {
-            Group newGroup = Group.from(new ArrayList<>());
-            List<Student> students = new ArrayList<>(groups.get(0).getStudents());
-            for (Student student: students) {
-                newGroup.add(student);
-            }
-            groups.add(newGroup);
-            newGroup.setId(groups.indexOf(newGroup));
-        }
-    }
+        public static VectorSpace VectorSpaceFromConstraint(Constraint constraint) {
+            Map<String, VectorSpace.Property> dimensions = new HashMap<>();
+            int clusterSizeLowerBound;
+            int clusterSizeUpperBound;
+            Map<String, HashMap<String, Integer>> discreteAttribute = new HashMap<>();
 
-    private void validifyGroups(List<Group> groups, Constraint constraint) {
-        List<Group> removeGroupList = new ArrayList<>();
-        for (Group group: groups.subList(1, groups.size())) {
-            if (!constraint.isValidGroup(group)) {
-                for (Student student : constraint.getInvalidStudentsFromGroup(group)) {
-                    groups.get(0).add(student);
-                }
+            if (constraint.isTimeMatter()) {
+                dimensions.put(Attributes.TIMEZONE.getName(), new VectorSpace.Property(12.0, VectorSpace.Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
             }
-            if (group.size() == 0) {
-                removeGroupList.add(group);
+
+            if (constraint.isAgeMatter()) {
+                dimensions.put(Attributes.AGE.getName(), new VectorSpace.Property(120.0, VectorSpace.Type.LINE, (double) constraint.getAgeDiff().getAsInt()));
             }
+
+            if (constraint.isSameGender()) {
+                dimensions.put(Attributes.GENDER.getName(), new VectorSpace.Property(2.0, VectorSpace.Type.LINE, 0.0));
+            }
+
+            discreteAttribute.put(Attributes.GENDER.getName(), new HashMap<>());
+            discreteAttribute.get(Attributes.GENDER.getName()).put("male", 0);
+            discreteAttribute.get(Attributes.GENDER.getName()).put("female", 0);
+            if (constraint.isGenderMatter()) {
+                assert constraint.getMinMale() + constraint.getMinFemale() <= constraint.getGroupSizeLowerBound();
+                discreteAttribute.get(Attributes.GENDER.getName()).put("male", constraint.getMinMale());
+                discreteAttribute.get(Attributes.GENDER.getName()).put("female", constraint.getMinFemale());
+            }
+
+            clusterSizeLowerBound = constraint.getGroupSizeLowerBound();
+            clusterSizeUpperBound = constraint.getGroupSizeUpperBound();
+            return new VectorSpace(dimensions, clusterSizeLowerBound, clusterSizeUpperBound, discreteAttribute);
         }
 
-        for (Group group: removeGroupList) {
-            groups.remove(group);
+        public static Node NodeFromStudentAndConstraint(Student student, Constraint constraint) {
+
+            String id;
+            Map<String, Double> coordinateMap = new HashMap<>();
+            Map<String, String> discreteAttributeType = new HashMap<>();
+
+            id = student.getId();
+
+            if (constraint.isTimeMatter()) {
+                coordinateMap.put(Attributes.TIMEZONE.getName(),
+                        (double) TimeZoneCalculator.timeZoneInInteger(student.getTimeZone().orElse(ZoneId.of("UTC+0"))));
+            }
+
+            if (constraint.isAgeMatter()) {
+                coordinateMap.put(Attributes.AGE.getName(), (double) student.getAge().orElse(0));
+            }
+
+            if (constraint.isSameGender()) {
+                coordinateMap.put(Attributes.GENDER.getName(), (double) genderToInteger(student.getGender().orElse("male")));
+            }
+
+            discreteAttributeType.put(Attributes.GENDER.getName(), "male");
+            if (constraint.isGenderMatter()) {
+                discreteAttributeType.put(Attributes.GENDER.getName(), student.getGender().orElse("male"));
+            }
+
+            return new Node(id, coordinateMap, discreteAttributeType);
         }
 
-        for (int i = 0; i < groups.size(); i++) {
-            groups.get(i).setId(i);
+        private static int genderToInteger(String gender) {
+            return gender.equals("male")? 0: 1;
         }
+
     }
 }

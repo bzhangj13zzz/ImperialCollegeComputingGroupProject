@@ -1,0 +1,22 @@
+{
+    "filters": {
+        "isSameGender": true,
+        "groupSizeLowerBound": 2,
+        "groupSizeUpperBound": 2
+    },
+
+    "students": [
+        {id: "0",  "gender": "male"},
+        {id: "1",  "gender": "male"},
+        {id: "2",  "gender": "male"},
+        {id: "3",  "gender": "male"},
+        {id: "5",  "gender": "female"},
+        {id: "6",  "gender": "female"},
+        {id: "7",  "gender": "female"},
+        {id: "8",  "gender": "female"},
+        {id: "9",  "gender": "female"},
+        {id: "10", "gender": "female"}
+    ],
+
+    "remaining": 0
+}

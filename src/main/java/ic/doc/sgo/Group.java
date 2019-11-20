@@ -1,44 +1,47 @@
 package ic.doc.sgo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class Group {
     public static final int UNKNOWN_ID = -1;
     public static final int UNALLOC_ID = 0;
 
     private int id = UNKNOWN_ID;
-    private final List<Student> studentList;
+    private final List<Student> students;
 
     private Group(List<Student> students) {
-        studentList = students;
+        this.students = students;
     }
 
     private Group(int id, List<Student> students) {
         this.id = id;
-        studentList = students;
+        this.students = students;
     }
 
-    public static Group from(List<Student> students) {
-        return new Group(students);
+    public static Group from(List<Student> members) {
+        return new Group(members);
     }
 
-    public static Group from(int id, List<Student> students) {
-        return new Group(id, students);
+    public static Group from(int id, List<Student> members) {
+        return new Group(id, members);
     }
 
-    public static Group of(Student... students) {
-        return new Group(new ArrayList<>(Arrays.asList(students)));
+    public static Group of(Student... members) {
+        return new Group(new ArrayList<>(Arrays.asList(members)));
     }
 
-    public static Group of(int id, Student... students) {
-        return new Group(id, new ArrayList<>(Arrays.asList(students)));
+    public static Group of(int id, Student... members) {
+        return new Group(id, new ArrayList<>(Arrays.asList(members)));
     }
 
     @Override
     public String toString() {
         return "Group{" +
                 "id=" + id +
-                ", studentList=" + studentList +
+                ", memberList=" + students +
                 '}';
     }
 
@@ -48,50 +51,43 @@ public class Group {
         if (o == null || getClass() != o.getClass()) return false;
         Group group = (Group) o;
         return id == group.id &&
-                Objects.equals(studentList, group.studentList);
+                Objects.equals(students, group.students);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, studentList);
+        return Objects.hash(id, students);
     }
 
-    public boolean add(Student student) {
-        if (!studentList.contains(student)) {
-            Group origin = student.getGroup();
+    public boolean add(Student member) {
+        if (!this.students.contains(member)) {
+            Group origin = member.getGroup();
             if (origin != null) {
-                origin.remove(student);
+                origin.remove(member);
             }
-            studentList.add(student);
-            student.setGroup(this);
+            this.students.add(member);
+            member.setGroup(this);
             return true;
         }
         return true;
     }
 
-    public boolean addAll(Collection<Student> students) {
-        return studentList.addAll(students);
-    }
-
-    public boolean remove(Student student) {
-        if (studentList.contains(student)) {
-            studentList.remove(student);
-            student.setGroup(null);
+    public boolean remove(Student member) {
+        if (students.contains(member)) {
+            students.remove(member);
+            member.setGroup(null);
             return true;
         }
         return false;
     }
 
-    public void clear() {
-        studentList.clear();
-    }
 
     public int size() {
-        return studentList.size();
+        return students.size();
     }
 
     public List<Student> getStudents() {
-        return this.studentList;
+        return this.students;
     }
 
     public int getId() {
@@ -102,7 +98,16 @@ public class Group {
         this.id = id;
     }
 
-    public boolean contains(Student s1) {
-        return studentList.contains(s1);
+    public boolean contains(Student member) {
+        return students.contains(member);
+    }
+
+    public void clear() {
+        students.clear();
+    }
+
+    public void addAll(ArrayList<Student> students) {
+        List<Student> studentList = new ArrayList<>(students);
+        studentList.forEach(this::add);
     }
 }

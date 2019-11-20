@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GroupingService {
-  public List<Group> groupStudent(List<Student> studentList, Constraint constraint) {
-    return new FixedPointStrategy().apply(studentList,constraint);
-  }
+    public List<Group> groupStudent(List<Student> studentList, Constraint constraint) {
+        return new FixedPointStrategy().apply(studentList, constraint);
+    }
 }
