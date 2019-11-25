@@ -118,14 +118,6 @@ public class FixedPointStrategy implements GroupingStrategy {
                 dimensions.put(Attributes.GENDER.getName(), new VectorSpace.Property(2.0, VectorSpace.Type.LINE, 0.0));
             }
 
-            if (constraint.isGenderRatioMatter()) {
-
-            }
-
-//            discreteAttribute.put(Attributes.GENDER.getName(), new HashMap<>());
-//            discreteAttribute.get(Attributes.GENDER.getName()).put("male", 0);
-//            discreteAttribute.get(Attributes.GENDER.getName()).put("female", 0);
-
 
             if (constraint.isGenderNumberMatter()) {
                 assert constraint.getMinMale() + constraint.getMinFemale() <= constraint.getGroupSizeLowerBound();
@@ -142,6 +134,13 @@ public class FixedPointStrategy implements GroupingStrategy {
                         new Pair<>(constraint.getGenderRatio(), constraint.getGenderErrorMargin()));
                 ratioAttribute.get(Attributes.GENDER.getName()).put("female",
                         new Pair<>((1-constraint.getGenderRatio()), constraint.getGenderErrorMargin()));
+            }
+
+            for (String attribute: constraint.getAdditionalAttributes().keySet()) {
+                assert constraint.getMinNumOfAdditionalAttributes(attribute) <= constraint.getGroupSizeLowerBound();
+                assert !discreteAttribute.containsKey(attribute);
+                discreteAttribute.put(attribute, new HashMap<>());
+                discreteAttribute.get(attribute).put("true", constraint.getMinNumOfAdditionalAttributes(attribute));
             }
 
             clusterSizeLowerBound = constraint.getGroupSizeLowerBound();
@@ -173,6 +172,10 @@ public class FixedPointStrategy implements GroupingStrategy {
             //discreteAttributeType.put(Attributes.GENDER.getName(), "male");
             if (constraint.isGenderNumberMatter() || constraint.isGenderRatioMatter()) {
                 discreteAttributeType.put(Attributes.GENDER.getName(), student.getGender().orElse("male"));
+            }
+
+            for (String attribute: constraint.getAdditionalAttributes().keySet()) {
+                discreteAttributeType.put(attribute, student.getAttribute(attribute).orElse(""));
             }
 
             return new Node(id, coordinateMap, discreteAttributeType);

@@ -2,10 +2,7 @@ package ic.doc.sgo;
 
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Constraint {
@@ -20,9 +17,11 @@ public class Constraint {
     private final Double genderRatio;
     private final Double genderErrorMargin;
     private final Boolean isSameGender;
+    private final Map<String, Integer> additionalDiscreteAttribute;
 
     private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, Integer timezoneDiff, Integer ageDiff,
-                       Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin, Boolean isSameGender) {
+                       Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin,
+                       Boolean isSameGender, Map<String, Integer> additionalDiscreteAttribute) {
         this.groupSizeLowerBound = groupSizeLowerBound;
         this.groupSizeUpperBound = groupSizeUpperBound;
         this.timezoneDiff = timezoneDiff;
@@ -32,6 +31,7 @@ public class Constraint {
         this.genderRatio = genderRatio;
         this.genderErrorMargin = genderErrorMargin;
         this.isSameGender = isSameGender;
+        this.additionalDiscreteAttribute = additionalDiscreteAttribute;
     }
 
     @Override
@@ -46,6 +46,7 @@ public class Constraint {
                 ", genderRatio=" + genderRatio +
                 ", genderErrorMargin=" + genderErrorMargin +
                 ", isSameGender=" + isSameGender +
+                ", additionalDiscreteAttribute=" + additionalDiscreteAttribute +
                 '}';
     }
 
@@ -149,7 +150,24 @@ public class Constraint {
             return false;
         }
 
+        for (String attribute: additionalDiscreteAttribute.keySet()) {
+            if (additionalDiscreteAttribute.get(attribute)  >
+                    getNumberOfAdditionalAttributeTypeInGroup(group, attribute, "true")) {
+                return false;
+            }
+        }
+
         return true;
+    }
+
+    private Integer getNumberOfAdditionalAttributeTypeInGroup(Group group, String attribute, String type) {
+        int res = 0;
+        for (Student student: group.getStudents()) {
+            if (student.getAttribute(attribute).orElse("").equals(type)) {
+                res++;
+            }
+        }
+        return res;
     }
 
 
@@ -312,6 +330,15 @@ public class Constraint {
         return this.ageDiff == null ? OptionalInt.empty() : OptionalInt.of(this.ageDiff);
     }
 
+    public Map<String, Integer> getAdditionalAttributes() {
+        return this.additionalDiscreteAttribute;
+    }
+
+    public int getMinNumOfAdditionalAttributes(String attribute) {
+        assert this.additionalDiscreteAttribute.containsKey(attribute);
+        return this.additionalDiscreteAttribute.get(attribute);
+    }
+
 
     public static class Builder {
         private final int groupSizeLowerBound;
@@ -323,6 +350,7 @@ public class Constraint {
         private Double genderRatio;
         private Double genderErrorMargin;
         private Boolean isSameGender;
+        private Map<String, Integer> additionalDiscreteAttribute = new HashMap<>();
 
         public Builder(int groupSizeLowerBound, int groupSizeUpperBound) {
             this.groupSizeLowerBound = groupSizeLowerBound;
@@ -377,7 +405,8 @@ public class Constraint {
 
         public Constraint createConstrain() {
             return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff,
-                    this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin, this.isSameGender);
+                    this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin, this.isSameGender,
+                    this.additionalDiscreteAttribute);
         }
 
         public Builder setIsSameGender() {
@@ -387,6 +416,11 @@ public class Constraint {
             assert this.minFemale == null;
 
             this.isSameGender = true;
+            return this;
+        }
+
+        public Builder setAdditionalDiscreteAttribute(Map<String, Integer> additionalDiscreteAttribute) {
+            this.additionalDiscreteAttribute = additionalDiscreteAttribute;
             return this;
         }
     }
