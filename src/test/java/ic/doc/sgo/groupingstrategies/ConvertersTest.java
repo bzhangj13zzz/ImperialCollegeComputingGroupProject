@@ -120,9 +120,10 @@ public class ConvertersTest {
                 .setGenderErrorMargin(0.1)
                 .createConstrain();
         vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
-        assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "female"));
-        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "male"));
-
+        assertTrue(0.4 == vectorSpace.getRatioAttributeValue(Attributes.GENDER.getName(), "female").first());
+        assertTrue(0.6 == vectorSpace.getRatioAttributeValue(Attributes.GENDER.getName(), "male").first());
+        assertTrue(0.1 == vectorSpace.getRatioAttributeValue(Attributes.GENDER.getName(), "female").second());
+        assertTrue(0.1 == vectorSpace.getRatioAttributeValue(Attributes.GENDER.getName(), "male").second());
         //ALERT: every time add an new Attribute, add corresponding test here.
 
         //Mix
@@ -135,8 +136,6 @@ public class ConvertersTest {
         vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
         assertEquals(5, vectorSpace.getClusterSizeLowerBound());
         assertEquals(6, vectorSpace.getClusterSizeUpperBound());
-        assertEquals(1, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "female"));
-        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "male"));
         assertFalse(vectorSpace.containDimension(Attributes.GENDER.getName()));
         timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE.getName());
         assertTrue(2 - eps <= timeZoneDiff && timeZoneDiff <= 2 + eps);
