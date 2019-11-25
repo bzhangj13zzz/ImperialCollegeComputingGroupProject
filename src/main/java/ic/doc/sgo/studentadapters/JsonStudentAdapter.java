@@ -64,7 +64,7 @@ public class JsonStudentAdapter implements StudentAdapter {
                     studentBuilder.setAge(studentJson.get(key).getAsInt());
                     break;
                 default:
-                    studentBuilder.addAttribute(key, studentJson.get(key));
+                    studentBuilder.addAttribute(key, studentJson.get(key).getAsString());
             }
         }
         if (!countryName.equals("")) {

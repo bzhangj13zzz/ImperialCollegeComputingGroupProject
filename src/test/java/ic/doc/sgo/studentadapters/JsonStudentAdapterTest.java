@@ -69,25 +69,17 @@ public class JsonStudentAdapterTest {
 
     @Test
     public void canReturnStudentIfJsonHasMembersWithAdditionalAttributes() {
-        JsonArray array = new JsonArray();
-        array.add(1);
-        array.add(2);
-        JsonObject obj = new JsonObject();
         JsonObject json = new JsonObject();
         json.addProperty("id", "123");
         json.addProperty("str", "Str");
         json.addProperty("int", 1);
         json.addProperty("float", 1.1);
         json.addProperty("bool", true);
-        json.add("array", array);
-        json.add("obj", obj);
         Student student = new Student.Builder("123")
-                .addAttribute("str", new JsonPrimitive("Str"))
-                .addAttribute("int", new JsonPrimitive(1))
-                .addAttribute("float", new JsonPrimitive(1.1))
-                .addAttribute("bool", new JsonPrimitive(true))
-                .addAttribute("array", array)
-                .addAttribute("obj", obj)
+                .addAttribute("str", "Str")
+                .addAttribute("int", "1")
+                .addAttribute("float", "1.1")
+                .addAttribute("bool", "true")
                 .createStudent();
         assertThat(new JsonStudentAdapter(json, localDate).toStudent(), is(Optional.of(student)));
     }
