@@ -1,0 +1,24 @@
+{
+    "filters": {
+        "quant": 2,
+        "groupSizeLowerBound": 3,
+        "groupSizeUpperBound": 3
+    },
+
+    "students": [
+        {id: "0",  "age": 20, "quant": true},
+        {id: "1",  "age": 21, "quant": true},
+        {id: "2",  "age": 22, "quant": true},
+        {id: "3",  "age": 23, "quant": true},
+        {id: "4",  "age": 24, "quant": true},
+        {id: "5",  "age": 25, "quant": true},
+        {id: "6",  "age": 26, "quant": true},
+        {id: "7",  "age": 27, "quant": true},
+        {id: "8",  "age": 28, "quant": true},
+        {id: "9",  "age": 29, "quant": true},
+        {id: "10", "age": 30, "quant": true},
+        {id: "11", "age": 31, "quant": true}
+    ],
+
+    "remaining": 0
+}
