@@ -18,7 +18,7 @@ public class FixedPointStrategy implements GroupingStrategy {
 
     @Override
     public List<Group> apply(List<Student> students, Constraint constraint) {
-        VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint);
+        VectorSpace vectorSpace = Converters.VectorSpaceFromConstraint(constraint, students);
         students.forEach(student -> idToStudents.put(student.getId(), student));
         List<Node> nodes = students.stream()
                 .map(student -> Converters.NodeFromStudentAndConstraint(student, constraint))
@@ -99,7 +99,7 @@ public class FixedPointStrategy implements GroupingStrategy {
         private Converters() {
         }
 
-        public static VectorSpace VectorSpaceFromConstraint(Constraint constraint) {
+        public static VectorSpace VectorSpaceFromConstraint(Constraint constraint, List<Student> students) {
             Map<String, VectorSpace.Property> dimensions = new HashMap<>();
             int clusterSizeLowerBound;
             int clusterSizeUpperBound;
@@ -140,17 +140,33 @@ public class FixedPointStrategy implements GroupingStrategy {
 
             if (constraint.isAdditionalAttributesMatter()) {
                 for (String attribute : constraint.getAdditionalAttributes().keySet()) {
-                    assert constraint.getMinNumOfAdditionalAttributes(attribute) <= constraint.getGroupSizeLowerBound();
+                    Pair<Integer, Integer> range = constraint.getRangeOfDiscreteAttributeConstraints(attribute);
+                    assert range.first() <= constraint.getGroupSizeLowerBound();
                     assert !discreteAttribute.containsKey(attribute);
                     discreteAttribute.put(attribute, new HashMap<>());
-                    discreteAttribute.get(attribute).put("true",
-                            new Pair<>(constraint.getMinNumOfAdditionalAttributes(attribute), constraint.getGroupSizeUpperBound()));
+                    for (String type: getTypesOfDiscreteAttributeFromStudents(students, attribute)) {
+                        assert !type.equals("");
+                        discreteAttribute.get(attribute)
+                                .put(type, constraint.getRangeOfDiscreteAttributeConstraints(attribute));
+                    }
+
                 }
             }
 
             clusterSizeLowerBound = constraint.getGroupSizeLowerBound();
             clusterSizeUpperBound = constraint.getGroupSizeUpperBound();
             return new VectorSpace(dimensions, clusterSizeLowerBound, clusterSizeUpperBound, discreteAttribute, ratioAttribute);
+        }
+
+        private static List<String> getTypesOfDiscreteAttributeFromStudents(List<Student> students, String attribute) {
+            List<String> res = new ArrayList<>();
+            for (Student student: students) {
+                String type = student.getAttribute(attribute).orElse("");
+                if (!type.equals("") && !res.contains(type)) {
+                    res.add(type);
+                }
+            }
+            return res;
         }
 
         public static Node NodeFromStudentAndConstraint(Student student, Constraint constraint) {

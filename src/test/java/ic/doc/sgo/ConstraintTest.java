@@ -1,5 +1,6 @@
 package ic.doc.sgo;
 
+import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Pair;
 import org.junit.Test;
 
 import java.time.ZoneId;
@@ -24,8 +25,8 @@ public class ConstraintTest {
             .setIsSameGender()
             .createConstrain();
     private Constraint constraintForAdditionalDiscreteAttribute = new Constraint.Builder(3, 4)
-            .setAdditionalDiscreteAttribute(new HashMap<String, Integer>() {{
-                put("quant", 2);
+            .setDiscreteAttributeConstraints(new HashMap<String, Pair<Integer, Integer>>() {{
+                put("quant", new Pair<>(2, 4));
             }})
             .createConstrain();
 
@@ -144,6 +145,8 @@ public class ConstraintTest {
         g1.clear();
         g1.addAll(new ArrayList<>(Arrays.asList(s1, s2, s8)));
         assertFalse(constraintForAdditionalDiscreteAttribute.isValidGroup(g1));
+
+        //test exclusion
     }
 
 }

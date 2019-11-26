@@ -6,11 +6,13 @@ import ic.doc.sgo.Student;
 import ic.doc.sgo.TimeZoneCalculator;
 import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Cluster;
 import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Node;
+import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Pair;
 import ic.doc.sgo.groupingstrategies.vectorspacestrategy.VectorSpace;
 import org.junit.Test;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -31,17 +33,11 @@ public class ConvertersTest {
             .createConstrain();
 
     private Constraint constraintForAdditionalDiscreteAttribute = new Constraint.Builder(3, 4)
-            .setAdditionalDiscreteAttribute(new HashMap<String, Integer>() {{
-                put("quant", 2);
+            .setDiscreteAttributeConstraints(new HashMap<String, Pair<Integer, Integer>>() {{
+                put("quant", new Pair<>(2, 4));
             }})
             .createConstrain();
 
-    private VectorSpace vectorSpaceForSameGender = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraintForSameGender);
-
-    private VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraint);
-
-    private VectorSpace vectorSpaceForAdditionalAttribute = FixedPointStrategy.Converters
-            .VectorSpaceFromConstraint(constraintForAdditionalDiscreteAttribute);
 
     private Student s1 = new Student.Builder("1")
             .setTimeZone(ZoneId.of("UTC+1"))
@@ -124,7 +120,7 @@ public class ConvertersTest {
         Constraint testConstraint = new Constraint.Builder(4, 5)
                 .setTimezoneDiff(2).createConstrain();
         assertTrue(testConstraint.getTimezoneDiff().isPresent());
-        VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
+        VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint, new ArrayList<>());
         assertEquals(4, vectorSpace.getClusterSizeLowerBound());
         assertEquals(5, vectorSpace.getClusterSizeUpperBound());
         Double timeZoneDiff = vectorSpace.getDimensionValue(Attributes.TIMEZONE.getName());
@@ -133,14 +129,14 @@ public class ConvertersTest {
         //Age
         testConstraint = new Constraint.Builder(4, 4)
                 .setAgeDiff(3).createConstrain();
-        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
+        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint, new ArrayList<>());
         Double ageDiff = vectorSpace.getDimensionValue(Attributes.AGE.getName());
         assertTrue(3 - eps <= ageDiff && ageDiff <= 3 + eps);
 
         //Gender
         testConstraint = new Constraint.Builder(4, 4)
                 .setMinFemale(3).createConstrain();
-        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
+        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint, new ArrayList<>());
         assertTrue(3 == vectorSpace.getDiscreteAttributeValueRange(Attributes.GENDER.getName(), "female").first());
         assertTrue(0 == vectorSpace.getDiscreteAttributeValueRange(Attributes.GENDER.getName(), "male").first());
 
@@ -148,7 +144,7 @@ public class ConvertersTest {
                 .setGenderRatio(0.6)
                 .setGenderErrorMargin(0.1)
                 .createConstrain();
-        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
+        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint, new ArrayList<>());
         assertEquals(0.4, vectorSpace.getRatioAttributeValue(Attributes.GENDER.getName(), "female").first(), 0.0);
         assertEquals(0.6, vectorSpace.getRatioAttributeValue(Attributes.GENDER.getName(), "male").first(), 0.0);
         assertEquals(0.1, vectorSpace.getRatioAttributeValue(Attributes.GENDER.getName(), "female").second(), 0.0);
@@ -157,11 +153,11 @@ public class ConvertersTest {
 
         //Additional Attribute
         testConstraint = new Constraint.Builder(3, 4)
-                .setAdditionalDiscreteAttribute(new HashMap<String, Integer>() {{
-                    put("quant", 2);
+                .setDiscreteAttributeConstraints(new HashMap<String, Pair<Integer, Integer>>() {{
+                    put("quant", new Pair<>(2, 4));
                 }})
                 .createConstrain();
-        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
+        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint, new ArrayList<>(Arrays.asList(s8, s1)));
         assertTrue(2 == vectorSpace.getDiscreteAttributeValueRange("quant", "true").first());
 
         //Mix
@@ -171,7 +167,7 @@ public class ConvertersTest {
                 .setTimezoneDiff(2)
                 .setAgeDiff(3)
                 .createConstrain();
-        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
+        vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint, new ArrayList<>());
         assertEquals(5, vectorSpace.getClusterSizeLowerBound());
         assertEquals(6, vectorSpace.getClusterSizeUpperBound());
         assertFalse(vectorSpace.containDimension(Attributes.GENDER.getName()));

@@ -1,6 +1,8 @@
 package ic.doc.sgo;
 
 
+import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Pair;
+
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,11 +19,11 @@ public class Constraint {
     private final Double genderRatio;
     private final Double genderErrorMargin;
     private final Boolean isSameGender;
-    private final Map<String, Integer> additionalDiscreteAttribute;
+    private final Map<String, Pair<Integer, Integer>> discreteAttributeConstraints;
 
     private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, Integer timezoneDiff, Integer ageDiff,
                        Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin,
-                       Boolean isSameGender, Map<String, Integer> additionalDiscreteAttribute) {
+                       Boolean isSameGender, Map<String, Pair<Integer,Integer>> additionalDiscreteAttribute) {
         this.groupSizeLowerBound = groupSizeLowerBound;
         this.groupSizeUpperBound = groupSizeUpperBound;
         this.timezoneDiff = timezoneDiff;
@@ -31,7 +33,7 @@ public class Constraint {
         this.genderRatio = genderRatio;
         this.genderErrorMargin = genderErrorMargin;
         this.isSameGender = isSameGender;
-        this.additionalDiscreteAttribute = additionalDiscreteAttribute;
+        this.discreteAttributeConstraints = additionalDiscreteAttribute;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class Constraint {
                 ", genderRatio=" + genderRatio +
                 ", genderErrorMargin=" + genderErrorMargin +
                 ", isSameGender=" + isSameGender +
-                ", additionalDiscreteAttribute=" + additionalDiscreteAttribute +
+                ", additionalDiscreteAttribute=" + discreteAttributeConstraints +
                 '}';
     }
 
@@ -151,15 +153,29 @@ public class Constraint {
         }
 
         if (isAdditionalAttributesMatter()) {
-            for (String attribute : additionalDiscreteAttribute.keySet()) {
-                if (additionalDiscreteAttribute.get(attribute) >
-                        getNumberOfAdditionalAttributeTypeInGroup(group, attribute, "true")) {
-                    return false;
+            for (String attribute : discreteAttributeConstraints.keySet()) {
+                Pair<Integer, Integer> range = discreteAttributeConstraints.get(attribute);
+                for (String type: getTypesOfDiscreteAttributeFromGroup(group, attribute))  {
+                    int number = getNumberOfAdditionalAttributeTypeInGroup(group, attribute, type);
+                    if (number < range.first() || number > range.second()) {
+                        return false;
+                    }
                 }
             }
         }
 
         return true;
+    }
+
+    private List<String> getTypesOfDiscreteAttributeFromGroup(Group group, String attribute) {
+        List<String> res = new ArrayList<>();
+        for (Student student: group.getStudents()) {
+            String type = student.getAttribute(attribute).orElse("");
+            if (!type.equals("") && !res.contains(type)) {
+                res.add(type);
+            }
+        }
+        return res;
     }
 
     private Integer getNumberOfAdditionalAttributeTypeInGroup(Group group, String attribute, String type) {
@@ -332,17 +348,17 @@ public class Constraint {
         return this.ageDiff == null ? OptionalInt.empty() : OptionalInt.of(this.ageDiff);
     }
 
-    public Map<String, Integer> getAdditionalAttributes() {
-        return this.additionalDiscreteAttribute;
+    public Map<String, Pair<Integer, Integer>> getAdditionalAttributes() {
+        return this.discreteAttributeConstraints;
     }
 
-    public int getMinNumOfAdditionalAttributes(String attribute) {
-        assert this.additionalDiscreteAttribute.containsKey(attribute);
-        return this.additionalDiscreteAttribute.get(attribute);
+    public Pair<Integer, Integer> getRangeOfDiscreteAttributeConstraints(String attribute) {
+        assert this.discreteAttributeConstraints.containsKey(attribute);
+        return this.discreteAttributeConstraints.get(attribute);
     }
 
     public boolean isAdditionalAttributesMatter() {
-        return this.additionalDiscreteAttribute != null;
+        return this.discreteAttributeConstraints != null;
     }
 
 
@@ -356,7 +372,7 @@ public class Constraint {
         private Double genderRatio;
         private Double genderErrorMargin;
         private Boolean isSameGender;
-        private Map<String, Integer> additionalDiscreteAttribute = new HashMap<>();
+        private Map<String, Pair<Integer, Integer>> discreteAttributeConstraints = new HashMap<>();
 
         public Builder(int groupSizeLowerBound, int groupSizeUpperBound) {
             this.groupSizeLowerBound = groupSizeLowerBound;
@@ -412,7 +428,7 @@ public class Constraint {
         public Constraint createConstrain() {
             return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff,
                     this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin, this.isSameGender,
-                    this.additionalDiscreteAttribute);
+                    this.discreteAttributeConstraints);
         }
 
         public Builder setIsSameGender() {
@@ -425,8 +441,8 @@ public class Constraint {
             return this;
         }
 
-        public Builder setAdditionalDiscreteAttribute(Map<String, Integer> additionalDiscreteAttribute) {
-            this.additionalDiscreteAttribute = additionalDiscreteAttribute;
+        public Builder setDiscreteAttributeConstraints(Map<String, Pair<Integer, Integer>> discreteAttributeConstraints) {
+            this.discreteAttributeConstraints = discreteAttributeConstraints;
             return this;
         }
     }
