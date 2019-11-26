@@ -4,7 +4,6 @@ import ic.doc.sgo.Attributes;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.TimeZoneCalculator;
-import ic.doc.sgo.groupingstrategies.FixedPointStrategy;
 import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Cluster;
 import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Node;
 import ic.doc.sgo.groupingstrategies.vectorspacestrategy.VectorSpace;
@@ -142,8 +141,8 @@ public class ConvertersTest {
         testConstraint = new Constraint.Builder(4, 4)
                 .setMinFemale(3).createConstrain();
         vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
-        assertEquals(3, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "female"));
-        assertEquals(0, vectorSpace.getDiscreteAttributeValue(Attributes.GENDER.getName(), "male"));
+        assertTrue(3 == vectorSpace.getDiscreteAttributeValueRange(Attributes.GENDER.getName(), "female").first());
+        assertTrue(0 == vectorSpace.getDiscreteAttributeValueRange(Attributes.GENDER.getName(), "male").first());
 
         testConstraint = new Constraint.Builder(5, 6)
                 .setGenderRatio(0.6)
@@ -163,7 +162,7 @@ public class ConvertersTest {
                 }})
                 .createConstrain();
         vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(testConstraint);
-        assertEquals(2, vectorSpace.getDiscreteAttributeValue("quant", "true"));
+        assertTrue(2 == vectorSpace.getDiscreteAttributeValueRange("quant", "true").first());
 
         //Mix
         testConstraint = new Constraint.Builder(5, 6)

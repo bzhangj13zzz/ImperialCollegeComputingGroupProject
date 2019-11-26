@@ -150,10 +150,12 @@ public class Constraint {
             return false;
         }
 
-        for (String attribute: additionalDiscreteAttribute.keySet()) {
-            if (additionalDiscreteAttribute.get(attribute)  >
-                    getNumberOfAdditionalAttributeTypeInGroup(group, attribute, "true")) {
-                return false;
+        if (isAdditionalAttributesMatter()) {
+            for (String attribute : additionalDiscreteAttribute.keySet()) {
+                if (additionalDiscreteAttribute.get(attribute) >
+                        getNumberOfAdditionalAttributeTypeInGroup(group, attribute, "true")) {
+                    return false;
+                }
             }
         }
 
@@ -337,6 +339,10 @@ public class Constraint {
     public int getMinNumOfAdditionalAttributes(String attribute) {
         assert this.additionalDiscreteAttribute.containsKey(attribute);
         return this.additionalDiscreteAttribute.get(attribute);
+    }
+
+    public boolean isAdditionalAttributesMatter() {
+        return this.additionalDiscreteAttribute != null;
     }
 
 
