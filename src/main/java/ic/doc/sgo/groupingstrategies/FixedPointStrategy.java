@@ -138,8 +138,8 @@ public class FixedPointStrategy implements GroupingStrategy {
                         new Pair<>((1-constraint.getGenderRatio()), constraint.getGenderErrorMargin()));
             }
 
-            if (constraint.isAdditionalAttributesMatter()) {
-                for (String attribute : constraint.getAdditionalAttributes().keySet()) {
+            if (constraint.isDiscreteAttributesConstraintsMatter()) {
+                for (String attribute : constraint.getDiscreteAttributes().keySet()) {
                     Pair<Integer, Integer> range = constraint.getRangeOfDiscreteAttributeConstraints(attribute);
                     assert range.first() <= constraint.getGroupSizeLowerBound();
                     assert !discreteAttribute.containsKey(attribute);
@@ -162,7 +162,7 @@ public class FixedPointStrategy implements GroupingStrategy {
             List<String> res = new ArrayList<>();
             for (Student student: students) {
                 String type = student.getAttribute(attribute).orElse("");
-                if (!type.equals("") && !res.contains(type)) {
+                if (!type.equals("") && !type.equals("false") && !res.contains(type)) {
                     res.add(type);
                 }
             }
@@ -195,8 +195,8 @@ public class FixedPointStrategy implements GroupingStrategy {
                 discreteAttributeType.put(Attributes.GENDER.getName(), student.getGender().orElse("male"));
             }
 
-            if (constraint.isAdditionalAttributesMatter()) {
-                for (String attribute : constraint.getAdditionalAttributes().keySet()) {
+            if (constraint.isDiscreteAttributesConstraintsMatter()) {
+                for (String attribute : constraint.getDiscreteAttributes().keySet()) {
                     discreteAttributeType.put(attribute, student.getAttribute(attribute).orElse(""));
                 }
             }

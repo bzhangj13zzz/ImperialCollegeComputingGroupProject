@@ -152,7 +152,7 @@ public class Constraint {
             return false;
         }
 
-        if (isAdditionalAttributesMatter()) {
+        if (isDiscreteAttributesConstraintsMatter()) {
             for (String attribute : discreteAttributeConstraints.keySet()) {
                 Pair<Integer, Integer> range = discreteAttributeConstraints.get(attribute);
                 for (String type: getTypesOfDiscreteAttributeFromGroup(group, attribute))  {
@@ -171,7 +171,7 @@ public class Constraint {
         List<String> res = new ArrayList<>();
         for (Student student: group.getStudents()) {
             String type = student.getAttribute(attribute).orElse("");
-            if (!type.equals("") && !res.contains(type)) {
+            if (!type.equals("") && !type.equals("false") && !res.contains(type)) {
                 res.add(type);
             }
         }
@@ -231,95 +231,6 @@ public class Constraint {
 
     }
 
-    public boolean canBeFit(Student student, Group group) {
-        Group originalGroup = student.getGroup();
-        group.add(student);
-        boolean res = isValidGroup(group);
-        originalGroup.add(student);
-        return res;
-    }
-
-    public List<Student> getInvalidStudentsFromGroup(Group group) {
-
-        List<Student> students = new ArrayList<>(group.getStudents());
-        List<Student> removeStudents = new ArrayList<>();
-        for (Student student : students) {
-            if (isBetterFitIfRemove(student, group)) {
-                removeStudents.add(student);
-                group.remove(student);
-                if (isValidGroup(group)) {
-                    return removeStudents;
-                }
-            }
-        }
-
-        return students;
-    }
-
-    private boolean isBetterFitIfRemove(Student student, Group group) {
-        double p = evaluateGroup(group);
-        group.remove(student);
-        double q = evaluateGroup(group);
-        group.add(student);
-        return q > p;
-    }
-
-    public boolean isBetterFitIfSwap(Student s1, Student s2) {
-        Group g1 = s1.getGroup();
-        Group g2 = s2.getGroup();
-        int v1 = 0;
-        if (isValidGroup(g1)) {
-            v1++;
-        }
-        if (isValidGroup(g2)) {
-            v1++;
-        }
-        double pv1 = evaluateGroup(g1);
-        double pv2 = evaluateGroup(g2);
-        Student.swapGroup(s1, s2);
-        int v2 = 0;
-        if (isValidGroup(g1)) {
-            v2++;
-        }
-        if (isValidGroup(g2)) {
-            v2++;
-        }
-        double cv1 = evaluateGroup(g1);
-        double cv2 = evaluateGroup(g2);
-        ;
-        Student.swapGroup(s1, s2);
-
-        if (v2 > v1) {
-            return true;
-        }
-        if (v2 < v1) {
-            return false;
-        }
-        return cv1 * cv2 > pv1 * pv2;
-    }
-
-    public boolean canBeBetterFit(Student s1, Group g2) {
-        Group g1 = s1.getGroup();
-        int v1 = 0;
-        if (isValidGroup(g1)) {
-            v1++;
-        }
-        if (isValidGroup(g2)) {
-            v1++;
-        }
-        g2.add(s1);
-        int v2 = 0;
-        if (isValidGroup(g1)) {
-            v2++;
-        }
-        if (isValidGroup(g2)) {
-            v2++;
-        }
-        g1.add(s1);
-
-        return v2 > v1;
-    }
-
     public boolean isSameGender() {
         return isSameGender != null && isSameGender;
     }
@@ -348,7 +259,7 @@ public class Constraint {
         return this.ageDiff == null ? OptionalInt.empty() : OptionalInt.of(this.ageDiff);
     }
 
-    public Map<String, Pair<Integer, Integer>> getAdditionalAttributes() {
+    public Map<String, Pair<Integer, Integer>> getDiscreteAttributes() {
         return this.discreteAttributeConstraints;
     }
 
@@ -357,7 +268,7 @@ public class Constraint {
         return this.discreteAttributeConstraints.get(attribute);
     }
 
-    public boolean isAdditionalAttributesMatter() {
+    public boolean isDiscreteAttributesConstraintsMatter() {
         return this.discreteAttributeConstraints != null;
     }
 
