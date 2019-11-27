@@ -1,0 +1,24 @@
+{
+    "filters": {
+        "country": "0, 2",
+        "groupSizeLowerBound": 3,
+        "groupSizeUpperBound": 3
+    },
+
+    "students": [
+        {id: "0",  "country": "the United Kingdom"},
+        {id: "1",  "country": "the United Kingdom"},
+        {id: "2",  "country": "the United Kingdom"},
+        {id: "3",  "country": "the United Kingdom"},
+        {id: "4",  "country": "the United Kingdom"},
+        {id: "5",  "country": "the United Kingdom"},
+        {id: "6",  "country": "the United Kingdom"},
+        {id: "7",  "country": "the United Kingdom"},
+        {id: "8",  "country": "the United Kingdom"},
+        {id: "9",  "country": "Dubai"},
+        {id: "10", "country": "Canada"},
+        {id: "11", "country": "Germany"}
+    ],
+
+    "remaining": 3
+}

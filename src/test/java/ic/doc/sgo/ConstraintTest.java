@@ -29,6 +29,11 @@ public class ConstraintTest {
                 put("quant", new Pair<>(2, 4));
             }})
             .createConstrain();
+    private Constraint constraintForExclusionDiscreteAttribute = new Constraint.Builder(3, 4)
+            .setDiscreteAttributeConstraints(new HashMap<String, Pair<Integer, Integer>>() {{
+                put("country", new Pair<>(0, 2));
+            }})
+            .createConstrain();
 
 
     private Student s1 = new Student.Builder("1")
@@ -85,6 +90,19 @@ public class ConstraintTest {
     private Student s10 = new Student.Builder("10")
             .setAge(5)
             .setAdditionalDiscreteAttributeWithType("quant", "true")
+            .createStudent();
+
+    private Student s11 = new Student.Builder("11")
+            .setAge(5)
+            .setAdditionalDiscreteAttributeWithType("country", "UK")
+            .createStudent();
+    private Student s12 = new Student.Builder("12")
+            .setAge(5)
+            .setAdditionalDiscreteAttributeWithType("country", "UK")
+            .createStudent();
+    private Student s13 = new Student.Builder("13")
+            .setAge(5)
+            .setAdditionalDiscreteAttributeWithType("country", "UK")
             .createStudent();
 
     private Group g1 = Group.from(new ArrayList<>());
@@ -146,7 +164,10 @@ public class ConstraintTest {
         g1.addAll(new ArrayList<>(Arrays.asList(s1, s2, s8)));
         assertFalse(constraintForAdditionalDiscreteAttribute.isValidGroup(g1));
 
-        //test exclusion
+        //test invalid exclusion
+        g1.clear();;
+        g1.addAll(new ArrayList<>(Arrays.asList(s11, s12, s13)));
+        assertFalse(constraintForExclusionDiscreteAttribute.isValidGroup(g1));
     }
 
 }

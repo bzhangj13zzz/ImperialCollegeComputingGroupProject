@@ -32,9 +32,11 @@ public class JsonStudentAdapter implements StudentAdapter {
                     break;
                 case "country":
                     countryName = studentJson.get(key).getAsString();
+                    studentBuilder.addAttribute(key, countryName);
                     break;
                 case "currentCity":
                     cityName = studentJson.get(key).getAsString();
+                    studentBuilder.addAttribute(key, cityName);
                     break;
                 case "gender":
                     studentBuilder.setGender(studentJson.get(key).getAsString().trim().toLowerCase());
