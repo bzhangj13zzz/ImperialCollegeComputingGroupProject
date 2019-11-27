@@ -8,6 +8,7 @@ import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.TimeZoneCalculator;
 import ic.doc.sgo.springframework.Service.GroupingService;
+import ic.doc.sgo.studentadapters.JsonConstraintAdapter;
 import ic.doc.sgo.studentadapters.JsonStudentAdapter;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +40,8 @@ public class GroupingController {
         Gson gson = new Gson();
         JsonObject parsedJson = gson.fromJson(json, JsonObject.class);
         JsonObject constraintJsonObject = parsedJson.getAsJsonObject("filters");
-        return gson.fromJson(constraintJsonObject, Constraint.class);
+        Optional<Constraint> optionalConstraint = new JsonConstraintAdapter(constraintJsonObject).toConstraint();
+        return optionalConstraint.orElse(null);
     }
 
     public static List<Student> getStudentFromJson(String json) {

@@ -441,6 +441,11 @@ public class Constraint {
             return this;
         }
 
+        public Builder addDiscreteAttributeConstraint(String key, Pair<Integer, Integer> value) {
+            this.discreteAttributeConstraints.put(key, value);
+            return this;
+        }
+
         public Builder setDiscreteAttributeConstraints(Map<String, Pair<Integer, Integer>> discreteAttributeConstraints) {
             this.discreteAttributeConstraints = discreteAttributeConstraints;
             return this;

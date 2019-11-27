@@ -1,8 +1,6 @@
 {
     "filters": {
-        "discreteAttributeConstraints": {
-            "country": "0, 4"
-        },
+        "country": "0, 4",
         "groupSizeLowerBound": 3,
         "groupSizeUpperBound": 3
     },
