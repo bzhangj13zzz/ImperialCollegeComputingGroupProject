@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Constraint {
+
     private final int groupSizeLowerBound;
     private final int groupSizeUpperBound;
     private final Integer timezoneDiff;
@@ -21,9 +22,10 @@ public class Constraint {
     private final Boolean isSameGender;
     private final Map<String, Pair<Integer, Integer>> discreteAttributeConstraints;
 
-    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, Integer timezoneDiff, Integer ageDiff,
-                       Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin,
-                       Boolean isSameGender, Map<String, Pair<Integer,Integer>> additionalDiscreteAttribute) {
+    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, Integer timezoneDiff,
+        Integer ageDiff,
+        Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin,
+        Boolean isSameGender, Map<String, Pair<Integer, Integer>> additionalDiscreteAttribute) {
         this.groupSizeLowerBound = groupSizeLowerBound;
         this.groupSizeUpperBound = groupSizeUpperBound;
         this.timezoneDiff = timezoneDiff;
@@ -37,19 +39,40 @@ public class Constraint {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || this.getClass() != obj.getClass()) {
+            return false;
+        }
+        Constraint constraint = (Constraint) obj;
+        return this.groupSizeLowerBound == constraint.groupSizeLowerBound
+            && this.groupSizeUpperBound == constraint.groupSizeUpperBound
+            && Objects.equals(this.timezoneDiff, constraint.timezoneDiff)
+            && Objects.equals(this.ageDiff, constraint.ageDiff)
+            && Objects.equals(this.minMale, constraint.minMale)
+            && Objects.equals(this.genderRatio, constraint.genderRatio)
+            && Objects.equals(this.genderErrorMargin, constraint.genderErrorMargin)
+            && Objects.equals(this.isSameGender, constraint.isSameGender)
+            && Objects
+            .equals(this.discreteAttributeConstraints, constraint.discreteAttributeConstraints);
+    }
+
+    @Override
     public String toString() {
         return "Constraint{" +
-                "groupSizeLowerBound=" + groupSizeLowerBound +
-                ", groupSizeUpperBound=" + groupSizeUpperBound +
-                ", timezoneDiff=" + timezoneDiff +
-                ", ageDiff=" + ageDiff +
-                ", minMale=" + minMale +
-                ", minFemale=" + minFemale +
-                ", genderRatio=" + genderRatio +
-                ", genderErrorMargin=" + genderErrorMargin +
-                ", isSameGender=" + isSameGender +
-                ", additionalDiscreteAttribute=" + discreteAttributeConstraints +
-                '}';
+            "groupSizeLowerBound=" + groupSizeLowerBound +
+            ", groupSizeUpperBound=" + groupSizeUpperBound +
+            ", timezoneDiff=" + timezoneDiff +
+            ", ageDiff=" + ageDiff +
+            ", minMale=" + minMale +
+            ", minFemale=" + minFemale +
+            ", genderRatio=" + genderRatio +
+            ", genderErrorMargin=" + genderErrorMargin +
+            ", isSameGender=" + isSameGender +
+            ", additionalDiscreteAttribute=" + discreteAttributeConstraints +
+            '}';
     }
 
     public int getMinMale() {
@@ -112,7 +135,8 @@ public class Constraint {
                 if (!s2TimeZone.isPresent()) {
                     continue;
                 }
-                res = Math.max(res, TimeZoneCalculator.timeBetween(s1TimeZone.get(), s2TimeZone.get()));
+                res = Math
+                    .max(res, TimeZoneCalculator.timeBetween(s1TimeZone.get(), s2TimeZone.get()));
             }
         }
         return res;
@@ -135,14 +159,15 @@ public class Constraint {
             return false;
         }
 
-        if (isGenderNumberMatter() && (getMinFemale() > getFemaleNumberOfGroup(group) || getMinMale() > getMaleNumberOfGroup(group))) {
+        if (isGenderNumberMatter() && (getMinFemale() > getFemaleNumberOfGroup(group)
+            || getMinMale() > getMaleNumberOfGroup(group))) {
             return false;
         }
 
         if (isGenderRatioMatter()) {
-            double currentRatio = 1.0*getMaleNumberOfGroup(group) / group.size();
+            double currentRatio = 1.0 * getMaleNumberOfGroup(group) / group.size();
             if (currentRatio < getGenderRatio() - getGenderErrorMargin() ||
-                    currentRatio > getGenderRatio() + getGenderErrorMargin()) {
+                currentRatio > getGenderRatio() + getGenderErrorMargin()) {
                 System.out.println("The current gender ratio is " + currentRatio);
                 return false;
             }
@@ -155,7 +180,7 @@ public class Constraint {
         if (isDiscreteAttributesConstraintsMatter()) {
             for (String attribute : discreteAttributeConstraints.keySet()) {
                 Pair<Integer, Integer> range = discreteAttributeConstraints.get(attribute);
-                for (String type: getTypesOfDiscreteAttributeFromGroup(group, attribute))  {
+                for (String type : getTypesOfDiscreteAttributeFromGroup(group, attribute)) {
                     int number = getNumberOfAdditionalAttributeTypeInGroup(group, attribute, type);
                     if (number < range.first() || number > range.second()) {
                         return false;
@@ -169,7 +194,7 @@ public class Constraint {
 
     private List<String> getTypesOfDiscreteAttributeFromGroup(Group group, String attribute) {
         List<String> res = new ArrayList<>();
-        for (Student student: group.getStudents()) {
+        for (Student student : group.getStudents()) {
             String type = student.getAttribute(attribute).orElse("");
             if (!type.equals("") && !type.equals("false") && !res.contains(type)) {
                 res.add(type);
@@ -178,9 +203,10 @@ public class Constraint {
         return res;
     }
 
-    private Integer getNumberOfAdditionalAttributeTypeInGroup(Group group, String attribute, String type) {
+    private Integer getNumberOfAdditionalAttributeTypeInGroup(Group group, String attribute,
+        String type) {
         int res = 0;
-        for (Student student: group.getStudents()) {
+        for (Student student : group.getStudents()) {
             if (student.getAttribute(attribute).orElse("").equals(type)) {
                 res++;
             }
@@ -192,7 +218,8 @@ public class Constraint {
     public boolean isGroupSameGender(Group group) {
         List<Student> students = group.getStudents();
         for (Student student : students) {
-            if (!student.getGender().orElse("male").equals(students.get(0).getGender().orElse("male"))) {
+            if (!student.getGender().orElse("male")
+                .equals(students.get(0).getGender().orElse("male"))) {
                 return false;
             }
         }
@@ -202,14 +229,14 @@ public class Constraint {
 
     private int getMaleNumberOfGroup(Group group) {
         return group.getStudents().stream()
-                .filter(student -> student.getGender().orElse("male").equals("male"))
-                .collect(Collectors.toList()).size();
+            .filter(student -> student.getGender().orElse("male").equals("male"))
+            .collect(Collectors.toList()).size();
     }
 
     private int getFemaleNumberOfGroup(Group group) {
         return group.getStudents().stream()
-                .filter(student -> student.getGender().orElse("male").equals("female"))
-                .collect(Collectors.toList()).size();
+            .filter(student -> student.getGender().orElse("male").equals("female"))
+            .collect(Collectors.toList()).size();
     }
 
     public Integer getAgeDiffOfGroup(Group group) {
@@ -274,6 +301,7 @@ public class Constraint {
 
 
     public static class Builder {
+
         private final int groupSizeLowerBound;
         private final int groupSizeUpperBound;
         private Integer timezoneDiff;
@@ -337,9 +365,11 @@ public class Constraint {
         }
 
         public Constraint createConstrain() {
-            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff,
-                    this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin, this.isSameGender,
-                    this.discreteAttributeConstraints);
+            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound,
+                this.timezoneDiff, this.ageDiff,
+                this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin,
+                this.isSameGender,
+                this.discreteAttributeConstraints);
         }
 
         public Builder setIsSameGender() {
@@ -357,7 +387,8 @@ public class Constraint {
             return this;
         }
 
-        public Builder setDiscreteAttributeConstraints(Map<String, Pair<Integer, Integer>> discreteAttributeConstraints) {
+        public Builder setDiscreteAttributeConstraints(
+            Map<String, Pair<Integer, Integer>> discreteAttributeConstraints) {
             this.discreteAttributeConstraints = discreteAttributeConstraints;
             return this;
         }
