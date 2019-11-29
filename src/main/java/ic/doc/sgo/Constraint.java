@@ -52,11 +52,20 @@ public class Constraint {
             && Objects.equals(this.timezoneDiff, constraint.timezoneDiff)
             && Objects.equals(this.ageDiff, constraint.ageDiff)
             && Objects.equals(this.minMale, constraint.minMale)
+            && Objects.equals(this.minFemale, constraint.minFemale)
             && Objects.equals(this.genderRatio, constraint.genderRatio)
             && Objects.equals(this.genderErrorMargin, constraint.genderErrorMargin)
             && Objects.equals(this.isSameGender, constraint.isSameGender)
             && Objects
             .equals(this.discreteAttributeConstraints, constraint.discreteAttributeConstraints);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects
+            .hash(groupSizeLowerBound, groupSizeUpperBound, timezoneDiff, ageDiff, minMale,
+                minFemale,
+                genderRatio, genderErrorMargin, isSameGender, discreteAttributeConstraints);
     }
 
     @Override
