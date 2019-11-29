@@ -23,7 +23,7 @@ public class VectorSpaceTest {
             .setAgeDiff(3)
             .createConstrain();
 
-    private VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraint);
+    private VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraint, new ArrayList<>());
 
     private Student s1 = new Student.Builder("1")
             .setTimeZone(ZoneId.of("UTC+1"))

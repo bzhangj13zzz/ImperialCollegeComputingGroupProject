@@ -52,6 +52,8 @@ public class JsonStudentAdapterTest {
                 .setDegree("PhD")
                 .setWorkYearNum(15)
                 .setCohort("18J")
+                .setAdditionalDiscreteAttributeWithType("country", "United Kingdom")
+                .setAdditionalDiscreteAttributeWithType("currentCity", "London")
                 .createStudent();
         assertThat(new JsonStudentAdapter(json, localDate).toStudent(), is(Optional.of(student)));
     }
@@ -63,6 +65,7 @@ public class JsonStudentAdapterTest {
         json.addProperty("country", "United Kingdom");
         Student student = new Student.Builder("123")
                 .setTimeZone(ZoneId.of("Europe/London"))
+                .setAdditionalDiscreteAttributeWithType("country", "United Kingdom")
                 .createStudent();
         assertThat(new JsonStudentAdapter(json, localDate).toStudent(), is(Optional.of(student)));
     }

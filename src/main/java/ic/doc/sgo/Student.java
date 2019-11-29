@@ -192,5 +192,16 @@ public class Student {
                     workYearNum, cohort, additionalAttributes);
         }
 
+        public Builder setAdditionalDiscreteAttributeWithType(String attribute, String type) {
+            this.additionalAttributes.put(attribute, type);
+            return this;
+        }
+
+        public String getAddtionalAttribute(String attribute) {
+            if (this.additionalAttributes.containsKey(attribute)) {
+                return this.additionalAttributes.get(attribute);
+            }
+            return "";
+        }
     }
 }

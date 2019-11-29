@@ -1,10 +1,12 @@
 package ic.doc.sgo;
 
+import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Pair;
 import org.junit.Test;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -21,6 +23,16 @@ public class ConstraintTest {
             .createConstrain();
     private Constraint constraintForSameGender = new Constraint.Builder(3, 4)
             .setIsSameGender()
+            .createConstrain();
+    private Constraint constraintForAdditionalDiscreteAttribute = new Constraint.Builder(3, 4)
+            .setDiscreteAttributeConstraints(new HashMap<String, Pair<Integer, Integer>>() {{
+                put("quant", new Pair<>(2, 4));
+            }})
+            .createConstrain();
+    private Constraint constraintForExclusionDiscreteAttribute = new Constraint.Builder(3, 4)
+            .setDiscreteAttributeConstraints(new HashMap<String, Pair<Integer, Integer>>() {{
+                put("country", new Pair<>(0, 2));
+            }})
             .createConstrain();
 
 
@@ -65,12 +77,35 @@ public class ConstraintTest {
             .setTimeZone(ZoneId.of("UTC+1"))
             .createStudent();
 
-    private Group g1 = Group.from(new ArrayList<>());
-    private Group c2 = Group.from(new ArrayList<>());
+    private Student s8 = new Student.Builder("8")
+            .setAge(5)
+            .setAdditionalDiscreteAttributeWithType("quant", "true")
+            .createStudent();
 
-    @Test
-    public void testEvaluateGroup() {
-    }
+    private Student s9 = new Student.Builder("9")
+            .setAge(5)
+            .setAdditionalDiscreteAttributeWithType("quant", "true")
+            .createStudent();
+
+    private Student s10 = new Student.Builder("10")
+            .setAge(5)
+            .setAdditionalDiscreteAttributeWithType("quant", "true")
+            .createStudent();
+
+    private Student s11 = new Student.Builder("11")
+            .setAge(5)
+            .setAdditionalDiscreteAttributeWithType("country", "UK")
+            .createStudent();
+    private Student s12 = new Student.Builder("12")
+            .setAge(5)
+            .setAdditionalDiscreteAttributeWithType("country", "UK")
+            .createStudent();
+    private Student s13 = new Student.Builder("13")
+            .setAge(5)
+            .setAdditionalDiscreteAttributeWithType("country", "UK")
+            .createStudent();
+
+    private Group g1 = Group.from(new ArrayList<>());
 
     @Test
     public void testIsValidGroup() {
@@ -119,17 +154,20 @@ public class ConstraintTest {
         g1.addAll(new ArrayList<>(Arrays.asList(s1, s2, s3)));
         assertTrue(constraint.isValidGroup(g1));
 
+        // test valid additional Discrete Attribute
+        g1.clear();
+        g1.addAll(new ArrayList<>(Arrays.asList(s1, s8, s9, s10)));
+        assertTrue(constraintForAdditionalDiscreteAttribute.isValidGroup(g1));
+
+        //test invalid additional Discrete Attribute
+        g1.clear();
+        g1.addAll(new ArrayList<>(Arrays.asList(s1, s2, s8)));
+        assertFalse(constraintForAdditionalDiscreteAttribute.isValidGroup(g1));
+
+        //test invalid exclusion
+        g1.clear();;
+        g1.addAll(new ArrayList<>(Arrays.asList(s11, s12, s13)));
+        assertFalse(constraintForExclusionDiscreteAttribute.isValidGroup(g1));
     }
 
-    @Test
-    public void testStudentCanBeFitInGroup() {
-    }
-
-    @Test
-    public void testGetInvalidStudentsFromGroup() {
-    }
-
-    @Test
-    public void testIsBetterFitIfSwap() {
-    }
 }

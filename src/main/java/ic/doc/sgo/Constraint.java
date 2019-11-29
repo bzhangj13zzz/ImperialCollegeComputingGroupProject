@@ -1,14 +1,14 @@
 package ic.doc.sgo;
 
 
+import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Pair;
+
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Constraint {
+
     private final int groupSizeLowerBound;
     private final int groupSizeUpperBound;
     private final Integer timezoneDiff;
@@ -20,9 +20,12 @@ public class Constraint {
     private final Double genderRatio;
     private final Double genderErrorMargin;
     private final Boolean isSameGender;
+    private final Map<String, Pair<Integer, Integer>> discreteAttributeConstraints;
 
-    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, Integer timezoneDiff, Integer ageDiff,
-                       Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin, Boolean isSameGender) {
+    private Constraint(int groupSizeLowerBound, int groupSizeUpperBound, Integer timezoneDiff,
+        Integer ageDiff,
+        Integer minMale, Integer minFemale, Double genderRatio, Double genderErrorMargin,
+        Boolean isSameGender, Map<String, Pair<Integer, Integer>> additionalDiscreteAttribute) {
         this.groupSizeLowerBound = groupSizeLowerBound;
         this.groupSizeUpperBound = groupSizeUpperBound;
         this.timezoneDiff = timezoneDiff;
@@ -32,21 +35,53 @@ public class Constraint {
         this.genderRatio = genderRatio;
         this.genderErrorMargin = genderErrorMargin;
         this.isSameGender = isSameGender;
+        this.discreteAttributeConstraints = additionalDiscreteAttribute;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || this.getClass() != obj.getClass()) {
+            return false;
+        }
+        Constraint constraint = (Constraint) obj;
+        return this.groupSizeLowerBound == constraint.groupSizeLowerBound
+            && this.groupSizeUpperBound == constraint.groupSizeUpperBound
+            && Objects.equals(this.timezoneDiff, constraint.timezoneDiff)
+            && Objects.equals(this.ageDiff, constraint.ageDiff)
+            && Objects.equals(this.minMale, constraint.minMale)
+            && Objects.equals(this.minFemale, constraint.minFemale)
+            && Objects.equals(this.genderRatio, constraint.genderRatio)
+            && Objects.equals(this.genderErrorMargin, constraint.genderErrorMargin)
+            && Objects.equals(this.isSameGender, constraint.isSameGender)
+            && Objects
+            .equals(this.discreteAttributeConstraints, constraint.discreteAttributeConstraints);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects
+            .hash(groupSizeLowerBound, groupSizeUpperBound, timezoneDiff, ageDiff, minMale,
+                minFemale,
+                genderRatio, genderErrorMargin, isSameGender, discreteAttributeConstraints);
     }
 
     @Override
     public String toString() {
         return "Constraint{" +
-                "groupSizeLowerBound=" + groupSizeLowerBound +
-                ", groupSizeUpperBound=" + groupSizeUpperBound +
-                ", timezoneDiff=" + timezoneDiff +
-                ", ageDiff=" + ageDiff +
-                ", minMale=" + minMale +
-                ", minFemale=" + minFemale +
-                ", genderRatio=" + genderRatio +
-                ", genderErrorMargin=" + genderErrorMargin +
-                ", isSameGender=" + isSameGender +
-                '}';
+            "groupSizeLowerBound=" + groupSizeLowerBound +
+            ", groupSizeUpperBound=" + groupSizeUpperBound +
+            ", timezoneDiff=" + timezoneDiff +
+            ", ageDiff=" + ageDiff +
+            ", minMale=" + minMale +
+            ", minFemale=" + minFemale +
+            ", genderRatio=" + genderRatio +
+            ", genderErrorMargin=" + genderErrorMargin +
+            ", isSameGender=" + isSameGender +
+            ", additionalDiscreteAttribute=" + discreteAttributeConstraints +
+            '}';
     }
 
     public int getMinMale() {
@@ -109,7 +144,8 @@ public class Constraint {
                 if (!s2TimeZone.isPresent()) {
                     continue;
                 }
-                res = Math.max(res, TimeZoneCalculator.timeBetween(s1TimeZone.get(), s2TimeZone.get()));
+                res = Math
+                    .max(res, TimeZoneCalculator.timeBetween(s1TimeZone.get(), s2TimeZone.get()));
             }
         }
         return res;
@@ -132,14 +168,15 @@ public class Constraint {
             return false;
         }
 
-        if (isGenderNumberMatter() && (getMinFemale() > getFemaleNumberOfGroup(group) || getMinMale() > getMaleNumberOfGroup(group))) {
+        if (isGenderNumberMatter() && (getMinFemale() > getFemaleNumberOfGroup(group)
+            || getMinMale() > getMaleNumberOfGroup(group))) {
             return false;
         }
 
         if (isGenderRatioMatter()) {
-            double currentRatio = 1.0*getMaleNumberOfGroup(group) / group.size();
+            double currentRatio = 1.0 * getMaleNumberOfGroup(group) / group.size();
             if (currentRatio < getGenderRatio() - getGenderErrorMargin() ||
-                    currentRatio > getGenderRatio() + getGenderErrorMargin()) {
+                currentRatio > getGenderRatio() + getGenderErrorMargin()) {
                 System.out.println("The current gender ratio is " + currentRatio);
                 return false;
             }
@@ -149,14 +186,49 @@ public class Constraint {
             return false;
         }
 
+        if (isDiscreteAttributesConstraintsMatter()) {
+            for (String attribute : discreteAttributeConstraints.keySet()) {
+                Pair<Integer, Integer> range = discreteAttributeConstraints.get(attribute);
+                for (String type : getTypesOfDiscreteAttributeFromGroup(group, attribute)) {
+                    int number = getNumberOfAdditionalAttributeTypeInGroup(group, attribute, type);
+                    if (number < range.first() || number > range.second()) {
+                        return false;
+                    }
+                }
+            }
+        }
+
         return true;
+    }
+
+    private List<String> getTypesOfDiscreteAttributeFromGroup(Group group, String attribute) {
+        List<String> res = new ArrayList<>();
+        for (Student student : group.getStudents()) {
+            String type = student.getAttribute(attribute).orElse("");
+            if (!type.equals("") && !type.equals("false") && !res.contains(type)) {
+                res.add(type);
+            }
+        }
+        return res;
+    }
+
+    private Integer getNumberOfAdditionalAttributeTypeInGroup(Group group, String attribute,
+        String type) {
+        int res = 0;
+        for (Student student : group.getStudents()) {
+            if (student.getAttribute(attribute).orElse("").equals(type)) {
+                res++;
+            }
+        }
+        return res;
     }
 
 
     public boolean isGroupSameGender(Group group) {
         List<Student> students = group.getStudents();
         for (Student student : students) {
-            if (!student.getGender().orElse("male").equals(students.get(0).getGender().orElse("male"))) {
+            if (!student.getGender().orElse("male")
+                .equals(students.get(0).getGender().orElse("male"))) {
                 return false;
             }
         }
@@ -166,14 +238,14 @@ public class Constraint {
 
     private int getMaleNumberOfGroup(Group group) {
         return group.getStudents().stream()
-                .filter(student -> student.getGender().orElse("male").equals("male"))
-                .collect(Collectors.toList()).size();
+            .filter(student -> student.getGender().orElse("male").equals("male"))
+            .collect(Collectors.toList()).size();
     }
 
     private int getFemaleNumberOfGroup(Group group) {
         return group.getStudents().stream()
-                .filter(student -> student.getGender().orElse("male").equals("female"))
-                .collect(Collectors.toList()).size();
+            .filter(student -> student.getGender().orElse("male").equals("female"))
+            .collect(Collectors.toList()).size();
     }
 
     public Integer getAgeDiffOfGroup(Group group) {
@@ -193,95 +265,6 @@ public class Constraint {
         }
         return res;
 
-    }
-
-    public boolean canBeFit(Student student, Group group) {
-        Group originalGroup = student.getGroup();
-        group.add(student);
-        boolean res = isValidGroup(group);
-        originalGroup.add(student);
-        return res;
-    }
-
-    public List<Student> getInvalidStudentsFromGroup(Group group) {
-
-        List<Student> students = new ArrayList<>(group.getStudents());
-        List<Student> removeStudents = new ArrayList<>();
-        for (Student student : students) {
-            if (isBetterFitIfRemove(student, group)) {
-                removeStudents.add(student);
-                group.remove(student);
-                if (isValidGroup(group)) {
-                    return removeStudents;
-                }
-            }
-        }
-
-        return students;
-    }
-
-    private boolean isBetterFitIfRemove(Student student, Group group) {
-        double p = evaluateGroup(group);
-        group.remove(student);
-        double q = evaluateGroup(group);
-        group.add(student);
-        return q > p;
-    }
-
-    public boolean isBetterFitIfSwap(Student s1, Student s2) {
-        Group g1 = s1.getGroup();
-        Group g2 = s2.getGroup();
-        int v1 = 0;
-        if (isValidGroup(g1)) {
-            v1++;
-        }
-        if (isValidGroup(g2)) {
-            v1++;
-        }
-        double pv1 = evaluateGroup(g1);
-        double pv2 = evaluateGroup(g2);
-        Student.swapGroup(s1, s2);
-        int v2 = 0;
-        if (isValidGroup(g1)) {
-            v2++;
-        }
-        if (isValidGroup(g2)) {
-            v2++;
-        }
-        double cv1 = evaluateGroup(g1);
-        double cv2 = evaluateGroup(g2);
-        ;
-        Student.swapGroup(s1, s2);
-
-        if (v2 > v1) {
-            return true;
-        }
-        if (v2 < v1) {
-            return false;
-        }
-        return cv1 * cv2 > pv1 * pv2;
-    }
-
-    public boolean canBeBetterFit(Student s1, Group g2) {
-        Group g1 = s1.getGroup();
-        int v1 = 0;
-        if (isValidGroup(g1)) {
-            v1++;
-        }
-        if (isValidGroup(g2)) {
-            v1++;
-        }
-        g2.add(s1);
-        int v2 = 0;
-        if (isValidGroup(g1)) {
-            v2++;
-        }
-        if (isValidGroup(g2)) {
-            v2++;
-        }
-        g1.add(s1);
-
-        return v2 > v1;
     }
 
     public boolean isSameGender() {
@@ -312,8 +295,22 @@ public class Constraint {
         return this.ageDiff == null ? OptionalInt.empty() : OptionalInt.of(this.ageDiff);
     }
 
+    public Map<String, Pair<Integer, Integer>> getDiscreteAttributes() {
+        return this.discreteAttributeConstraints;
+    }
+
+    public Pair<Integer, Integer> getRangeOfDiscreteAttributeConstraints(String attribute) {
+        assert this.discreteAttributeConstraints.containsKey(attribute);
+        return this.discreteAttributeConstraints.get(attribute);
+    }
+
+    public boolean isDiscreteAttributesConstraintsMatter() {
+        return this.discreteAttributeConstraints != null;
+    }
+
 
     public static class Builder {
+
         private final int groupSizeLowerBound;
         private final int groupSizeUpperBound;
         private Integer timezoneDiff;
@@ -323,6 +320,7 @@ public class Constraint {
         private Double genderRatio;
         private Double genderErrorMargin;
         private Boolean isSameGender;
+        private Map<String, Pair<Integer, Integer>> discreteAttributeConstraints = new HashMap<>();
 
         public Builder(int groupSizeLowerBound, int groupSizeUpperBound) {
             this.groupSizeLowerBound = groupSizeLowerBound;
@@ -376,8 +374,11 @@ public class Constraint {
         }
 
         public Constraint createConstrain() {
-            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound, this.timezoneDiff, this.ageDiff,
-                    this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin, this.isSameGender);
+            return new Constraint(this.groupSizeLowerBound, this.groupSizeUpperBound,
+                this.timezoneDiff, this.ageDiff,
+                this.minMale, this.minFemale, this.genderRatio, this.genderErrorMargin,
+                this.isSameGender,
+                this.discreteAttributeConstraints);
         }
 
         public Builder setIsSameGender() {
@@ -387,6 +388,17 @@ public class Constraint {
             assert this.minFemale == null;
 
             this.isSameGender = true;
+            return this;
+        }
+
+        public Builder addDiscreteAttributeConstraint(String key, Pair<Integer, Integer> value) {
+            this.discreteAttributeConstraints.put(key, value);
+            return this;
+        }
+
+        public Builder setDiscreteAttributeConstraints(
+            Map<String, Pair<Integer, Integer>> discreteAttributeConstraints) {
+            this.discreteAttributeConstraints = discreteAttributeConstraints;
             return this;
         }
     }

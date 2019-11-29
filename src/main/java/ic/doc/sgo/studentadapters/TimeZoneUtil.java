@@ -36,7 +36,6 @@ final class TimeZoneUtil {
         if (lookup.isPresent()) {
             return lookup.get();
         }
-
         return cache.get(new CityCountry(cityName, countryName));
     }
 

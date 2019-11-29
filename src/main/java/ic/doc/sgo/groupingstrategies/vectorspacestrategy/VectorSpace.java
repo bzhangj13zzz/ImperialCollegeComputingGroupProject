@@ -11,13 +11,13 @@ public class VectorSpace {
     private final Map<String, Property> dimensions;
     private final int clusterSizeLowerBound;
     private final int clusterSizeUpperBound;
-    private final Map<String, HashMap<String, Integer>> discreteAttribute;
+    private final Map<String, HashMap<String, Pair<Integer, Integer>>> discreteAttribute;
     private final Map<String, HashMap<String, Pair<Double, Double>>> ratioAttribute;
     private final double eps = 0.00001;
 
 
     public VectorSpace(Map<String, Property> dimensions, int clusterSizeLowerBound, int clusterSizeUpperBound,
-                       Map<String, HashMap<String, Integer>> discreteAttribute, Map<String, HashMap<String, Pair<Double, Double>>> ratioAttribute) {
+                       Map<String, HashMap<String, Pair<Integer, Integer>>> discreteAttribute, Map<String, HashMap<String, Pair<Double, Double>>> ratioAttribute) {
         this.dimensions = dimensions;
         this.clusterSizeLowerBound = clusterSizeLowerBound;
         this.clusterSizeUpperBound = clusterSizeUpperBound;
@@ -33,7 +33,7 @@ public class VectorSpace {
         return clusterSizeUpperBound;
     }
 
-    public int getDiscreteAttributeValue(String attribute, String type) {
+    public Pair<Integer, Integer> getDiscreteAttributeValueRange(String attribute, String type) {
         assert discreteAttribute.containsKey(attribute);
         return discreteAttribute.get(attribute).get(type);
     }
@@ -91,9 +91,13 @@ public class VectorSpace {
         int cnt = 0;
         for (String attributeName: discreteAttribute.keySet()) {
             for (String type: discreteAttribute.get(attributeName).keySet()) {
-                int target = getDiscreteAttributeValue(attributeName, type);
+                Pair<Integer, Integer> range = getDiscreteAttributeValueRange(attributeName, type);
                 int number = getDiscreteAttributeNumberInCluster(cluster, attributeName, type);
-                sum += Math.min(target - number, 0);
+                if (range.second() < number) {
+                    sum += number - range.second();
+                } else if (number < range.first()) {
+                    sum += range.first() - number;
+                }
                 cnt++;
             }
         }
@@ -163,9 +167,10 @@ public class VectorSpace {
         }
 
         for (String attributeName : discreteAttribute.keySet()) {
-            HashMap<String, Integer> valueMap = discreteAttribute.get(attributeName);
+            HashMap<String, Pair<Integer, Integer>> valueMap = discreteAttribute.get(attributeName);
             for (String type : valueMap.keySet()) {
-                if (valueMap.get(type) > cluster.getNumberOf(attributeName, type)) {
+                if (valueMap.get(type).first() > cluster.getNumberOf(attributeName, type) ||
+                        valueMap.get(type).second() < cluster.getNumberOf(attributeName, type)) {
                     return false;
                 }
             }
