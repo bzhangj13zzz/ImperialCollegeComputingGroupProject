@@ -16,7 +16,6 @@ public class Student {
     private final double workYearNum;
     private final String cohort;
     private final Map<String, JsonElement> additionalAttributes; // never null
-    private Group group;
 
     private Student(String id, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
@@ -113,26 +112,6 @@ public class Student {
     public void addAttribute(String key, JsonElement value) {
         additionalAttributes.put(key, value);
     }
-
-    public Group getGroup() {
-        return this.group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    public static boolean isSameGroup(Student s1, Student s2) {
-        return s1.getGroup() == s2.getGroup();
-    }
-
-    public static void swapGroup(Student s1, Student s2) {
-        Group g1 = s1.getGroup();
-        Group g2 = s2.getGroup();
-        g2.add(s1);
-        g1.add(s2);
-    }
-
 
     public static class Builder {
         private final String id;

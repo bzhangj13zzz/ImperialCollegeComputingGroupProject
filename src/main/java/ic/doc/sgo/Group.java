@@ -1,13 +1,12 @@
 package ic.doc.sgo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Group {
     public static final int UNKNOWN_ID = -1;
     public static final int UNALLOC_ID = 0;
+
+    private static final Map<Student, Group> studentGroupMap = new HashMap<>();
 
     private int id = UNKNOWN_ID;
     private final List<Student> students;
@@ -59,23 +58,45 @@ public class Group {
         return Objects.hash(id, students);
     }
 
+    public static Optional<Group> getGroup(Student student) {
+        if (studentGroupMap.containsKey(student)) {
+            return Optional.of(studentGroupMap.get(student));
+        }
+        return Optional.empty();
+    }
+
+    public static void setGroup(Student student, Group group) {
+        if (group == null) {
+            studentGroupMap.remove(student);
+        } else {
+            studentGroupMap.put(student, group);
+        }
+    }
+
+    public static boolean isSameGroup(Student s1, Student s2) {
+        Optional<Group> optionalGroup1 = getGroup(s1);
+        Optional<Group> optionalGroup2 = getGroup(s2);
+        if (optionalGroup1.isPresent() && optionalGroup2.isPresent()) {
+            return optionalGroup1.get().equals(optionalGroup2.get());
+        }
+        return false;
+    }
+
     public boolean add(Student member) {
         if (!this.students.contains(member)) {
-            Group origin = member.getGroup();
-            if (origin != null) {
-                origin.remove(member);
-            }
+            Optional<Group> origin = getGroup(member);
+            origin.ifPresent(group -> group.remove(member));
             this.students.add(member);
-            member.setGroup(this);
+            setGroup(member, this);
             return true;
         }
-        return true;
+        return false;
     }
 
     public boolean remove(Student member) {
         if (students.contains(member)) {
             students.remove(member);
-            member.setGroup(null);
+            setGroup(member, null);
             return true;
         }
         return false;
