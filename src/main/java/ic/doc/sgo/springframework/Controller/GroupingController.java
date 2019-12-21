@@ -8,7 +8,7 @@ import ic.doc.sgo.Group;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.ZoneIdUtils;
 import ic.doc.sgo.springframework.Service.GroupingService;
-import ic.doc.sgo.studentadapters.JsonConstraintAdapter;
+import ic.doc.sgo.constraintadapters.JsonConstraintAdapter;
 import ic.doc.sgo.studentadapters.JsonStudentAdapter;
 import org.springframework.web.bind.annotation.*;
 

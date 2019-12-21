@@ -1,4 +1,4 @@
-package ic.doc.sgo.studentadapters;
+package ic.doc.sgo.constraintadapters;
 
 import com.google.gson.JsonObject;
 import ic.doc.sgo.Constraint;

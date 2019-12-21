@@ -6,7 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.google.gson.JsonObject;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Pair;
-import ic.doc.sgo.studentadapters.JsonConstraintAdapter;
+
 import java.util.Optional;
 import org.junit.Test;
 
