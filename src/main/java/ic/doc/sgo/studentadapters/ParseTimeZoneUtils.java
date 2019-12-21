@@ -21,14 +21,14 @@ import java.util.concurrent.TimeUnit;
 /**
  * Utility class that handles time zone.
  **/
-final class TimeZoneUtil {
+final class ParseTimeZoneUtils {
     private static final String JSON_PATH = "src/main/java/ic/doc/sgo/studentadapters/countries_with_timeZones.json";
     private static final String API_KEY = System.getenv("GOOGLE_API_KEY");
     private static final Gson gson = new Gson();
     private static final LoadingCache<CityCountry, ZoneId> cache =
             buildCache(200, 30, TimeUnit.DAYS);
 
-    private TimeZoneUtil() {
+    private ParseTimeZoneUtils() {
     }
 
     static ZoneId getTimeZoneId(String cityName, String countryName) throws Exception {

@@ -41,7 +41,7 @@ public class JsonStudentAdapter implements StudentAdapter {
                     break;
                 case "dob":
                     String dobStr = studentJson.get(key).getAsString();
-                    studentBuilder.setAge(JsonFormatUtil.dobToAge(dobStr, now));
+                    studentBuilder.setAge(JsonFormatUtils.dobToAge(dobStr, now));
                     break;
                 case "career":
                     studentBuilder.setCareer(studentJson.get(key).getAsString());
@@ -51,7 +51,7 @@ public class JsonStudentAdapter implements StudentAdapter {
                     break;
                 case "workYearNum":
                     String yearNumStr = studentJson.get(key).getAsString();
-                    double yearNum = JsonFormatUtil.yearNumStringToDouble(yearNumStr);
+                    double yearNum = JsonFormatUtils.yearNumStringToDouble(yearNumStr);
                     studentBuilder.setWorkYearNum(yearNum);
                     break;
                 case "cohort":
@@ -69,7 +69,7 @@ public class JsonStudentAdapter implements StudentAdapter {
         }
         if (!countryName.equals("")) {
             try {
-                ZoneId timeZoneId = TimeZoneUtil.getTimeZoneId(cityName, countryName);
+                ZoneId timeZoneId = ParseTimeZoneUtils.getTimeZoneId(cityName, countryName);
                 studentBuilder.setTimeZone(timeZoneId);
             } catch (Exception e) {
                 e.printStackTrace();

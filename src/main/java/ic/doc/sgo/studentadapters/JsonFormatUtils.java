@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-final class JsonFormatUtil {
-    private JsonFormatUtil() {
+final class JsonFormatUtils {
+    private JsonFormatUtils() {
     }
 
     static double yearNumStringToDouble(String yearNumStr) {

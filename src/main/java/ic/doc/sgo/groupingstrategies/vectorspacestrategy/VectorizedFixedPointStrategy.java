@@ -1,10 +1,10 @@
 package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
-import ic.doc.sgo.groupingstrategies.StrategyUtil;
+import ic.doc.sgo.groupingstrategies.StrategyUtils;
 
 import java.util.*;
 
-import static ic.doc.sgo.groupingstrategies.StrategyUtil.getRandomIntegerBetween;
+import static ic.doc.sgo.groupingstrategies.StrategyUtils.getRandomIntegerBetween;
 
 public class VectorizedFixedPointStrategy {
 
@@ -52,7 +52,7 @@ public class VectorizedFixedPointStrategy {
             clusters.get(0).setId(0);
             return clusters;
         }
-        StrategyUtil.Pair<Integer, Integer> numberIntervalOfGroups = StrategyUtil.getNumberInterval(nodes.size(),
+        StrategyUtils.Pair<Integer, Integer> numberIntervalOfGroups = StrategyUtils.getNumberInterval(nodes.size(),
                 vectorSpace.getClusterSizeLowerBound(), vectorSpace.getClusterSizeUpperBound());
         int number = getRandomIntegerBetween(numberIntervalOfGroups.first(), numberIntervalOfGroups.second());
 

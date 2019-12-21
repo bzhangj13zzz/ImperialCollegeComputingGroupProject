@@ -1,6 +1,6 @@
 package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
-import ic.doc.sgo.Attributes;
+import ic.doc.sgo.Attribute;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.groupingstrategies.FixedPointStrategy;
@@ -89,9 +89,9 @@ public class NodeTest {
         List<String> attributes = new ArrayList<>();
         n1.getDimensions().forEach(attributes::add);
 
-        assertTrue(attributes.contains(Attributes.AGE.getName()));
-        assertTrue(attributes.contains(Attributes.TIMEZONE.getName()));
-        assertFalse(attributes.contains(Attributes.GENDER.getName()));
+        assertTrue(attributes.contains(Attribute.AGE.getName()));
+        assertTrue(attributes.contains(Attribute.TIMEZONE.getName()));
+        assertFalse(attributes.contains(Attribute.GENDER.getName()));
 
     }
 

@@ -108,7 +108,7 @@ public class Constraint {
                 if (!s2TimeZone.isPresent()) {
                     continue;
                 }
-                res = Math.max(res, TimeZoneCalculator.timeBetween(s1TimeZone.get(), s2TimeZone.get()));
+                res = Math.max(res, ZoneIdUtils.timeBetween(s1TimeZone.get(), s2TimeZone.get()));
             }
         }
         return res;

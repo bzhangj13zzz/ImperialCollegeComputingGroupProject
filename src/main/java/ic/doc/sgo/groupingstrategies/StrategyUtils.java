@@ -2,9 +2,9 @@ package ic.doc.sgo.groupingstrategies;
 
 import java.util.Random;
 
-public final class StrategyUtil {
+public final class StrategyUtils {
 
-    private StrategyUtil() {
+    private StrategyUtils() {
     }
 
     public static Pair<Integer, Integer> getNumberInterval(int size, int lowerBound, int upperBound) {

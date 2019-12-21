@@ -1,6 +1,6 @@
 package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
-import ic.doc.sgo.Attributes;
+import ic.doc.sgo.Attribute;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.groupingstrategies.FixedPointStrategy;
@@ -126,7 +126,7 @@ public class ClusterTest {
     @Test
     public void testDiscreteAttributeNumber() {
         c1.addAll(new ArrayList<>(Arrays.asList(n1, n2, n3, n4, n5, n6, n7)));
-        assertEquals(3, (int) c1.getNumberOf(Attributes.GENDER.getName(), "male"));
-        assertEquals(4, (int) c1.getNumberOf(Attributes.GENDER.getName(), "female"));
+        assertEquals(3, (int) c1.getNumberOf(Attribute.GENDER.getName(), "male"));
+        assertEquals(4, (int) c1.getNumberOf(Attribute.GENDER.getName(), "female"));
     }
 }

@@ -106,24 +106,24 @@ public class FixedPointStrategy implements GroupingStrategy {
             Map<String, HashMap<String, Integer>> discreteAttribute = new HashMap<>();
 
             if (constraint.isTimeMatter()) {
-                dimensions.put(Attributes.TIMEZONE.getName(), new VectorSpace.Property(12.0, VectorSpace.Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
+                dimensions.put(Attribute.TIMEZONE.getName(), new VectorSpace.Property(12.0, VectorSpace.Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
             }
 
             if (constraint.isAgeMatter()) {
-                dimensions.put(Attributes.AGE.getName(), new VectorSpace.Property(120.0, VectorSpace.Type.LINE, (double) constraint.getAgeDiff().getAsInt()));
+                dimensions.put(Attribute.AGE.getName(), new VectorSpace.Property(120.0, VectorSpace.Type.LINE, (double) constraint.getAgeDiff().getAsInt()));
             }
 
             if (constraint.isSameGender()) {
-                dimensions.put(Attributes.GENDER.getName(), new VectorSpace.Property(2.0, VectorSpace.Type.LINE, 0.0));
+                dimensions.put(Attribute.GENDER.getName(), new VectorSpace.Property(2.0, VectorSpace.Type.LINE, 0.0));
             }
 
-            discreteAttribute.put(Attributes.GENDER.getName(), new HashMap<>());
-            discreteAttribute.get(Attributes.GENDER.getName()).put("male", 0);
-            discreteAttribute.get(Attributes.GENDER.getName()).put("female", 0);
+            discreteAttribute.put(Attribute.GENDER.getName(), new HashMap<>());
+            discreteAttribute.get(Attribute.GENDER.getName()).put("male", 0);
+            discreteAttribute.get(Attribute.GENDER.getName()).put("female", 0);
             if (constraint.isGenderMatter()) {
                 assert constraint.getMinMale() + constraint.getMinFemale() <= constraint.getGroupSizeLowerBound();
-                discreteAttribute.get(Attributes.GENDER.getName()).put("male", constraint.getMinMale());
-                discreteAttribute.get(Attributes.GENDER.getName()).put("female", constraint.getMinFemale());
+                discreteAttribute.get(Attribute.GENDER.getName()).put("male", constraint.getMinMale());
+                discreteAttribute.get(Attribute.GENDER.getName()).put("female", constraint.getMinFemale());
             }
 
             clusterSizeLowerBound = constraint.getGroupSizeLowerBound();
@@ -140,21 +140,21 @@ public class FixedPointStrategy implements GroupingStrategy {
             id = student.getId();
 
             if (constraint.isTimeMatter()) {
-                coordinateMap.put(Attributes.TIMEZONE.getName(),
-                        (double) TimeZoneCalculator.timeZoneInInteger(student.getTimeZone().orElse(ZoneId.of("UTC+0"))));
+                coordinateMap.put(Attribute.TIMEZONE.getName(),
+                        (double) ZoneIdUtils.zoneIdToInteger(student.getTimeZone().orElse(ZoneId.of("UTC+0"))));
             }
 
             if (constraint.isAgeMatter()) {
-                coordinateMap.put(Attributes.AGE.getName(), (double) student.getAge().orElse(0));
+                coordinateMap.put(Attribute.AGE.getName(), (double) student.getAge().orElse(0));
             }
 
             if (constraint.isSameGender()) {
-                coordinateMap.put(Attributes.GENDER.getName(), (double) genderToInteger(student.getGender().orElse("male")));
+                coordinateMap.put(Attribute.GENDER.getName(), (double) genderToInteger(student.getGender().orElse("male")));
             }
 
-            discreteAttributeType.put(Attributes.GENDER.getName(), "male");
+            discreteAttributeType.put(Attribute.GENDER.getName(), "male");
             if (constraint.isGenderMatter()) {
-                discreteAttributeType.put(Attributes.GENDER.getName(), student.getGender().orElse("male"));
+                discreteAttributeType.put(Attribute.GENDER.getName(), student.getGender().orElse("male"));
             }
 
             return new Node(id, coordinateMap, discreteAttributeType);
