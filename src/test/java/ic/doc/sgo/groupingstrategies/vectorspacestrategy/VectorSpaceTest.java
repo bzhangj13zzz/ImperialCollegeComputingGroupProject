@@ -1,6 +1,6 @@
 package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
-import ic.doc.sgo.Attributes;
+import ic.doc.sgo.Attribute;
 import ic.doc.sgo.Constraint;
 import ic.doc.sgo.Student;
 import ic.doc.sgo.groupingstrategies.FixedPointStrategy;
@@ -93,14 +93,14 @@ public class VectorSpaceTest {
         // test invalid timezone
         c1.clear();
         c1.addAll(new ArrayList<>(Arrays.asList(n1, n2, n3, n6)));
-        Double difference = vectorSpace.getBiggestDifferenceInClusterOf(Attributes.TIMEZONE.getName(), c1);
+        Double difference = vectorSpace.getBiggestDifferenceInClusterOf(Attribute.TIMEZONE.getName(), c1);
         assertTrue(6 - eps <= difference && difference <= 6 + eps);
         assertFalse(vectorSpace.isValidCluster(c1));
 
         // test invalid age
         c1.clear();
         c1.addAll(new ArrayList<>(Arrays.asList(n1, n2, n3, n7)));
-        difference = vectorSpace.getBiggestDifferenceInClusterOf(Attributes.AGE.getName(), c1);
+        difference = vectorSpace.getBiggestDifferenceInClusterOf(Attribute.AGE.getName(), c1);
         assertTrue(7 - eps <= difference && difference <= 7 + eps);
         assertFalse(vectorSpace.isValidCluster(c1));
 

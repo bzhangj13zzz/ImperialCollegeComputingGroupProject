@@ -1,7 +1,11 @@
 language: java
+node_js:
+  - "8.2.1"
 sudo: true
 before_install:
   - mvn clean && mvn -N io.takari:maven:0.7.6:wrapper && chmod +x mvnw
+install:
+  - npm install newman
 stages:
   - compile
   - test
@@ -9,8 +13,15 @@ jobs:
   include:
     - stage: compile
       script: mvn compile
-    - stage: test
+    - stage: unit_test
       script: mvn test
+    - stage: integration_test
+      before_script:
+        - node --version
+        - npm --version
+        - node_modules/.bin/newman --version
+      script:
+        - node_modules/.bin/newman run group_allocator_integration_test.postman_collection.json
 deploy:
   provider: heroku
   api_key: 4788febb-d90c-45f5-84c3-d31d91a7f423

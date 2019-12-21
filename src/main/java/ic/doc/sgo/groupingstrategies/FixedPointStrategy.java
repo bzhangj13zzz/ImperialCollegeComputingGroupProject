@@ -107,34 +107,34 @@ public class FixedPointStrategy implements GroupingStrategy {
             Map<String, HashMap<String, Pair<Double, Double>>> ratioAttribute = new HashMap<>();
 
             if (constraint.isTimeMatter()) {
-                dimensions.put(Attributes.TIMEZONE.getName(), new VectorSpace.Property(12.0, VectorSpace.Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
+                dimensions.put(Attribute.TIMEZONE.getName(), new VectorSpace.Property(12.0, VectorSpace.Type.CIRCLE, (double) constraint.getTimezoneDiff().getAsInt()));
             }
 
             if (constraint.isAgeMatter()) {
-                dimensions.put(Attributes.AGE.getName(), new VectorSpace.Property(120.0, VectorSpace.Type.LINE, (double) constraint.getAgeDiff().getAsInt()));
+                dimensions.put(Attribute.AGE.getName(), new VectorSpace.Property(120.0, VectorSpace.Type.LINE, (double) constraint.getAgeDiff().getAsInt()));
             }
 
             if (constraint.isSameGender()) {
-                dimensions.put(Attributes.GENDER.getName(), new VectorSpace.Property(2.0, VectorSpace.Type.LINE, 0.0));
+                dimensions.put(Attribute.GENDER.getName(), new VectorSpace.Property(2.0, VectorSpace.Type.LINE, 0.0));
             }
 
 
             if (constraint.isGenderNumberMatter()) {
                 assert constraint.getMinMale() + constraint.getMinFemale() <= constraint.getGroupSizeLowerBound();
-                discreteAttribute.put(Attributes.GENDER.getName(), new HashMap<>());
-                discreteAttribute.get(Attributes.GENDER.getName()).put("male",
+                discreteAttribute.put(Attribute.GENDER.getName(), new HashMap<>());
+                discreteAttribute.get(Attribute.GENDER.getName()).put("male",
                         new Pair<>(constraint.getMinMale(), constraint.getGroupSizeUpperBound()));
-                discreteAttribute.get(Attributes.GENDER.getName()).put("female",
+                discreteAttribute.get(Attribute.GENDER.getName()).put("female",
                         new Pair<>(constraint.getMinFemale(), constraint.getGroupSizeUpperBound()));
             }
 
             if (constraint.isGenderRatioMatter()) {
                 assert constraint.getGenderRatio() + constraint.getGenderErrorMargin() <= 1;
                 assert constraint.getGenderRatio() - constraint.getGenderErrorMargin() >= 0;
-                ratioAttribute.put(Attributes.GENDER.getName(), new HashMap<>());
-                ratioAttribute.get(Attributes.GENDER.getName()).put("male",
+                ratioAttribute.put(Attribute.GENDER.getName(), new HashMap<>());
+                ratioAttribute.get(Attribute.GENDER.getName()).put("male",
                         new Pair<>(constraint.getGenderRatio(), constraint.getGenderErrorMargin()));
-                ratioAttribute.get(Attributes.GENDER.getName()).put("female",
+                ratioAttribute.get(Attribute.GENDER.getName()).put("female",
                         new Pair<>((1-constraint.getGenderRatio()), constraint.getGenderErrorMargin()));
             }
 
@@ -178,21 +178,22 @@ public class FixedPointStrategy implements GroupingStrategy {
             id = student.getId();
 
             if (constraint.isTimeMatter()) {
-                coordinateMap.put(Attributes.TIMEZONE.getName(),
-                        (double) TimeZoneCalculator.timeZoneInInteger(student.getTimeZone().orElse(ZoneId.of("UTC+0"))));
+                coordinateMap.put(Attribute.TIMEZONE.getName(),
+                        (double) ZoneIdUtils.zoneIdToInteger(student.getTimeZone().orElse(ZoneId.of("UTC+0"))));
             }
 
             if (constraint.isAgeMatter()) {
-                coordinateMap.put(Attributes.AGE.getName(), (double) student.getAge().orElse(0));
+                coordinateMap.put(Attribute.AGE.getName(), (double) student.getAge().orElse(0));
             }
 
             if (constraint.isSameGender()) {
-                coordinateMap.put(Attributes.GENDER.getName(), (double) genderToInteger(student.getGender().orElse("male")));
+                coordinateMap.put(Attribute.GENDER.getName(), (double) genderToInteger(student.getGender().orElse("male")));
             }
 
             //discreteAttributeType.put(Attributes.GENDER.getName(), "male");
             if (constraint.isGenderNumberMatter() || constraint.isGenderRatioMatter()) {
-                discreteAttributeType.put(Attributes.GENDER.getName(), student.getGender().orElse("male"));
+                discreteAttributeType.put(Attribute.GENDER.getName(), student.getGender().orElse("male"));
+
             }
 
             if (constraint.isDiscreteAttributesConstraintsMatter()) {
