@@ -46,7 +46,7 @@ public class FixedPointStrategyTest {
         for (File directory : cases) {
             assertTrue(directory.isDirectory());
             System.out.println("Testing for " + directory.getName());
-            //if (directory.getName().equals("misc")) continue;
+            //if (!directory.getName().equals("exclusions")) continue;
             for (File file : Objects.requireNonNull(directory.listFiles())) {
                 System.out.print(file.getName() + " ");
                 Instant testStart = Instant.now();

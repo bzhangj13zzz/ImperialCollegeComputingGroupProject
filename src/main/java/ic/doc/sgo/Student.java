@@ -1,7 +1,5 @@
 package ic.doc.sgo;
 
-import com.google.gson.JsonElement;
-
 import javax.annotation.Nullable;
 import java.time.ZoneId;
 import java.util.*;
@@ -15,11 +13,11 @@ public class Student {
     private final String degree;
     private final double workYearNum;
     private final String cohort;
-    private final Map<String, JsonElement> additionalAttributes; // never null
+    private final Map<String, String> additionalAttributes; // never null
 
     private Student(String id, @Nullable ZoneId timeZone,
                     @Nullable String gender, int age, @Nullable String career, @Nullable String degree,
-                    double workYearNum, @Nullable String cohort, Map<String, JsonElement> additionalAttributes) {
+                    double workYearNum, @Nullable String cohort, Map<String, String> additionalAttributes) {
         this.id = id;
         this.timeZone = timeZone;
         this.gender = gender;
@@ -105,11 +103,11 @@ public class Student {
         return Optional.ofNullable(cohort);
     }
 
-    public Optional<JsonElement> getAttribute(String key) {
+    public Optional<String> getAttribute(String key) {
         return Optional.ofNullable(additionalAttributes.get(key));
     }
 
-    public void addAttribute(String key, JsonElement value) {
+    public void addAttribute(String key, String value) {
         additionalAttributes.put(key, value);
     }
 
@@ -122,7 +120,7 @@ public class Student {
         private String degree = null;
         private double workYearNum = 12;
         private String cohort = null;
-        private final Map<String, JsonElement> additionalAttributes = new HashMap<>();
+        private final Map<String, String> additionalAttributes = new HashMap<>();
 
         public Builder(String id) {
             this.id = id;
@@ -163,7 +161,7 @@ public class Student {
             return this;
         }
 
-        public Builder addAttribute(String key, JsonElement value) {
+        public Builder addAttribute(String key, String value) {
             additionalAttributes.put(key, value);
             return this;
         }
@@ -173,5 +171,16 @@ public class Student {
                     workYearNum, cohort, additionalAttributes);
         }
 
+        public Builder setAdditionalDiscreteAttributeWithType(String attribute, String type) {
+            this.additionalAttributes.put(attribute, type);
+            return this;
+        }
+
+        public String getAddtionalAttribute(String attribute) {
+            if (this.additionalAttributes.containsKey(attribute)) {
+                return this.additionalAttributes.get(attribute);
+            }
+            return "";
+        }
     }
 }

@@ -1,8 +1,6 @@
-package ic.doc.sgo.studentadapters;
+package ic.doc.sgo.studentparsers;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import ic.doc.sgo.Student;
 import org.junit.Test;
 
@@ -13,7 +11,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class JsonStudentAdapterTest {
+public class JsonStudentParserTest {
 
     private final LocalDate localDate = LocalDate.of(2019, 10, 1);
 
@@ -21,7 +19,7 @@ public class JsonStudentAdapterTest {
     public void returnEmptyIfJsonNoIdMember() {
         JsonObject json = new JsonObject();
         json.addProperty("gender", "Male");
-        assertThat(new JsonStudentAdapter(json, localDate).toStudent(), is(Optional.empty()));
+        assertThat(new JsonStudentParser(json, localDate).toStudent(), is(Optional.empty()));
     }
 
     @Test
@@ -29,7 +27,7 @@ public class JsonStudentAdapterTest {
         JsonObject json = new JsonObject();
         json.addProperty("id", "123");
         Student student = new Student.Builder("123").createStudent();
-        assertThat(new JsonStudentAdapter(json, localDate).toStudent(), is(Optional.of(student)));
+        assertThat(new JsonStudentParser(json, localDate).toStudent(), is(Optional.of(student)));
     }
 
     @Test
@@ -52,8 +50,10 @@ public class JsonStudentAdapterTest {
                 .setDegree("PhD")
                 .setWorkYearNum(15)
                 .setCohort("18J")
+                .setAdditionalDiscreteAttributeWithType("country", "United Kingdom")
+                .setAdditionalDiscreteAttributeWithType("currentCity", "London")
                 .createStudent();
-        assertThat(new JsonStudentAdapter(json, localDate).toStudent(), is(Optional.of(student)));
+        assertThat(new JsonStudentParser(json, localDate).toStudent(), is(Optional.of(student)));
     }
 
     @Test
@@ -63,32 +63,25 @@ public class JsonStudentAdapterTest {
         json.addProperty("country", "United Kingdom");
         Student student = new Student.Builder("123")
                 .setTimeZone(ZoneId.of("Europe/London"))
+                .setAdditionalDiscreteAttributeWithType("country", "United Kingdom")
                 .createStudent();
-        assertThat(new JsonStudentAdapter(json, localDate).toStudent(), is(Optional.of(student)));
+        assertThat(new JsonStudentParser(json, localDate).toStudent(), is(Optional.of(student)));
     }
 
     @Test
     public void canReturnStudentIfJsonHasMembersWithAdditionalAttributes() {
-        JsonArray array = new JsonArray();
-        array.add(1);
-        array.add(2);
-        JsonObject obj = new JsonObject();
         JsonObject json = new JsonObject();
         json.addProperty("id", "123");
         json.addProperty("str", "Str");
         json.addProperty("int", 1);
         json.addProperty("float", 1.1);
         json.addProperty("bool", true);
-        json.add("array", array);
-        json.add("obj", obj);
         Student student = new Student.Builder("123")
-                .addAttribute("str", new JsonPrimitive("Str"))
-                .addAttribute("int", new JsonPrimitive(1))
-                .addAttribute("float", new JsonPrimitive(1.1))
-                .addAttribute("bool", new JsonPrimitive(true))
-                .addAttribute("array", array)
-                .addAttribute("obj", obj)
+                .addAttribute("str", "Str")
+                .addAttribute("int", "1")
+                .addAttribute("float", "1.1")
+                .addAttribute("bool", "true")
                 .createStudent();
-        assertThat(new JsonStudentAdapter(json, localDate).toStudent(), is(Optional.of(student)));
+        assertThat(new JsonStudentParser(json, localDate).toStudent(), is(Optional.of(student)));
     }
 }

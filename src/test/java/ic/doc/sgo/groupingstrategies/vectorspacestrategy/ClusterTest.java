@@ -24,7 +24,6 @@ public class ClusterTest {
             .setAgeDiff(3)
             .createConstrain();
 
-    private VectorSpace vectorSpace = FixedPointStrategy.Converters.VectorSpaceFromConstraint(constraint);
 
     private Student s1 = new Student.Builder("1")
             .setTimeZone(ZoneId.of("UTC+1"))

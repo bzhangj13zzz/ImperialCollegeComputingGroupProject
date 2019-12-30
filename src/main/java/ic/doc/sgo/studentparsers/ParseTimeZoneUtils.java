@@ -1,4 +1,4 @@
-package ic.doc.sgo.studentadapters;
+package ic.doc.sgo.studentparsers;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * Utility class that handles time zone.
  **/
 final class ParseTimeZoneUtils {
-    private static final String JSON_PATH = "src/main/java/ic/doc/sgo/studentadapters/countries_with_timeZones.json";
+    private static final String JSON_PATH = "src/main/java/ic/doc/sgo/studentparsers/countries_with_timeZones.json";
     private static final String API_KEY = System.getenv("GOOGLE_API_KEY");
     private static final Gson gson = new Gson();
     private static final LoadingCache<CityCountry, ZoneId> cache =
@@ -36,7 +36,6 @@ final class ParseTimeZoneUtils {
         if (lookup.isPresent()) {
             return lookup.get();
         }
-
         return cache.get(new CityCountry(cityName, countryName));
     }
 

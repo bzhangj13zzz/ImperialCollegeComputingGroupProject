@@ -1,5 +1,6 @@
 package ic.doc.sgo.groupingstrategies.vectorspacestrategy;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,16 +11,18 @@ public class VectorSpace {
     private final Map<String, Property> dimensions;
     private final int clusterSizeLowerBound;
     private final int clusterSizeUpperBound;
-    private final Map<String, HashMap<String, Integer>> discreteAttribute;
-
+    private final Map<String, HashMap<String, Pair<Integer, Integer>>> discreteAttribute;
+    private final Map<String, HashMap<String, Pair<Double, Double>>> ratioAttribute;
     private final double eps = 0.00001;
 
+
     public VectorSpace(Map<String, Property> dimensions, int clusterSizeLowerBound, int clusterSizeUpperBound,
-                       Map<String, HashMap<String, Integer>> discreteAttribute) {
+                       Map<String, HashMap<String, Pair<Integer, Integer>>> discreteAttribute, Map<String, HashMap<String, Pair<Double, Double>>> ratioAttribute) {
         this.dimensions = dimensions;
         this.clusterSizeLowerBound = clusterSizeLowerBound;
         this.clusterSizeUpperBound = clusterSizeUpperBound;
         this.discreteAttribute = discreteAttribute;
+        this.ratioAttribute = ratioAttribute;
     }
 
     public int getClusterSizeLowerBound() {
@@ -30,7 +33,7 @@ public class VectorSpace {
         return clusterSizeUpperBound;
     }
 
-    public int getDiscreteAttributeValue(String attribute, String type) {
+    public Pair<Integer, Integer> getDiscreteAttributeValueRange(String attribute, String type) {
         assert discreteAttribute.containsKey(attribute);
         return discreteAttribute.get(attribute).get(type);
     }
@@ -86,11 +89,25 @@ public class VectorSpace {
         }
 
         int cnt = 0;
-        for (String String: discreteAttribute.keySet()) {
-            for (String type: discreteAttribute.get(String).keySet()) {
-                int target = getDiscreteAttributeValue(String, type);
-                int number = getDiscreteAttributeNumberInCluster(cluster, String, type);
-                sum += Math.min(target - number, 0);
+        for (String attributeName: discreteAttribute.keySet()) {
+            for (String type: discreteAttribute.get(attributeName).keySet()) {
+                Pair<Integer, Integer> range = getDiscreteAttributeValueRange(attributeName, type);
+                int number = getDiscreteAttributeNumberInCluster(cluster, attributeName, type);
+                if (range.second() < number) {
+                    sum += number - range.second();
+                } else if (number < range.first()) {
+                    sum += range.first() - number;
+                }
+                cnt++;
+            }
+        }
+
+        for (String attributeName : ratioAttribute.keySet()) {
+            HashMap<String, Pair<Double, Double>> hashMap = ratioAttribute.get(attributeName);
+            for (String type: hashMap.keySet()) {
+                double ratio = hashMap.get(type).first();
+                double currRatio = 1.0*cluster.getNumberOf(attributeName, type)/cluster.size();
+                sum += Math.abs(ratio-currRatio);
                 cnt++;
             }
         }
@@ -150,9 +167,22 @@ public class VectorSpace {
         }
 
         for (String attributeName : discreteAttribute.keySet()) {
-            HashMap<String, Integer> valueMap = discreteAttribute.get(attributeName);
+            HashMap<String, Pair<Integer, Integer>> valueMap = discreteAttribute.get(attributeName);
             for (String type : valueMap.keySet()) {
-                if (valueMap.get(type) > cluster.getNumberOf(attributeName, type)) {
+                if (valueMap.get(type).first() > cluster.getNumberOf(attributeName, type) ||
+                        valueMap.get(type).second() < cluster.getNumberOf(attributeName, type)) {
+                    return false;
+                }
+            }
+        }
+
+        for (String attributeName : ratioAttribute.keySet()) {
+            HashMap<String, Pair<Double, Double>> hashMap = ratioAttribute.get(attributeName);
+            for (String type: hashMap.keySet()) {
+                double ratio = hashMap.get(type).first();
+                double margin = hashMap.get(type).second();
+                double currRatio = 1.0*cluster.getNumberOf(attributeName, type)/cluster.size();
+                if (currRatio < ratio - margin || currRatio > ratio + margin) {
                     return false;
                 }
             }
@@ -290,7 +320,10 @@ public class VectorSpace {
         return dimensions.isEmpty();
     }
 
-
+    public Pair<Double, Double> getRatioAttributeValue(String name, String type) {
+        assert ratioAttribute.containsKey(name);
+        return ratioAttribute.get(name).get(type);
+    }
 
 
     public static class Property {
