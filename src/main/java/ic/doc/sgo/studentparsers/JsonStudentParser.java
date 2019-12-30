@@ -1,4 +1,4 @@
-package ic.doc.sgo.studentadapters;
+package ic.doc.sgo.studentparsers;
 
 import com.google.gson.JsonObject;
 import ic.doc.sgo.Student;
@@ -7,11 +7,11 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Optional;
 
-public class JsonStudentAdapter implements StudentAdapter {
+public class JsonStudentParser implements StudentParser {
     private final JsonObject studentJson;
     private final LocalDate now;
 
-    public JsonStudentAdapter(JsonObject studentJson, LocalDate now) {
+    public JsonStudentParser(JsonObject studentJson, LocalDate now) {
         this.studentJson = studentJson;
         this.now = now;
     }

@@ -1,4 +1,4 @@
-package ic.doc.sgo.studentadapters;
+package ic.doc.sgo.studentparsers;
 
 import java.time.LocalDate;
 import java.time.Period;

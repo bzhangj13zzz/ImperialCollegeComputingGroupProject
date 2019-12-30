@@ -1,4 +1,4 @@
-package ic.doc.sgo.constraintadapters;
+package ic.doc.sgo.constraintparsers;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -10,20 +10,20 @@ import ic.doc.sgo.groupingstrategies.vectorspacestrategy.Pair;
 import java.util.Optional;
 import org.junit.Test;
 
-public class JsonConstraintAdapterTest {
+public class JsonConstraintParserTest {
 
     @Test
     public void returnEmptyIfJsonNoUpperBound() {
         JsonObject json = new JsonObject();
         json.addProperty("groupSizeLowerBound", 1);
-        assertThat(new JsonConstraintAdapter(json).toConstraint(), is(Optional.empty()));
+        assertThat(new JsonConstraintParser(json).toConstraint(), is(Optional.empty()));
     }
 
     @Test
     public void returnEmptyIfJsonNoLowerBound() {
         JsonObject json = new JsonObject();
         json.addProperty("groupSizeUpperBound", 1);
-        assertThat(new JsonConstraintAdapter(json).toConstraint(), is(Optional.empty()));
+        assertThat(new JsonConstraintParser(json).toConstraint(), is(Optional.empty()));
     }
 
     @Test
@@ -32,7 +32,7 @@ public class JsonConstraintAdapterTest {
         json.addProperty("minMale", 1);
         json.addProperty("groupSizeLowerBound", 1);
         json.addProperty("groupSizeUpperBound", 1);
-        assertThat(new JsonConstraintAdapter(json).toConstraint(), is(Optional.empty()));
+        assertThat(new JsonConstraintParser(json).toConstraint(), is(Optional.empty()));
     }
 
     @Test
@@ -41,7 +41,7 @@ public class JsonConstraintAdapterTest {
         json.addProperty("minFemale", 1);
         json.addProperty("groupSizeLowerBound", 1);
         json.addProperty("groupSizeUpperBound", 1);
-        assertThat(new JsonConstraintAdapter(json).toConstraint(), is(Optional.empty()));
+        assertThat(new JsonConstraintParser(json).toConstraint(), is(Optional.empty()));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class JsonConstraintAdapterTest {
         json.addProperty("genderRatio", 1);
         json.addProperty("groupSizeLowerBound", 1);
         json.addProperty("groupSizeUpperBound", 1);
-        assertThat(new JsonConstraintAdapter(json).toConstraint(), is(Optional.empty()));
+        assertThat(new JsonConstraintParser(json).toConstraint(), is(Optional.empty()));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class JsonConstraintAdapterTest {
         json.addProperty("genderErrorMargin", 1);
         json.addProperty("groupSizeLowerBound", 1);
         json.addProperty("groupSizeUpperBound", 1);
-        assertThat(new JsonConstraintAdapter(json).toConstraint(), is(Optional.empty()));
+        assertThat(new JsonConstraintParser(json).toConstraint(), is(Optional.empty()));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class JsonConstraintAdapterTest {
         json.addProperty("genderErrorMargin", 1);
         json.addProperty("groupSizeLowerBound", 1);
         json.addProperty("groupSizeUpperBound", 1);
-        assertThat(new JsonConstraintAdapter(json).toConstraint(), is(Optional.empty()));
+        assertThat(new JsonConstraintParser(json).toConstraint(), is(Optional.empty()));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class JsonConstraintAdapterTest {
         json.addProperty("groupSizeLowerBound", "1");
         json.addProperty("groupSizeUpperBound", "1");
         Constraint constraint = new Constraint.Builder(1, 1).createConstrain();
-        assertThat(new JsonConstraintAdapter(json).toConstraint(), is(Optional.of(constraint)));
+        assertThat(new JsonConstraintParser(json).toConstraint(), is(Optional.of(constraint)));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class JsonConstraintAdapterTest {
         json.addProperty("minFemale", "1");
         Constraint constraint = new Constraint.Builder(1, 1).
             setTimezoneDiff(1).setAgeDiff(1).setMinFemale(1).setMinMale(1).createConstrain();
-        assertThat(new JsonConstraintAdapter(json).toConstraint(), is(Optional.of(constraint)));
+        assertThat(new JsonConstraintParser(json).toConstraint(), is(Optional.of(constraint)));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class JsonConstraintAdapterTest {
         Constraint constraint = new Constraint.Builder(1, 1).
             setTimezoneDiff(1).setAgeDiff(1).setMinFemale(1).setMinMale(1)
             .addDiscreteAttributeConstraint("quant", new Pair<>(1, 1)).createConstrain();
-        assertThat(new JsonConstraintAdapter(json).toConstraint(), is(Optional.of(constraint)));
+        assertThat(new JsonConstraintParser(json).toConstraint(), is(Optional.of(constraint)));
     }
 
 }

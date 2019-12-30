@@ -1,8 +1,8 @@
-package ic.doc.sgo.constraintadapters;
+package ic.doc.sgo.constraintparsers;
 
 import ic.doc.sgo.Constraint;
 import java.util.Optional;
 
-public interface ConstraintAdapter {
+public interface ConstraintParser {
     Optional<Constraint> toConstraint();
 }

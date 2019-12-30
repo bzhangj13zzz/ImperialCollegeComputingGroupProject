@@ -1,4 +1,4 @@
-package ic.doc.sgo.constraintadapters;
+package ic.doc.sgo.constraintparsers;
 
 import com.google.gson.JsonObject;
 import ic.doc.sgo.Constraint;
@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class JsonConstraintAdapter implements ConstraintAdapter {
+public class JsonConstraintParser implements ConstraintParser {
 
     private final JsonObject constraintJson;
 
-    public JsonConstraintAdapter(JsonObject constraintJson) {
+    public JsonConstraintParser(JsonObject constraintJson) {
         this.constraintJson = constraintJson;
     }
 
