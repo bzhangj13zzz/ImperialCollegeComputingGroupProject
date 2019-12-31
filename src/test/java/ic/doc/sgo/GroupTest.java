@@ -48,26 +48,4 @@ public class GroupTest {
         assertFalse(g1.remove(s1));
     }
 
-    @Test
-    public void studentIsConsistentWithGroup() {
-        g1.add(s1);
-        assertTrue(Group.getGroup(s1).isPresent());
-        assertSame(Group.getGroup(s1).get(), g1);
-        g2.add(s1);
-        assertTrue(Group.getGroup(s1).isPresent());
-        assertSame(Group.getGroup(s1).get(), g2);
-        assertFalse(g1.contains(s1));
-        g2.remove(s1);
-        assertFalse(Group.getGroup(s1).isPresent());
-    }
-
-    @Test
-    public void testIsSameGroup() {
-        g1.add(s1);
-        g1.add(s2);
-        assertTrue(Group.isSameGroup(s1, s2));
-        g2.add(s1);
-        assertFalse(Group.isSameGroup(s1, s2));
-    }
-
 }
