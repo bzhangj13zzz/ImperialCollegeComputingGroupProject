@@ -198,9 +198,6 @@ public class FixedPointStrategy implements GroupingStrategy {
 
             if (constraint.isDiscreteAttributesConstraintsMatter()) {
                 for (String attribute : constraint.getDiscreteAttributes().keySet()) {
-                    if (student.getAttribute(attribute).equals("false")) {
-                        continue;
-                    }
                     discreteAttributeType.put(attribute, student.getAttribute(attribute).orElse(""));
                 }
             }
